@@ -1,0 +1,11 @@
+FROM golang AS build
+COPY . .
+ENV GOPATH=""
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+RUN go build -trimpath -a -ldflags="-w -s" ./cmd/tasks-app
+
+FROM gcr.io/distroless/static
+COPY --from=build /go/tasks-app /tasks-app
+ENTRYPOINT ["/tasks-app"]

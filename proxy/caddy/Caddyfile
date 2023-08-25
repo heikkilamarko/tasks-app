@@ -1,0 +1,38 @@
+{
+	admin off
+	auto_https off
+	skip_install_trust
+
+	log {
+		level {$CADDY_LOG_LEVEL}
+		# format console
+		format json {
+			time_format "rfc3339_nano"
+		}
+	}
+
+	log file {
+		output file {$CADDY_LOG_FILE}
+		level {$CADDY_LOG_LEVEL}
+		# format console
+		format json {
+			time_format "rfc3339_nano"
+		}
+	}
+}
+
+{$CADDY_SITE_ADDRESS} {
+	log
+	encode gzip
+	tls {$CADDY_TLS}
+
+	header -Server
+
+	handle_path /hub/v1 {
+		reverse_proxy {$CADDY_HUB_ADDRESS}
+	}
+
+	handle {
+		reverse_proxy {$CADDY_APP_ADDRESS}
+	}
+}

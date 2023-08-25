@@ -1,0 +1,99 @@
+version: "3.9"
+
+services:
+  caddy:
+    build: proxy/caddy
+    image: tasks-app/caddy
+    container_name: caddy
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/caddy.env
+    ports:
+      - 80:80
+    networks:
+      - tasks-app
+
+  tasks-app:
+    build: src
+    image: tasks-app/tasks-app
+    container_name: tasks-app
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/tasks-app.env
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
+      - nats
+
+  postgres:
+    build: db/postgres
+    image: tasks-app/postgres
+    container_name: postgres
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/postgres.env
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - tasks-app
+
+  postgres-migrations:
+    build: db/postgres-migrations
+    image: tasks-app/postgres-migrations
+    container_name: postgres-migrations
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/postgres-migrations.env
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
+
+  nats:
+    build: messaging/nats
+    image: tasks-app/nats
+    container_name: nats
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/nats.env
+    ports:
+      - 4222:4222
+    volumes:
+      - nats:/nats
+    networks:
+      - tasks-app
+
+  nats-configure:
+    build: messaging/nats-configure
+    image: tasks-app/nats-configure
+    container_name: nats-configure
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/nats-configure.env
+    networks:
+      - tasks-app
+    depends_on:
+      - nats
+
+networks:
+  tasks-app:
+    name: tasks-app
+
+volumes:
+  postgres:
+  nats:
