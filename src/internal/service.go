@@ -14,7 +14,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	// PostgreSQL driver
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Service struct {
