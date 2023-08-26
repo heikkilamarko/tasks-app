@@ -10,15 +10,15 @@
 		</tr>
 	</thead>
 	<tbody>
-		{{range .Tasks}}
-		<tr>
-			<td>{{.ID}}</td>
-			<td>{{.Name}}</td>
-			<td>{{with .ExpiresAt}}{{.Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
-			<td>{{.CreatedAt.Format "2006-01-02 15:04:05"}}</td>
-			<td>{{with .UpdatedAt}}{{.Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
-			<td>{{with .CompletedAt}}{{.Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
-		</tr>
-		{{end}}
+		{{ range .Tasks }}
+			<tr>
+				<td>{{ .ID }}</td>
+				<td>{{ .Name }}</td>
+				<td>{{ with .ExpiresAt }}{{ .Format "2006-01-02 15:04:05" }}{{ else }}N/A{{ end }}</td>
+				<td>{{ .CreatedAt.Format "2006-01-02 15:04:05" }}</td>
+				<td>{{ with .UpdatedAt }}{{ .Format "2006-01-02 15:04:05" }}{{ else }}N/A{{ end }}</td>
+				<td>{{ with .CompletedAt }}{{ .Format "2006-01-02 15:04:05" }}{{ else }}N/A{{ end }}</td>
+			</tr>
+		{{ end }}
 	</tbody>
 </table>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 	<head>
 		<meta charset="UTF-8" />
@@ -17,7 +17,9 @@
 		<main class="container">
 			<h1>Tasks App</h1>
 			<button hx-get="/ui/tasks" hx-target="#tasks-table" hx-swap="outerHTML" class="btn btn-primary">Reload</button>
-			<div class="table-responsive">{{ template "tasks.html" . }}</div>
+			<div class="table-responsive">
+				{{ template "tasks.html" . }}
+			</div>
 		</main>
 	</body>
 </html>
