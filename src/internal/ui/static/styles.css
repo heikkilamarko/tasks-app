@@ -2,3 +2,10 @@ th,
 td {
 	white-space: nowrap;
 }
+
+.loading-indicator {
+	display: none;
+}
+.htmx-request.loading-indicator {
+	display: inline-block;
+}
