@@ -6,10 +6,6 @@ type PostgresTaskRepository struct {
 	db *sql.DB
 }
 
-func NewPostgresTaskRepository(db *sql.DB) TaskRepository {
-	return &PostgresTaskRepository{db: db}
-}
-
 func (repo *PostgresTaskRepository) Create(task *Task) error {
 	query := `
         INSERT INTO task (name, expires_at, created_at, updated_at, completed_at)

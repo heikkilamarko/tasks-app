@@ -18,11 +18,12 @@ import (
 )
 
 type Service struct {
-	Config   *Config
-	Logger   *slog.Logger
-	DB       *sql.DB
-	TaskRepo TaskRepository
-	Server   *http.Server
+	Config      *Config
+	Logger      *slog.Logger
+	DB          *sql.DB
+	TaskRepo    TaskRepository
+	EmailClient EmailClient
+	Server      *http.Server
 }
 
 func (s *Service) Run() {
@@ -39,6 +40,11 @@ func (s *Service) Run() {
 	s.Logger.Info("application is starting up...")
 
 	if err := s.initDB(ctx); err != nil {
+		s.Logger.Error(err.Error())
+		os.Exit(1)
+	}
+
+	if err := s.initEmailClient(ctx); err != nil {
 		s.Logger.Error(err.Error())
 		os.Exit(1)
 	}
@@ -103,17 +109,28 @@ func (s *Service) initDB(ctx context.Context) error {
 	return nil
 }
 
+func (s *Service) initEmailClient(ctx context.Context) error {
+	s.EmailClient = &NullEmailClient{s.Logger}
+
+	// s.EmailClient = &SMTPEmailClient{SMTPEmailClientOptions{
+	// 	Host:        s.Config.SMTPHost,
+	// 	Port:        s.Config.SMTPPort,
+	// 	FromName:    s.Config.SMTPFromName,
+	// 	FromAddress: s.Config.SMTPFromAddress,
+	// 	Password:    s.Config.SMTPPassword,
+	// }}
+
+	return nil
+}
+
 func (s *Service) initHTTPServer(ctx context.Context) {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
-
+	router.Handle("/ui/static/*", http.FileServer(http.FS(UIStaticFilesFS)))
 	router.Method(http.MethodGet, "/ui", &GetUIHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks", &GetUITasksHandler{s.TaskRepo, s.Logger})
-
 	router.NotFound(NotFound)
-
-	router.Handle("/ui/static/*", http.FileServer(http.FS(StaticFS)))
 
 	s.Server = &http.Server{
 		ReadTimeout:  5 * time.Second,
