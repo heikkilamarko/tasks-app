@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"strings"
 
 	"github.com/wneessen/go-mail"
@@ -18,7 +19,7 @@ type SMTPEmailClient struct {
 	Options SMTPEmailClientOptions
 }
 
-func (c *SMTPEmailClient) SendEmail(to string, subject string, templateName string, data any) error {
+func (c *SMTPEmailClient) SendEmail(ctx context.Context, to string, subject string, templateName string, data any) error {
 	var bodyBuilder strings.Builder
 	if err := EmailTemplates.ExecuteTemplate(&bodyBuilder, templateName, data); err != nil {
 		return err
@@ -50,5 +51,5 @@ func (c *SMTPEmailClient) SendEmail(to string, subject string, templateName stri
 		return err
 	}
 
-	return client.DialAndSend(msg)
+	return client.DialAndSendWithContext(ctx, msg)
 }

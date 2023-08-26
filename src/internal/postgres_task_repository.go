@@ -1,19 +1,23 @@
 package internal
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+)
 
 type PostgresTaskRepository struct {
 	db *sql.DB
 }
 
-func (repo *PostgresTaskRepository) Create(task *Task) error {
+func (repo *PostgresTaskRepository) Create(ctx context.Context, task *Task) error {
 	query := `
-        INSERT INTO task (name, expires_at, created_at, updated_at, completed_at)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING id
-    `
+		INSERT INTO task (name, expires_at, created_at, updated_at, completed_at)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+	`
 
-	err := repo.db.QueryRow(
+	err := repo.db.QueryRowContext(
+		ctx,
 		query,
 		task.Name, task.ExpiresAt, task.CreatedAt, task.UpdatedAt, task.CompletedAt,
 	).Scan(&task.ID)
@@ -24,14 +28,15 @@ func (repo *PostgresTaskRepository) Create(task *Task) error {
 	return nil
 }
 
-func (repo *PostgresTaskRepository) Update(task *Task) error {
+func (repo *PostgresTaskRepository) Update(ctx context.Context, task *Task) error {
 	query := `
-        UPDATE task
-        SET name = $2, expires_at = $3, updated_at = $4, completed_at = $5
-        WHERE id = $1
-    `
+		UPDATE task
+		SET name = $2, expires_at = $3, updated_at = $4, completed_at = $5
+		WHERE id = $1
+	`
 
-	_, err := repo.db.Exec(
+	_, err := repo.db.ExecContext(
+		ctx,
 		query,
 		task.ID, task.Name, task.ExpiresAt, task.UpdatedAt, task.CompletedAt,
 	)
@@ -42,13 +47,13 @@ func (repo *PostgresTaskRepository) Update(task *Task) error {
 	return nil
 }
 
-func (repo *PostgresTaskRepository) Delete(id int) error {
+func (repo *PostgresTaskRepository) Delete(ctx context.Context, id int) error {
 	query := `
-        DELETE FROM task
-        WHERE id = $1
-    `
+		DELETE FROM task
+		WHERE id = $1
+	`
 
-	_, err := repo.db.Exec(query, id)
+	_, err := repo.db.ExecContext(ctx, query, id)
 	if err != nil {
 		return err
 	}
@@ -56,14 +61,14 @@ func (repo *PostgresTaskRepository) Delete(id int) error {
 	return nil
 }
 
-func (repo *PostgresTaskRepository) GetByID(id int) (*Task, error) {
+func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task, error) {
 	query := `
-        SELECT id, name, expires_at, created_at, updated_at, completed_at
-        FROM task
-        WHERE id = $1
-    `
+		SELECT id, name, expires_at, created_at, updated_at, completed_at
+		FROM task
+		WHERE id = $1
+	`
 
-	row := repo.db.QueryRow(query, id)
+	row := repo.db.QueryRowContext(ctx, query, id)
 
 	task := &Task{}
 	err := row.Scan(
@@ -79,11 +84,13 @@ func (repo *PostgresTaskRepository) GetByID(id int) (*Task, error) {
 	return task, nil
 }
 
-func (repo *PostgresTaskRepository) GetAll() ([]*Task, error) {
-	rows, err := repo.db.Query(`
-        SELECT id, name, expires_at, created_at, updated_at, completed_at
-        FROM task
-    `)
+func (repo *PostgresTaskRepository) GetAll(ctx context.Context) ([]*Task, error) {
+	query := `
+		SELECT id, name, expires_at, created_at, updated_at, completed_at
+		FROM task
+	`
+
+	rows, err := repo.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}

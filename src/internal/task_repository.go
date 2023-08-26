@@ -1,9 +1,11 @@
 package internal
 
+import "context"
+
 type TaskRepository interface {
-	Create(task *Task) error
-	Update(task *Task) error
-	Delete(id int) error
-	GetByID(id int) (*Task, error)
-	GetAll() ([]*Task, error)
+	Create(ctx context.Context, task *Task) error
+	Update(ctx context.Context, task *Task) error
+	Delete(ctx context.Context, id int) error
+	GetByID(ctx context.Context, id int) (*Task, error)
+	GetAll(ctx context.Context) ([]*Task, error)
 }
