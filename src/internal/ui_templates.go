@@ -6,6 +6,6 @@ import (
 )
 
 //go:embed ui/templates
-var TemplatesFS embed.FS
+var UITemplatesFS embed.FS
 
-var UITemplates = template.Must(template.ParseFS(TemplatesFS, "ui/templates/*.html"))
+var UITemplates = template.Must(template.ParseFS(UITemplatesFS, "ui/templates/*.html"))
