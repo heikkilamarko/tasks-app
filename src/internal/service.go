@@ -30,8 +30,10 @@ func (s *Service) Run() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	s.initDefaultLogger()
+
 	if err := s.loadConfig(); err != nil {
-		s.Logger.Error(err.Error())
+		slog.Error("load config", "error", err)
 		os.Exit(1)
 	}
 
@@ -40,19 +42,19 @@ func (s *Service) Run() {
 	s.Logger.Info("application is starting up...")
 
 	if err := s.initDB(ctx); err != nil {
-		s.Logger.Error(err.Error())
+		s.Logger.Error("init db", "error", err)
 		os.Exit(1)
 	}
 
 	if err := s.initEmailClient(ctx); err != nil {
-		s.Logger.Error(err.Error())
+		s.Logger.Error("init email client", "error", err)
 		os.Exit(1)
 	}
 
 	s.initHTTPServer(ctx)
 
 	if err := s.serve(ctx); err != nil {
-		s.Logger.Error(err.Error())
+		s.Logger.Error("serve", "error", err)
 		os.Exit(1)
 	}
 
@@ -70,20 +72,20 @@ func (s *Service) loadConfig() error {
 	return nil
 }
 
-func (s *Service) initLogger() {
-	level := slog.LevelInfo
-
-	level.UnmarshalText([]byte(s.Config.LogLevel))
-
-	opts := &slog.HandlerOptions{
-		Level: level,
-	}
-
+func (s *Service) initDefaultLogger() {
+	opts := &slog.HandlerOptions{Level: slog.LevelInfo}
 	handler := slog.NewJSONHandler(os.Stderr, opts)
-
 	logger := slog.New(handler)
 
 	slog.SetDefault(logger)
+}
+
+func (s *Service) initLogger() {
+	level := slog.LevelInfo
+	level.UnmarshalText([]byte(s.Config.LogLevel))
+	opts := &slog.HandlerOptions{Level: level}
+	handler := slog.NewJSONHandler(os.Stderr, opts)
+	logger := slog.New(handler)
 
 	s.Logger = logger
 }
