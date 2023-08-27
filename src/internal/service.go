@@ -91,7 +91,7 @@ func (s *Service) initLogger() {
 }
 
 func (s *Service) initDB(ctx context.Context) error {
-	db, err := sql.Open("pgx", s.Config.DBConnectionString)
+	db, err := sql.Open("pgx", s.Config.PostgresConnectionString)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func (s *Service) initHTTPServer(ctx context.Context) {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
-	router.Handle("/ui/static/*", http.FileServer(http.FS(UIStaticFilesFS)))
+	router.Handle("/ui/static/*", http.FileServer(http.FS(UIStaticFS)))
 	router.Method(http.MethodGet, "/ui", &GetUIHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks", &GetUITasksHandler{s.TaskRepo, s.Logger})
 	router.NotFound(NotFound)
@@ -138,7 +138,7 @@ func (s *Service) initHTTPServer(ctx context.Context) {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
-		Addr:         s.Config.Address,
+		Addr:         s.Config.Addr,
 		Handler:      router,
 	}
 }
