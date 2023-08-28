@@ -88,6 +88,7 @@ func (repo *PostgresTaskRepository) GetAll(ctx context.Context) ([]*Task, error)
 	query := `
 		SELECT id, name, expires_at, created_at, updated_at, completed_at
 		FROM task
+		ORDER BY created_at ASC
 	`
 
 	rows, err := repo.db.QueryContext(ctx, query)

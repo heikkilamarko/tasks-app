@@ -6,6 +6,12 @@ td {
 .loading-indicator {
 	display: none;
 }
+
 .htmx-request.loading-indicator {
 	display: inline-block;
+}
+
+tr.htmx-swapping td {
+	opacity: 0;
+	transition: opacity 0.2s ease-out;
 }
