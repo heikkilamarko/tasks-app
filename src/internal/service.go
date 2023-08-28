@@ -133,8 +133,8 @@ func (s *Service) initHTTPServer(ctx context.Context) {
 	router.Method(http.MethodGet, "/ui", &GetUIHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks", &GetUITasksHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/{id}", &GetUITaskHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITaskHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/{id}/edit", &GetUITaskEditHandler{s.TaskRepo, s.Logger})
+	router.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITaskHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodDelete, "/ui/tasks/{id}", &DeleteUITaskHandler{s.TaskRepo, s.Logger})
 	router.NotFound(NotFound)
 

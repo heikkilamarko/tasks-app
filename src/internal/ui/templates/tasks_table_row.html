@@ -9,15 +9,21 @@
 		<button
 			class="btn btn-sm btn-outline-primary rounded-pill px-3"
 			hx-get="/ui/tasks/{{ .ID }}/edit"
+			hx-target="closest tr"
+			hx-swap="outerHTML"
 			hx-trigger="edit"
-			_="on click trigger edit"
+			_="on click
+				send cancel to .editing
+				trigger edit"
 		>
 			Edit
 		</button>
 		<button
 			class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-2"
-			hx-delete="/ui/tasks/{{ .ID }}"
 			hx-confirm="Are you sure?"
+			hx-delete="/ui/tasks/{{ .ID }}"
+			hx-target="#tasks-table"
+			hx-swap="innerHTML"
 		>
 			Delete
 		</button>

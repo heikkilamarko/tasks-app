@@ -22,16 +22,15 @@
 			<button
 				hx-get="/ui/tasks"
 				hx-target="#tasks-table"
-				hx-swap="outerHTML"
 				hx-indicator=".loading-indicator"
-				class="btn btn-outline-primary rounded-pill px-4"
+				class="btn btn-outline-primary rounded-pill px-4 mt-3"
 				_="on click toggle @disabled until htmx:afterOnLoad"
 			>
 				Refresh
 				<span class="spinner-grow spinner-grow-sm ms-2 loading-indicator" aria-hidden="true"></span>
 			</button>
 
-			<div class="table-responsive">
+			<div id="tasks-table" class="mt-3">
 				{{ template "tasks_table.html" . }}
 			</div>
 		</main>

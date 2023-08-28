@@ -1,18 +1,24 @@
-<table id="tasks-table" class="table">
-	<thead>
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-			<th>Expires At</th>
-			<th>Created At</th>
-			<th>Updated At</th>
-			<th>Completed At</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody hx-target="closest tr" hx-swap="outerHTML swap:0.2s">
-		{{ range .Tasks }}
-			{{ template "tasks_table_task.html" . }}
-		{{ end }}
-	</tbody>
-</table>
+{{ if .Tasks }}
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Expires At</th>
+					<th>Created At</th>
+					<th>Updated At</th>
+					<th>Completed At</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{{ range .Tasks }}
+					{{ template "tasks_table_row.html" . }}
+				{{ end }}
+			</tbody>
+		</table>
+	</div>
+{{ else }}
+	<div class="fw-bold text-muted">No tasks</div>
+{{ end }}
