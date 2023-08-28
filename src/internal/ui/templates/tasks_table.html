@@ -1,4 +1,4 @@
-{{ if .Tasks }}
+{{ if or .Tasks .IsCreatingNew }}
 	<div class="table-responsive">
 		<table class="table">
 			<thead>
@@ -13,6 +13,9 @@
 				</tr>
 			</thead>
 			<tbody>
+				{{ if .IsCreatingNew }}
+					{{ template "tasks_table_row_new.html" }}
+				{{ end }}
 				{{ range .Tasks }}
 					{{ template "tasks_table_row.html" . }}
 				{{ end }}

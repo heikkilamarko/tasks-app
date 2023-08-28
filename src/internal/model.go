@@ -18,3 +18,19 @@ type TaskExpiringMsg struct {
 type TaskExpiredMsg struct {
 	Task Task `json:"task"`
 }
+
+func NewTask(name string, expiresAt *time.Time) *Task {
+	return &Task{
+		Name:      name,
+		ExpiresAt: expiresAt,
+		CreatedAt: time.Now(),
+	}
+}
+
+func (t *Task) Update(name string, expiresAt *time.Time) {
+	t.Name = name
+	t.ExpiresAt = expiresAt
+
+	now := time.Now()
+	t.UpdatedAt = &now
+}

@@ -21,7 +21,13 @@ func (h *GetUIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusInternalServerError)
 	}
 
-	data := struct{ Tasks []*Task }{Tasks: tasks}
+	data := struct {
+		Tasks         []*Task
+		IsCreatingNew bool
+	}{
+		Tasks:         tasks,
+		IsCreatingNew: false,
+	}
 
 	if err := UITemplates.ExecuteTemplate(w, "index.html", data); err != nil {
 		h.Logger.Error("execute template", "error", err)
@@ -41,7 +47,39 @@ func (h *GetUITasksHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusInternalServerError)
 	}
 
-	data := struct{ Tasks []*Task }{Tasks: tasks}
+	data := struct {
+		Tasks         []*Task
+		IsCreatingNew bool
+	}{
+		Tasks:         tasks,
+		IsCreatingNew: false,
+	}
+
+	if err := UITemplates.ExecuteTemplate(w, "tasks_table.html", data); err != nil {
+		h.Logger.Error("execute template", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+}
+
+type GetUITaskNewHandler struct {
+	TaskRepo TaskRepository
+	Logger   *slog.Logger
+}
+
+func (h *GetUITaskNewHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	tasks, err := h.TaskRepo.GetAll(r.Context())
+	if err != nil {
+		h.Logger.Error("get tasks", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+
+	data := struct {
+		Tasks         []*Task
+		IsCreatingNew bool
+	}{
+		Tasks:         tasks,
+		IsCreatingNew: true,
+	}
 
 	if err := UITemplates.ExecuteTemplate(w, "tasks_table.html", data); err != nil {
 		h.Logger.Error("execute template", "error", err)
@@ -103,6 +141,63 @@ func (h *GetUITaskEditHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 }
 
+type PostUITaskHandler struct {
+	TaskRepo TaskRepository
+	Logger   *slog.Logger
+}
+
+func (h *PostUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "failed to parse form data", http.StatusBadRequest)
+		return
+	}
+
+	name := r.FormValue("name")
+	if len(name) < 1 {
+		http.Error(w, "invalid name", http.StatusBadRequest)
+		return
+	}
+
+	var expiresAt *time.Time
+	expiresAtStr := r.FormValue("expires_at")
+	if expiresAtStr != "" {
+		expiresAtTemp, err := time.Parse("2006-01-02T15:04", expiresAtStr)
+		if err != nil {
+			http.Error(w, "invalid expires_at format", http.StatusBadRequest)
+			return
+		}
+		expiresAt = &expiresAtTemp
+	}
+
+	task := NewTask(name, expiresAt)
+
+	err = h.TaskRepo.Create(r.Context(), task)
+	if err != nil {
+		h.Logger.Error("create task", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+
+	tasks, err := h.TaskRepo.GetAll(r.Context())
+	if err != nil {
+		h.Logger.Error("get tasks", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+
+	data := struct {
+		Tasks         []*Task
+		IsCreatingNew bool
+	}{
+		Tasks:         tasks,
+		IsCreatingNew: false,
+	}
+
+	if err := UITemplates.ExecuteTemplate(w, "tasks_table.html", data); err != nil {
+		h.Logger.Error("execute template", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+}
+
 type PutUITaskHandler struct {
 	TaskRepo TaskRepository
 	Logger   *slog.Logger
@@ -147,8 +242,7 @@ func (h *PutUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "task not found", http.StatusNotFound)
 	}
 
-	task.Name = name
-	task.ExpiresAt = expiresAt
+	task.Update(name, expiresAt)
 
 	err = h.TaskRepo.Update(r.Context(), task)
 	if err != nil {
@@ -195,7 +289,13 @@ func (h *DeleteUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "", http.StatusInternalServerError)
 	}
 
-	data := struct{ Tasks []*Task }{Tasks: tasks}
+	data := struct {
+		Tasks         []*Task
+		IsCreatingNew bool
+	}{
+		Tasks:         tasks,
+		IsCreatingNew: false,
+	}
 
 	if err := UITemplates.ExecuteTemplate(w, "tasks_table.html", data); err != nil {
 		h.Logger.Error("execute template", "error", err)
