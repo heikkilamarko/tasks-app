@@ -23,6 +23,7 @@ type Service struct {
 	DB          *sql.DB
 	TaskRepo    TaskRepository
 	EmailClient EmailClient
+	TaskChecker *TaskChecker
 	Server      *http.Server
 }
 
@@ -165,6 +166,9 @@ func (s *Service) serve(ctx context.Context) error {
 
 		errChan <- nil
 	}()
+
+	s.TaskChecker = &TaskChecker{s.Config, s.Logger, s.TaskRepo}
+	s.TaskChecker.Run(ctx)
 
 	s.Logger.Info("application is running", "port", s.Server.Addr)
 
