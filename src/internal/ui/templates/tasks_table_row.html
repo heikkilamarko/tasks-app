@@ -20,10 +20,20 @@
 		</button>
 		<button
 			class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-2"
-			hx-confirm="Are you sure?"
 			hx-delete="/ui/tasks/{{ .ID }}"
 			hx-target="#tasks-table"
 			hx-swap="innerHTML"
+			hx-trigger="delete"
+			_="on click
+				app.showConfirmModal({
+					title: 'Confirm Task Deletion',
+					text: 'Are you sure you want to delete the selected task? This action cannot be undone.',
+					confirmButtonText: 'Delete'
+				})
+				if the result's isConfirmed is false
+					halt
+				end
+				trigger delete"
 		>
 			Delete
 		</button>

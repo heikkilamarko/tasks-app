@@ -1,5 +1,10 @@
 import { connect, StringCodec } from 'https://unpkg.com/nats.ws@1.17.0/esm/nats.js';
 
+window.app = {
+	showConfirmModal,
+	showToastMessage
+};
+
 const sc = StringCodec();
 
 document.addEventListener('DOMContentLoaded', async (_event) => {
@@ -36,29 +41,21 @@ function handleMsg(msg) {
 
 function handleTaskExpiringMsg(msg) {
 	const data = sc.decode(msg.data);
-	Swal.fire({
-		toast: true,
-		position: 'top-end',
+	showToastMessage({
 		icon: 'warning',
 		title: 'Message',
 		text: data,
-		footer: '<a href="/ui">See expiring tasks</a>',
-		showConfirmButton: false,
-		timer: 5000
+		footer: '<a href="/ui">See expiring tasks</a>'
 	});
 }
 
 function handleTaskExpiredMsg(msg) {
 	const data = sc.decode(msg.data);
-	Swal.fire({
-		toast: true,
-		position: 'top-end',
+	showToastMessage({
 		icon: 'error',
 		title: 'Message',
 		text: data,
-		footer: '<a href="/ui">See expired tasks</a>',
-		showConfirmButton: false,
-		timer: 5000
+		footer: '<a href="/ui">See expired tasks</a>'
 	});
 }
 
@@ -68,4 +65,27 @@ function handleUnknownMsg(msg) {
 
 function getWsUrl(url) {
 	return url?.startsWith('ws') ? url : `${location.origin.replace(/^http/, 'ws')}/${url.replace(/^\//, '')}`;
+}
+
+function showConfirmModal(config) {
+	return Swal.fire({
+		showCancelButton: true,
+		buttonsStyling: false,
+		customClass: {
+			confirmButton: 'btn btn-danger rounded-pill px-4',
+			cancelButton: 'btn btn-outline-secondary rounded-pill px-4 ms-3'
+		},
+		...config
+	});
+}
+
+function showToastMessage(config) {
+	return Swal.fire({
+		toast: true,
+		position: 'top-end',
+		icon: 'info',
+		showConfirmButton: false,
+		timer: 5000,
+		...config
+	});
 }
