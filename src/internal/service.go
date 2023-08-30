@@ -18,13 +18,14 @@ import (
 )
 
 type Service struct {
-	Config      *Config
-	Logger      *slog.Logger
-	DB          *sql.DB
-	TaskRepo    TaskRepository
-	EmailClient EmailClient
-	TaskChecker *TaskChecker
-	Server      *http.Server
+	Config          *Config
+	Logger          *slog.Logger
+	DB              *sql.DB
+	TaskRepo        TaskRepository
+	MessagingClient MessagingClient
+	EmailClient     EmailClient
+	TaskChecker     *TaskChecker
+	Server          *http.Server
 }
 
 func (s *Service) Run() {
@@ -44,6 +45,11 @@ func (s *Service) Run() {
 
 	if err := s.initDB(ctx); err != nil {
 		s.Logger.Error("init db", "error", err)
+		os.Exit(1)
+	}
+
+	if err := s.initMessagingClient(ctx); err != nil {
+		s.Logger.Error("init messaging client", "error", err)
 		os.Exit(1)
 	}
 
@@ -112,6 +118,14 @@ func (s *Service) initDB(ctx context.Context) error {
 	return nil
 }
 
+func (s *Service) initMessagingClient(ctx context.Context) error {
+	s.MessagingClient = &NullMessagingClient{s.Logger}
+
+	// TODO: NATSMessagingClient
+
+	return nil
+}
+
 func (s *Service) initEmailClient(ctx context.Context) error {
 	s.EmailClient = &NullEmailClient{s.Logger}
 
@@ -167,7 +181,7 @@ func (s *Service) serve(ctx context.Context) error {
 		errChan <- nil
 	}()
 
-	s.TaskChecker = &TaskChecker{s.Config, s.Logger, s.TaskRepo}
+	s.TaskChecker = &TaskChecker{s.Config, s.Logger, s.TaskRepo, s.MessagingClient}
 	s.TaskChecker.Run(ctx)
 
 	s.Logger.Info("application is running", "port", s.Server.Addr)
