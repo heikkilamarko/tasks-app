@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
@@ -69,4 +70,32 @@ func (c *NATSMessagingClient) SendPersistentMsg(ctx context.Context, subject str
 
 	_, err = js.Publish(ctx, subject, payload)
 	return err
+}
+
+func (c *NATSMessagingClient) PullPersistentMsgs(ctx context.Context, stream string, consumer string, batchSize int) ([]Message, error) {
+	js, err := jetstream.New(c.Conn)
+	if err != nil {
+		return nil, err
+	}
+
+	con, err := js.Consumer(ctx, stream, consumer)
+	if err != nil {
+		return nil, err
+	}
+
+	batch, err := con.Fetch(batchSize, jetstream.FetchMaxWait(5*time.Second))
+	if err != nil {
+		return nil, err
+	}
+
+	if err := batch.Error(); err != nil {
+		return nil, err
+	}
+
+	var messages []Message
+	for msg := range batch.Messages() {
+		messages = append(messages, msg)
+	}
+
+	return messages, nil
 }

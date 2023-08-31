@@ -25,6 +25,7 @@ type Service struct {
 	MessagingClient MessagingClient
 	EmailClient     EmailClient
 	TaskChecker     *TaskChecker
+	UINotifier      *UINotifier
 	Server          *http.Server
 }
 
@@ -190,6 +191,9 @@ func (s *Service) serve(ctx context.Context) error {
 
 	s.TaskChecker = &TaskChecker{s.Config, s.Logger, s.TaskRepo, s.MessagingClient}
 	s.TaskChecker.Run(ctx)
+
+	s.UINotifier = &UINotifier{s.Config, s.Logger, s.MessagingClient}
+	s.UINotifier.Run(ctx)
 
 	s.Logger.Info("application is running", "port", s.Server.Addr)
 

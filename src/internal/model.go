@@ -2,6 +2,13 @@ package internal
 
 import "time"
 
+const (
+	SubjectTasksExpiring   = "tasks.expiring"
+	SubjectTasksExpired    = "tasks.expired"
+	SubjectTasksUIExpiring = "tasks.ui.expiring"
+	SubjectTasksUIExpired  = "tasks.ui.expired"
+)
+
 type Task struct {
 	ID          int        `json:"id"`
 	Name        string     `json:"name"`

@@ -1,11 +1,11 @@
-import { connect, StringCodec } from 'https://unpkg.com/nats.ws@1.17.0/esm/nats.js';
+import { connect, JSONCodec } from 'https://unpkg.com/nats.ws@1.17.0/esm/nats.js';
 
 window.app = {
 	showConfirmModal,
 	showToastMessage
 };
 
-const sc = StringCodec();
+const codec = JSONCodec();
 
 document.addEventListener('DOMContentLoaded', async (_event) => {
 	const nc = await connect({
@@ -40,21 +40,21 @@ function handleMsg(msg) {
 }
 
 function handleTaskExpiringMsg(msg) {
-	const data = sc.decode(msg.data);
+	const data = codec.decode(msg.data);
 	showToastMessage({
 		icon: 'warning',
-		title: 'Message',
-		text: data,
+		title: 'Task Expiring',
+		text: `Task: ${data?.task?.name ?? '<no name>'}`,
 		footer: '<a href="/ui">See expiring tasks</a>'
 	});
 }
 
 function handleTaskExpiredMsg(msg) {
-	const data = sc.decode(msg.data);
+	const data = codec.decode(msg.data);
 	showToastMessage({
 		icon: 'error',
-		title: 'Message',
-		text: data,
+		title: 'Task Expired',
+		text: `Task: ${data?.task?.name ?? '<no name>'}`,
 		footer: '<a href="/ui">See expired tasks</a>'
 	});
 }

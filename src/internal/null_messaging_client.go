@@ -30,3 +30,15 @@ func (c *NullMessagingClient) SendPersistentMsg(ctx context.Context, subject str
 
 	return nil
 }
+
+func (c *NullMessagingClient) PullPersistentMsgs(ctx context.Context, stream string, consumer string, batchSize int) ([]Message, error) {
+	c.Logger.Info("pull persistent msgs",
+		slog.Group("params",
+			slog.String("stream", stream),
+			slog.String("consumer", consumer),
+			slog.Int("batchSize", batchSize),
+		),
+	)
+
+	return nil, nil
+}

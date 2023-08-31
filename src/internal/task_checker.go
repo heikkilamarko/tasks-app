@@ -49,7 +49,7 @@ func (tc *TaskChecker) CheckTasks(ctx context.Context) (err error) {
 func (tc *TaskChecker) CheckExpiringTasks(ctx context.Context) error {
 	tc.Logger.Info("check expiring tasks")
 
-	tc.MessagingClient.SendPersistentMsg(ctx, "tasks.expiring", TaskExpiringMsg{
+	tc.MessagingClient.SendPersistentMsg(ctx, SubjectTasksExpiring, TaskExpiringMsg{
 		Task{
 			ID:        1,
 			Name:      "expiring task",
@@ -63,7 +63,7 @@ func (tc *TaskChecker) CheckExpiringTasks(ctx context.Context) error {
 func (tc *TaskChecker) CheckExpiredTasks(ctx context.Context) error {
 	tc.Logger.Info("check expired tasks")
 
-	tc.MessagingClient.SendPersistentMsg(ctx, "tasks.expired", TaskExpiredMsg{
+	tc.MessagingClient.SendPersistentMsg(ctx, SubjectTasksExpired, TaskExpiredMsg{
 		Task{
 			ID:        1,
 			Name:      "expired task",
