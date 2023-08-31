@@ -119,9 +119,16 @@ func (s *Service) initDB(ctx context.Context) error {
 }
 
 func (s *Service) initMessagingClient(ctx context.Context) error {
-	s.MessagingClient = &NullMessagingClient{s.Logger}
+	client, err := NewNATSMessagingClient(NATSMessagingClientOptions{
+		NATSURL:   s.Config.NATSURL,
+		NATSToken: s.Config.NATSToken,
+		Logger:    s.Logger,
+	})
+	if err != nil {
+		return err
+	}
 
-	// TODO: NATSMessagingClient
+	s.MessagingClient = client
 
 	return nil
 }
