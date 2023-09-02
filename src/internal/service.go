@@ -75,6 +75,8 @@ func (s *Service) loadConfig() error {
 		return err
 	}
 
+	slog.Debug("app config", slog.Any("config", c))
+
 	s.Config = c
 
 	return nil

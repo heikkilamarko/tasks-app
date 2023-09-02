@@ -15,7 +15,7 @@ type GetUIHandler struct {
 }
 
 func (h *GetUIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.TaskRepo.GetAll(r.Context())
+	tasks, err := h.TaskRepo.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -41,7 +41,7 @@ type GetUITasksHandler struct {
 }
 
 func (h *GetUITasksHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.TaskRepo.GetAll(r.Context())
+	tasks, err := h.TaskRepo.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -67,7 +67,7 @@ type GetUITaskNewHandler struct {
 }
 
 func (h *GetUITaskNewHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.TaskRepo.GetAll(r.Context())
+	tasks, err := h.TaskRepo.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -178,7 +178,7 @@ func (h *PostUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusInternalServerError)
 	}
 
-	tasks, err := h.TaskRepo.GetAll(r.Context())
+	tasks, err := h.TaskRepo.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -283,7 +283,7 @@ func (h *DeleteUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "", http.StatusInternalServerError)
 	}
 
-	tasks, err := h.TaskRepo.GetAll(r.Context())
+	tasks, err := h.TaskRepo.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)

@@ -77,7 +77,7 @@ func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // Return nil if no task with the given ID is found
+			return nil, nil
 		}
 		return nil, err
 	}
@@ -85,94 +85,64 @@ func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task,
 	return task, nil
 }
 
-func (repo *PostgresTaskRepository) GetAll(ctx context.Context) ([]*Task, error) {
+func (repo *PostgresTaskRepository) GetActive(ctx context.Context) ([]*Task, error) {
 	query := `
 		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
 		FROM task
-		ORDER BY created_at ASC
+		WHERE completed_at IS NULL
+		ORDER BY created_at DESC
 	`
 
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var tasks []*Task
-	for rows.Next() {
-		task := &Task{}
-
-		err := rows.Scan(
-			&task.ID, &task.Name, &task.ExpiresAt, &task.ExpiringInfoAt, &task.ExpiredInfoAt, &task.CreatedAt, &task.UpdatedAt, &task.CompletedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		tasks = append(tasks, task)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return tasks, nil
+	return repo.getTasks(ctx, query)
 }
 
-func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, expirationWindow time.Duration) ([]*Task, error) {
-	now := time.Now().UTC()
-	expirationTime := now.Add(expirationWindow)
-
+func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context) ([]*Task, error) {
 	query := `
 		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
 		FROM task
-		WHERE expires_at IS NOT NULL
+		WHERE completed_at IS NOT NULL
+		ORDER BY completed_at DESC
+	`
+
+	return repo.getTasks(ctx, query)
+}
+
+func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Duration) ([]*Task, error) {
+	query := `
+		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
+		FROM task
+		WHERE completed_at IS NULL
+		AND expires_at IS NOT NULL
 		AND expiring_info_at IS NULL
 		AND expires_at >= $1
 		AND expires_at <= $2
 		ORDER BY created_at ASC
-    `
+	`
 
-	rows, err := repo.db.QueryContext(ctx, query, now, expirationTime)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+	t1 := time.Now().UTC()
+	t2 := t1.Add(d)
 
-	var tasks []*Task
-	for rows.Next() {
-		task := &Task{}
-
-		err := rows.Scan(
-			&task.ID, &task.Name, &task.ExpiresAt, &task.ExpiringInfoAt, &task.ExpiredInfoAt, &task.CreatedAt, &task.UpdatedAt, &task.CompletedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		tasks = append(tasks, task)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return tasks, nil
+	return repo.getTasks(ctx, query, t1, t2)
 }
 
 func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, error) {
-	now := time.Now().UTC()
-
 	query := `
 		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
 		FROM task
-		WHERE expires_at IS NOT NULL
+		WHERE completed_at IS NULL
+		AND expires_at IS NOT NULL
 		AND expired_info_at IS NULL
 		AND expires_at < $1
 		ORDER BY created_at ASC
-    `
+	`
 
-	rows, err := repo.db.QueryContext(ctx, query, now)
+	now := time.Now().UTC()
+
+	return repo.getTasks(ctx, query, now)
+}
+
+func (repo *PostgresTaskRepository) getTasks(ctx context.Context, query string, args ...any) ([]*Task, error) {
+	rows, err := repo.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}

@@ -16,15 +16,13 @@ type TaskChecker struct {
 }
 
 func (tc *TaskChecker) Run(ctx context.Context) {
-	seconds := time.Duration(tc.Config.TaskCheckIntervalSeconds) * time.Second
-
 	go func() {
 		for {
 			select {
 			case <-ctx.Done():
 				tc.Logger.Info("exit task checker")
 				return
-			case <-time.After(seconds):
+			case <-time.After(tc.Config.TaskCheckInterval):
 				if err := tc.CheckTasks(ctx); err != nil {
 					tc.Logger.Error("run checks", "error", err)
 				}
@@ -49,7 +47,7 @@ func (tc *TaskChecker) CheckTasks(ctx context.Context) (err error) {
 func (tc *TaskChecker) CheckExpiringTasks(ctx context.Context) error {
 	tc.Logger.Info("check expiring tasks")
 
-	tasks, err := tc.TaskRepository.GetExpiring(ctx, 24*time.Hour)
+	tasks, err := tc.TaskRepository.GetExpiring(ctx, tc.Config.TaskCheckExpiringWindow)
 	if err != nil {
 		return err
 	}
