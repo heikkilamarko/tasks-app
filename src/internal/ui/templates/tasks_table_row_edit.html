@@ -10,8 +10,8 @@
 		/>
 	</td>
 	<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
-	<td>{{ with .UpdatedAt }}{{ FormatUIDisplayTime . }}{{ else }}N/A{{ end }}</td>
-	<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}N/A{{ end }}</td>
+	<td>{{ with .UpdatedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+	<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
 	<td>
 		<button
 			class="btn btn-sm btn-outline-danger rounded-pill px-3"

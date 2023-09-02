@@ -27,17 +27,19 @@ type TaskExpiredMsg struct {
 }
 
 func NewTask(name string, expiresAt *time.Time) *Task {
+	now := time.Now().UTC()
+
 	return &Task{
 		Name:      name,
 		ExpiresAt: expiresAt,
-		CreatedAt: time.Now(),
+		CreatedAt: now,
 	}
 }
 
 func (t *Task) Update(name string, expiresAt *time.Time) {
+	now := time.Now().UTC()
+
 	t.Name = name
 	t.ExpiresAt = expiresAt
-
-	now := time.Now()
 	t.UpdatedAt = &now
 }

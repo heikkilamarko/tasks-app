@@ -120,7 +120,7 @@ func (repo *PostgresTaskRepository) GetAll(ctx context.Context) ([]*Task, error)
 }
 
 func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, expirationWindow time.Duration) ([]*Task, error) {
-	now := time.Now()
+	now := time.Now().UTC()
 	expirationTime := now.Add(expirationWindow)
 
 	query := `
@@ -160,7 +160,7 @@ func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, expirationW
 }
 
 func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, error) {
-	now := time.Now()
+	now := time.Now().UTC()
 
 	query := `
         SELECT id, name, expires_at, created_at, updated_at, completed_at
