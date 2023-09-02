@@ -1,6 +1,9 @@
 package internal
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type TaskRepository interface {
 	Create(ctx context.Context, task *Task) error
@@ -8,4 +11,6 @@ type TaskRepository interface {
 	Delete(ctx context.Context, id int) error
 	GetByID(ctx context.Context, id int) (*Task, error)
 	GetAll(ctx context.Context) ([]*Task, error)
+	GetExpiring(ctx context.Context, expirationWindow time.Duration) ([]*Task, error)
+	GetExpired(ctx context.Context) ([]*Task, error)
 }

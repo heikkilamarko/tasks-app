@@ -49,27 +49,33 @@ func (tc *TaskChecker) CheckTasks(ctx context.Context) (err error) {
 func (tc *TaskChecker) CheckExpiringTasks(ctx context.Context) error {
 	tc.Logger.Info("check expiring tasks")
 
-	tc.MessagingClient.SendPersistentMsg(ctx, SubjectTasksExpiring, TaskExpiringMsg{
-		Task{
-			ID:        1,
-			Name:      "expiring task",
-			CreatedAt: time.Now(),
-		},
-	})
+	tasks, err := tc.TaskRepository.GetExpiring(ctx, 24*time.Hour)
+	if err != nil {
+		return err
+	}
 
-	return nil
+	var errs []error
+	for _, task := range tasks {
+		err := tc.MessagingClient.SendPersistentMsg(ctx, SubjectTasksExpiring, TaskExpiringMsg{task})
+		errs = append(errs, err)
+	}
+
+	return errors.Join(errs...)
 }
 
 func (tc *TaskChecker) CheckExpiredTasks(ctx context.Context) error {
 	tc.Logger.Info("check expired tasks")
 
-	tc.MessagingClient.SendPersistentMsg(ctx, SubjectTasksExpired, TaskExpiredMsg{
-		Task{
-			ID:        1,
-			Name:      "expired task",
-			CreatedAt: time.Now(),
-		},
-	})
+	tasks, err := tc.TaskRepository.GetExpired(ctx)
+	if err != nil {
+		return err
+	}
 
-	return nil
+	var errs []error
+	for _, task := range tasks {
+		err := tc.MessagingClient.SendPersistentMsg(ctx, SubjectTasksExpired, TaskExpiredMsg{task})
+		errs = append(errs, err)
+	}
+
+	return errors.Join(errs...)
 }

@@ -19,11 +19,11 @@ type Task struct {
 }
 
 type TaskExpiringMsg struct {
-	Task Task `json:"task"`
+	Task *Task `json:"task"`
 }
 
 type TaskExpiredMsg struct {
-	Task Task `json:"task"`
+	Task *Task `json:"task"`
 }
 
 func NewTask(name string, expiresAt *time.Time) *Task {

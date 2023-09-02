@@ -1,10 +1,10 @@
 <tr>
 	<td>{{ .ID }}</td>
 	<td>{{ .Name }}</td>
-	<td>{{ with .ExpiresAt }}{{ .Format "2006-01-02 15:04:05" }}{{ else }}N/A{{ end }}</td>
-	<td>{{ .CreatedAt.Format "2006-01-02 15:04:05" }}</td>
-	<td>{{ with .UpdatedAt }}{{ .Format "2006-01-02 15:04:05" }}{{ else }}N/A{{ end }}</td>
-	<td>{{ with .CompletedAt }}{{ .Format "2006-01-02 15:04:05" }}{{ else }}N/A{{ end }}</td>
+	<td>{{ with .ExpiresAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+	<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
+	<td>{{ with .UpdatedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+	<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
 	<td>
 		<button
 			class="btn btn-sm btn-outline-primary rounded-pill px-3"

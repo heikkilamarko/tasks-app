@@ -6,12 +6,12 @@
 			class="form-control form-control-sm"
 			type="datetime-local"
 			name="expires_at"
-			value="{{ with .ExpiresAt }}{{ .Format "2006-01-02T15:04" }}{{ end }}"
+			value="{{ with .ExpiresAt }}{{ FormatUITime . }}{{ end }}"
 		/>
 	</td>
-	<td>{{ .CreatedAt.Format "2006-01-02 15:04:05" }}</td>
-	<td>{{ with .UpdatedAt }}{{ .Format "2006-01-02 15:04:05" }}{{ else }}N/A{{ end }}</td>
-	<td>{{ with .CompletedAt }}{{ .Format "2006-01-02 15:04:05" }}{{ else }}N/A{{ end }}</td>
+	<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
+	<td>{{ with .UpdatedAt }}{{ FormatUIDisplayTime . }}{{ else }}N/A{{ end }}</td>
+	<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}N/A{{ end }}</td>
 	<td>
 		<button
 			class="btn btn-sm btn-outline-danger rounded-pill px-3"

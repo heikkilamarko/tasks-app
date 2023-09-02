@@ -162,7 +162,7 @@ func (h *PostUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var expiresAt *time.Time
 	expiresAtStr := r.FormValue("expires_at")
 	if expiresAtStr != "" {
-		expiresAtTemp, err := time.Parse("2006-01-02T15:04", expiresAtStr)
+		expiresAtTemp, err := ParseUITime(expiresAtStr)
 		if err != nil {
 			http.Error(w, "invalid expires_at format", http.StatusBadRequest)
 			return
@@ -219,7 +219,7 @@ func (h *PutUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var expiresAt *time.Time
 	expiresAtStr := r.FormValue("expires_at")
 	if expiresAtStr != "" {
-		expiresAtTemp, err := time.Parse("2006-01-02T15:04", expiresAtStr)
+		expiresAtTemp, err := ParseUITime(expiresAtStr)
 		if err != nil {
 			http.Error(w, "invalid expires_at format", http.StatusBadRequest)
 			return

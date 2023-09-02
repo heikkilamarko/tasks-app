@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 type PostgresTaskRepository struct {
@@ -92,6 +93,84 @@ func (repo *PostgresTaskRepository) GetAll(ctx context.Context) ([]*Task, error)
 	`
 
 	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []*Task
+	for rows.Next() {
+		task := &Task{}
+
+		err := rows.Scan(
+			&task.ID, &task.Name, &task.ExpiresAt, &task.CreatedAt, &task.UpdatedAt, &task.CompletedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		tasks = append(tasks, task)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}
+
+func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, expirationWindow time.Duration) ([]*Task, error) {
+	now := time.Now()
+	expirationTime := now.Add(expirationWindow)
+
+	query := `
+        SELECT id, name, expires_at, created_at, updated_at, completed_at
+        FROM task
+        WHERE expires_at IS NOT NULL
+        AND expires_at >= $1
+        AND expires_at <= $2
+        ORDER BY created_at ASC
+    `
+
+	rows, err := repo.db.QueryContext(ctx, query, now, expirationTime)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []*Task
+	for rows.Next() {
+		task := &Task{}
+
+		err := rows.Scan(
+			&task.ID, &task.Name, &task.ExpiresAt, &task.CreatedAt, &task.UpdatedAt, &task.CompletedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		tasks = append(tasks, task)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}
+
+func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, error) {
+	now := time.Now()
+
+	query := `
+        SELECT id, name, expires_at, created_at, updated_at, completed_at
+        FROM task
+        WHERE expires_at IS NOT NULL
+        AND expires_at < $1
+        ORDER BY created_at ASC
+    `
+
+	rows, err := repo.db.QueryContext(ctx, query, now)
 	if err != nil {
 		return nil, err
 	}
