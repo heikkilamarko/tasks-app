@@ -14,4 +14,5 @@ type TaskRepository interface {
 	GetCompleted(ctx context.Context) ([]*Task, error)
 	GetExpiring(ctx context.Context, d time.Duration) ([]*Task, error)
 	GetExpired(ctx context.Context) ([]*Task, error)
+	DeleteCompleted(ctx context.Context, d time.Duration) (int64, error)
 }

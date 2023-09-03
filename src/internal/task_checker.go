@@ -39,9 +39,25 @@ func (tc *TaskChecker) CheckTasks(ctx context.Context) (err error) {
 	}()
 
 	return errors.Join(
+		tc.CheckCompletedTasks(ctx),
 		tc.CheckExpiringTasks(ctx),
 		tc.CheckExpiredTasks(ctx),
 	)
+}
+
+func (tc *TaskChecker) CheckCompletedTasks(ctx context.Context) error {
+	tc.Logger.Info("check completed tasks")
+
+	count, err := tc.TaskRepository.DeleteCompleted(ctx, tc.Config.TaskCheckDeleteWindow)
+	if err != nil {
+		return err
+	}
+
+	if 0 < count {
+		tc.Logger.Info("found completed tasks", slog.Int64("count", count))
+	}
+
+	return nil
 }
 
 func (tc *TaskChecker) CheckExpiringTasks(ctx context.Context) error {

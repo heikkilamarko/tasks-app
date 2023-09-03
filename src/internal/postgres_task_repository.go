@@ -141,6 +141,28 @@ func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, er
 	return repo.getTasks(ctx, query, now)
 }
 
+func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.Duration) (int64, error) {
+	query := `
+		DELETE FROM task
+		WHERE completed_at IS NOT NULL
+		AND completed_at < $1
+	`
+
+	t := time.Now().UTC().Add(-d)
+
+	result, err := repo.db.ExecContext(ctx, query, t)
+	if err != nil {
+		return 0, err
+	}
+
+	count, err := result.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (repo *PostgresTaskRepository) getTasks(ctx context.Context, query string, args ...any) ([]*Task, error) {
 	rows, err := repo.db.QueryContext(ctx, query, args...)
 	if err != nil {

@@ -19,6 +19,7 @@ type Config struct {
 	SMTPPassword             string        `env:"APP_SMTP_PASSWORD"`
 	TaskCheckInterval        time.Duration `env:"APP_TASK_CHECK_INTERVAL_SECONDS,notEmpty" envDefault:"60s"`
 	TaskCheckExpiringWindow  time.Duration `env:"APP_TASK_CHECK_EXPIRING_WINDOW,notEmpty" envDefault:"24h"`
+	TaskCheckDeleteWindow    time.Duration `env:"APP_TASK_CHECK_DELETE_WINDOW,notEmpty" envDefault:"48h"`
 }
 
 func (c *Config) Load() error {
