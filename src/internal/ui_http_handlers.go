@@ -29,7 +29,7 @@ func (h *GetUIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		IsCreatingNew: false,
 	}
 
-	if err := UITemplates.ExecuteTemplate(w, "index.html", data); err != nil {
+	if err := UITemplates.ExecuteTemplate(w, "active_tasks.html", data); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
@@ -55,7 +55,7 @@ func (h *GetUITasksHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		IsCreatingNew: false,
 	}
 
-	if err := UITemplates.ExecuteTemplate(w, "tasks_table.html", data); err != nil {
+	if err := UITemplates.ExecuteTemplate(w, "active_tasks_table.html", data); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
@@ -81,7 +81,7 @@ func (h *GetUITaskNewHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		IsCreatingNew: true,
 	}
 
-	if err := UITemplates.ExecuteTemplate(w, "tasks_table.html", data); err != nil {
+	if err := UITemplates.ExecuteTemplate(w, "active_tasks_table.html", data); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
@@ -108,7 +108,7 @@ func (h *GetUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "task not found", http.StatusNotFound)
 	}
 
-	if err := UITemplates.ExecuteTemplate(w, "tasks_table_row.html", task); err != nil {
+	if err := UITemplates.ExecuteTemplate(w, "active_tasks_table_row.html", task); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
@@ -135,7 +135,7 @@ func (h *GetUITaskEditHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "task not found", http.StatusNotFound)
 	}
 
-	if err := UITemplates.ExecuteTemplate(w, "tasks_table_row_edit.html", task); err != nil {
+	if err := UITemplates.ExecuteTemplate(w, "active_tasks_table_row_edit.html", task); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
@@ -192,7 +192,7 @@ func (h *PostUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		IsCreatingNew: false,
 	}
 
-	if err := UITemplates.ExecuteTemplate(w, "tasks_table.html", data); err != nil {
+	if err := UITemplates.ExecuteTemplate(w, "active_tasks_table.html", data); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
@@ -250,7 +250,7 @@ func (h *PutUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusInternalServerError)
 	}
 
-	if err := UITemplates.ExecuteTemplate(w, "tasks_table_row.html", task); err != nil {
+	if err := UITemplates.ExecuteTemplate(w, "active_tasks_table_row.html", task); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
@@ -297,7 +297,31 @@ func (h *DeleteUITaskHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		IsCreatingNew: false,
 	}
 
-	if err := UITemplates.ExecuteTemplate(w, "tasks_table.html", data); err != nil {
+	if err := UITemplates.ExecuteTemplate(w, "active_tasks_table.html", data); err != nil {
+		h.Logger.Error("execute template", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+}
+
+type GetUICompletedHandler struct {
+	TaskRepo TaskRepository
+	Logger   *slog.Logger
+}
+
+func (h *GetUICompletedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	tasks, err := h.TaskRepo.GetCompleted(r.Context())
+	if err != nil {
+		h.Logger.Error("get tasks", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+
+	data := struct {
+		Tasks []*Task
+	}{
+		Tasks: tasks,
+	}
+
+	if err := UITemplates.ExecuteTemplate(w, "completed_tasks.html", data); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}

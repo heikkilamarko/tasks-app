@@ -50,12 +50,14 @@ func (t *Task) Update(name string, expiresAt *time.Time) {
 
 func (t *Task) SetExpiringInfoAt() {
 	now := time.Now().UTC()
+
 	t.ExpiringInfoAt = &now
 	t.UpdatedAt = &now
 }
 
 func (t *Task) SetExpiredInfoAt() {
 	now := time.Now().UTC()
+
 	t.ExpiredInfoAt = &now
 	t.UpdatedAt = &now
 }

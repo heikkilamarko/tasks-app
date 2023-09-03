@@ -163,6 +163,7 @@ func (s *Service) initHTTPServer(ctx context.Context) {
 	router.Method(http.MethodPost, "/ui/tasks", &PostUITaskHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITaskHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodDelete, "/ui/tasks/{id}", &DeleteUITaskHandler{s.TaskRepo, s.Logger})
+	router.Method(http.MethodGet, "/ui/completed", &GetUICompletedHandler{s.TaskRepo, s.Logger})
 	router.NotFound(NotFound)
 
 	s.Server = &http.Server{

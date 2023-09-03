@@ -14,10 +14,10 @@
 			</thead>
 			<tbody>
 				{{ if .IsCreatingNew }}
-					{{ template "tasks_table_row_new.html" }}
+					{{ template "active_tasks_table_row_new.html" }}
 				{{ end }}
 				{{ range .Tasks }}
-					{{ template "tasks_table_row.html" . }}
+					{{ template "active_tasks_table_row.html" . }}
 				{{ end }}
 			</tbody>
 		</table>
