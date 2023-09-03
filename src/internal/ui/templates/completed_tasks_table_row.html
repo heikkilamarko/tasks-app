@@ -1,0 +1,8 @@
+<tr>
+	<td>{{ .ID }}</td>
+	<td>{{ .Name }}</td>
+	<td>{{ with .ExpiresAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+	<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
+	<td>{{ with .UpdatedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+	<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+</tr>

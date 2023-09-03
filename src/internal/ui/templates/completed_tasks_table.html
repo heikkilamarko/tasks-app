@@ -1,0 +1,23 @@
+{{ if .Tasks }}
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Expires At</th>
+					<th>Created At</th>
+					<th>Updated At</th>
+					<th>Completed At</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{ range .Tasks }}
+					{{ template "completed_tasks_table_row.html" . }}
+				{{ end }}
+			</tbody>
+		</table>
+	</div>
+{{ else }}
+	<div class="fw-bold text-muted">No completed tasks</div>
+{{ end }}
