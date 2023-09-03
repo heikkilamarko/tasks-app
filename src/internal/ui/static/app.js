@@ -44,8 +44,7 @@ function handleTaskExpiringMsg(msg) {
 	showToastMessage({
 		icon: 'warning',
 		title: 'Task Expiring',
-		text: `Task: ${data?.task?.name ?? '<no name>'}`,
-		footer: '<a href="/ui">See expiring tasks</a>'
+		text: data?.task?.name ?? '<no name>'
 	});
 }
 
@@ -54,8 +53,7 @@ function handleTaskExpiredMsg(msg) {
 	showToastMessage({
 		icon: 'error',
 		title: 'Task Expired',
-		text: `Task: ${data?.task?.name ?? '<no name>'}`,
-		footer: '<a href="/ui">See expired tasks</a>'
+		text: data?.task?.name ?? '<no name>'
 	});
 }
 
