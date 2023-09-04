@@ -6,17 +6,20 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"tasks-app/internal/modules/emailnotifier"
+	"tasks-app/internal/modules/taskchecker"
+	"tasks-app/internal/modules/ui"
+	"tasks-app/internal/modules/uinotifier"
+	"tasks-app/internal/shared"
 
 	"golang.org/x/sync/errgroup"
 )
 
 type Service struct {
-	Config          *Config
+	Config          *shared.Config
 	Logger          *slog.Logger
-	TaskRepo        TaskRepository
-	MessagingClient MessagingClient
-	EmailClient     EmailClient
-	FileExporter    FileExporter
+	TaskRepo        shared.TaskRepository
+	MessagingClient shared.MessagingClient
 }
 
 func (s *Service) Run() {
@@ -43,7 +46,7 @@ func (s *Service) Run() {
 }
 
 func (s *Service) loadConfig() error {
-	c := &Config{}
+	c := &shared.Config{}
 	if err := c.Load(); err != nil {
 		return err
 	}
@@ -78,14 +81,14 @@ func (s *Service) serve(ctx context.Context) error {
 
 	var err error
 
-	if s.TaskRepo, err = NewPostgresTaskRepository(ctx, PostgresTaskRepositoryOptions{
+	if s.TaskRepo, err = shared.NewPostgresTaskRepository(ctx, shared.PostgresTaskRepositoryOptions{
 		ConnectionString: s.Config.PostgresConnectionString,
 		Logger:           s.Logger,
 	}); err != nil {
 		return err
 	}
 
-	if s.MessagingClient, err = NewNATSMessagingClient(NATSMessagingClientOptions{
+	if s.MessagingClient, err = shared.NewNATSMessagingClient(shared.NATSMessagingClientOptions{
 		NATSURL:   s.Config.NATSURL,
 		NATSToken: s.Config.NATSToken,
 		Logger:    s.Logger,
@@ -93,28 +96,52 @@ func (s *Service) serve(ctx context.Context) error {
 		return err
 	}
 
-	s.EmailClient = &NullEmailClient{s.Logger}
+	appModules := []shared.AppModule{
+		&taskchecker.TaskChecker{
+			Config:          s.Config,
+			Logger:          s.Logger,
+			TaskRepository:  s.TaskRepo,
+			MessagingClient: s.MessagingClient,
+		},
 
-	// s.EmailClient = &SMTPEmailClient{SMTPEmailClientOptions{
-	// 	Host:        s.Config.SMTPHost,
-	// 	Port:        s.Config.SMTPPort,
-	// 	FromName:    s.Config.SMTPFromName,
-	// 	FromAddress: s.Config.SMTPFromAddress,
-	// 	Password:    s.Config.SMTPPassword,
-	// }}
+		&uinotifier.UINotifier{
+			Config:          s.Config,
+			Logger:          s.Logger,
+			MessagingClient: s.MessagingClient,
+		},
 
-	s.FileExporter = &ExcelFileExporter{s.Logger}
+		&emailnotifier.EmailNotifier{
+			Config:          s.Config,
+			Logger:          s.Logger,
+			MessagingClient: s.MessagingClient,
+			EmailClient: &emailnotifier.NullEmailClient{
+				Logger: s.Logger,
+			},
+			// EmailClient: &emailnotifier.SMTPEmailClient{
+			// 	Options: emailnotifier.SMTPEmailClientOptions{
+			// 		Host:        s.Config.SMTPHost,
+			// 		Port:        s.Config.SMTPPort,
+			// 		FromName:    s.Config.SMTPFromName,
+			// 		FromAddress: s.Config.SMTPFromAddress,
+			// 		Password:    s.Config.SMTPPassword,
+			// 	}},
+		},
 
-	appModules := []AppModule{
-		&TaskChecker{s.Config, s.Logger, s.TaskRepo, s.MessagingClient},
-		&UINotifier{s.Config, s.Logger, s.MessagingClient},
-		&EmailNotifier{s.Config, s.Logger, s.MessagingClient, s.EmailClient},
-		&HTTPService{s.Config, s.Logger, s.TaskRepo, s.FileExporter, nil},
+		&ui.HTTPService{
+			Config:   s.Config,
+			Logger:   s.Logger,
+			TaskRepo: s.TaskRepo,
+			FileExporter: &shared.ExcelFileExporter{
+				Logger: s.Logger},
+		},
 	}
 
 	for _, am := range appModules {
 		am := am
-		g.Go(func() error { return am.Run(ctx) })
+		g.Go(func() error {
+			s.Logger.Info("run app module", slog.String("module", am.Name()))
+			return am.Run(ctx)
+		})
 	}
 
 	g.Go(func() error {

@@ -1,4 +1,4 @@
-package internal
+package emailnotifier
 
 import (
 	"context"
@@ -6,14 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"tasks-app/internal/shared"
 )
 
 type EmailNotifier struct {
-	Config          *Config
+	Config          *shared.Config
 	Logger          *slog.Logger
-	MessagingClient MessagingClient
+	MessagingClient shared.MessagingClient
 	EmailClient     EmailClient
 }
+
+func (*EmailNotifier) Name() string { return "emailnotifier" }
 
 func (n *EmailNotifier) Run(ctx context.Context) error {
 	return n.MessagingClient.SubscribePersistent(ctx, "tasks", "tasks", n.HandleMessage)
@@ -23,7 +26,7 @@ func (n *EmailNotifier) Close() error {
 	return nil
 }
 
-func (n *EmailNotifier) HandleMessage(ctx context.Context, msg Message) (err error) {
+func (n *EmailNotifier) HandleMessage(ctx context.Context, msg shared.Message) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("panic: %v", r)
@@ -31,17 +34,17 @@ func (n *EmailNotifier) HandleMessage(ctx context.Context, msg Message) (err err
 	}()
 
 	switch msg.Subject() {
-	case SubjectTasksExpiring:
+	case shared.SubjectTasksExpiring:
 		return n.HandleTaskExpiringMessage(ctx, msg)
-	case SubjectTasksExpired:
+	case shared.SubjectTasksExpired:
 		return n.HandleTaskExpiredMessage(ctx, msg)
 	default:
 		return n.HandleUnknownMessage(ctx, msg)
 	}
 }
 
-func (n *EmailNotifier) HandleTaskExpiringMessage(ctx context.Context, msg Message) error {
-	var data TaskExpiringMsg
+func (n *EmailNotifier) HandleTaskExpiringMessage(ctx context.Context, msg shared.Message) error {
+	var data shared.TaskExpiringMsg
 	if err := json.Unmarshal(msg.Data(), &data); err != nil {
 		return err
 	}
@@ -49,8 +52,8 @@ func (n *EmailNotifier) HandleTaskExpiringMessage(ctx context.Context, msg Messa
 	return n.EmailClient.SendEmail(ctx, n.Config.EmailToAddress, "Task Expiring", "task_expiring.html", data.Task)
 }
 
-func (n *EmailNotifier) HandleTaskExpiredMessage(ctx context.Context, msg Message) error {
-	var data TaskExpiredMsg
+func (n *EmailNotifier) HandleTaskExpiredMessage(ctx context.Context, msg shared.Message) error {
+	var data shared.TaskExpiredMsg
 	if err := json.Unmarshal(msg.Data(), &data); err != nil {
 		return err
 	}
@@ -58,7 +61,7 @@ func (n *EmailNotifier) HandleTaskExpiredMessage(ctx context.Context, msg Messag
 	return n.EmailClient.SendEmail(ctx, n.Config.EmailToAddress, "Task Expired", "task_expired.html", data.Task)
 }
 
-func (n *EmailNotifier) HandleUnknownMessage(ctx context.Context, msg Message) error {
+func (n *EmailNotifier) HandleUnknownMessage(ctx context.Context, msg shared.Message) error {
 	n.Logger.Warn("handle unknown message",
 		slog.Group("message",
 			slog.String("subject", msg.Subject()),

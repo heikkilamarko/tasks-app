@@ -1,8 +1,6 @@
-package internal
+package ui
 
-import (
-	"time"
-)
+import "time"
 
 const (
 	uiTimezone          = "Europe/Helsinki"

@@ -1,19 +1,22 @@
-package internal
+package taskchecker
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"log/slog"
+	"tasks-app/internal/shared"
 	"time"
 )
 
 type TaskChecker struct {
-	Config          *Config
+	Config          *shared.Config
 	Logger          *slog.Logger
-	TaskRepository  TaskRepository
-	MessagingClient MessagingClient
+	TaskRepository  shared.TaskRepository
+	MessagingClient shared.MessagingClient
 }
+
+func (*TaskChecker) Name() string { return "taskchecker" }
 
 func (tc *TaskChecker) Run(ctx context.Context) error {
 	for {
@@ -77,7 +80,7 @@ func (tc *TaskChecker) CheckExpiringTasks(ctx context.Context) error {
 
 	var errs []error
 	for _, task := range tasks {
-		if err := tc.MessagingClient.SendPersistent(ctx, SubjectTasksExpiring, TaskExpiringMsg{task}); err != nil {
+		if err := tc.MessagingClient.SendPersistent(ctx, shared.SubjectTasksExpiring, shared.TaskExpiringMsg{Task: task}); err != nil {
 			errs = append(errs, err)
 			continue
 		}
@@ -105,7 +108,7 @@ func (tc *TaskChecker) CheckExpiredTasks(ctx context.Context) error {
 
 	var errs []error
 	for _, task := range tasks {
-		if err := tc.MessagingClient.SendPersistent(ctx, SubjectTasksExpired, TaskExpiredMsg{task}); err != nil {
+		if err := tc.MessagingClient.SendPersistent(ctx, shared.SubjectTasksExpired, shared.TaskExpiredMsg{Task: task}); err != nil {
 			errs = append(errs, err)
 			continue
 		}

@@ -1,18 +1,18 @@
-package internal
+package ui
 
 import (
 	"embed"
 	"html/template"
 )
 
-//go:embed ui/templates
-var UITemplatesFS embed.FS
+//go:embed templates
+var TemplatesFS embed.FS
 
-var UITemplates = template.Must(template.New("").
+var Templates = template.Must(template.New("").
 	Funcs(template.FuncMap{
 		"FormatUITime":        FormatUITime,
 		"FormatUIDisplayTime": FormatUIDisplayTime,
 		"ParseUITime":         ParseUITime,
 	}).
-	ParseFS(UITemplatesFS, "ui/templates/*.html"),
+	ParseFS(TemplatesFS, "templates/*.html"),
 )

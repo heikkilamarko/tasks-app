@@ -1,9 +1,10 @@
-package internal
+package ui
 
 import (
 	"context"
 	"log/slog"
 	"net/http"
+	"tasks-app/internal/shared"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -11,18 +12,20 @@ import (
 )
 
 type HTTPService struct {
-	Config       *Config
+	Config       *shared.Config
 	Logger       *slog.Logger
-	TaskRepo     TaskRepository
-	FileExporter FileExporter
+	TaskRepo     shared.TaskRepository
+	FileExporter shared.FileExporter
 	server       *http.Server
 }
+
+func (*HTTPService) Name() string { return "ui" }
 
 func (s *HTTPService) Run(ctx context.Context) error {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
-	router.Handle("/ui/static/*", http.FileServer(http.FS(UIStaticFS)))
+	router.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
 	router.Method(http.MethodGet, "/ui", &GetUIHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks", &GetUITasksHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExportHandler{s.TaskRepo, s.FileExporter, s.Logger})

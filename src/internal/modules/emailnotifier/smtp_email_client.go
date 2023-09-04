@@ -1,4 +1,4 @@
-package internal
+package emailnotifier
 
 import (
 	"context"
@@ -21,7 +21,7 @@ type SMTPEmailClient struct {
 
 func (c *SMTPEmailClient) SendEmail(ctx context.Context, to string, subject string, templateName string, data any) error {
 	var bodyBuilder strings.Builder
-	if err := EmailTemplates.ExecuteTemplate(&bodyBuilder, templateName, data); err != nil {
+	if err := Templates.ExecuteTemplate(&bodyBuilder, templateName, data); err != nil {
 		return err
 	}
 	body := bodyBuilder.String()
