@@ -19,6 +19,25 @@
 			Edit
 		</button>
 		<button
+			class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2"
+			hx-post="/ui/tasks/{{ .ID }}/complete"
+			hx-target="#tasks-table"
+			hx-swap="innerHTML"
+			hx-trigger="complete"
+			_="on click
+				app.showConfirmModal({
+					title: 'Confirm Task Completion',
+					text: 'Are you sure you want to complete the selected task?',
+					confirmButtonText: 'Complete'
+				})
+				if the result's isConfirmed is false
+					halt
+				end
+				trigger complete"
+		>
+			Complete
+		</button>
+		<button
 			class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-2"
 			hx-delete="/ui/tasks/{{ .ID }}"
 			hx-target="#tasks-table"
@@ -29,7 +48,7 @@
 					title: 'Confirm Task Deletion',
 					text: 'Are you sure you want to delete the selected task? This action cannot be undone.',
 					confirmButtonText: 'Delete'
-				})
+				}, true)
 				if the result's isConfirmed is false
 					halt
 				end

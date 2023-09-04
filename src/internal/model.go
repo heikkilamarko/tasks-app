@@ -61,3 +61,10 @@ func (t *Task) SetExpiredInfoAt() {
 	t.ExpiredInfoAt = &now
 	t.UpdatedAt = &now
 }
+
+func (t *Task) SetCompleted() {
+	now := time.Now().UTC()
+
+	t.CompletedAt = &now
+	t.UpdatedAt = &now
+}
