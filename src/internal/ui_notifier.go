@@ -14,8 +14,12 @@ type UINotifier struct {
 	MessagingClient MessagingClient
 }
 
-func (n *UINotifier) Run(ctx context.Context) {
-	go n.MessagingClient.Subscribe(ctx, "tasks.*", n.HandleMessage)
+func (n *UINotifier) Run(ctx context.Context) error {
+	return n.MessagingClient.Subscribe(ctx, "tasks.*", n.HandleMessage)
+}
+
+func (n *UINotifier) Close() error {
+	return nil
 }
 
 func (n *UINotifier) HandleMessage(ctx context.Context, msg Message) (err error) {

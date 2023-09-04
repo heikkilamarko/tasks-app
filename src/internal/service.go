@@ -4,14 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"log/slog"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"golang.org/x/sync/errgroup"
 
 	// PostgreSQL driver
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -25,10 +23,6 @@ type Service struct {
 	FileExporter    FileExporter
 	MessagingClient MessagingClient
 	EmailClient     EmailClient
-	TaskChecker     *TaskChecker
-	UINotifier      *UINotifier
-	EmailNotifier   *EmailNotifier
-	Server          *http.Server
 }
 
 func (s *Service) Run() {
@@ -65,8 +59,6 @@ func (s *Service) Run() {
 		s.Logger.Error("init email client", "error", err)
 		os.Exit(1)
 	}
-
-	s.initHTTPServer(ctx)
 
 	if err := s.serve(ctx); err != nil {
 		s.Logger.Error("serve", "error", err)
@@ -162,65 +154,34 @@ func (s *Service) initEmailClient(ctx context.Context) error {
 	return nil
 }
 
-func (s *Service) initHTTPServer(ctx context.Context) {
-	router := chi.NewRouter()
-
-	router.Use(middleware.Recoverer)
-	router.Handle("/ui/static/*", http.FileServer(http.FS(UIStaticFS)))
-	router.Method(http.MethodGet, "/ui", &GetUIHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodGet, "/ui/tasks", &GetUITasksHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExportHandler{s.TaskRepo, s.FileExporter, s.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/new", &GetUITaskNewHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/{id}", &GetUITaskHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/{id}/edit", &GetUITaskEditHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodPost, "/ui/tasks", &PostUITaskHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodPost, "/ui/tasks/{id}/complete", &PostUITaskCompleteHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITaskHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodDelete, "/ui/tasks/{id}", &DeleteUITaskHandler{s.TaskRepo, s.Logger})
-	router.Method(http.MethodGet, "/ui/completed", &GetUICompletedHandler{s.TaskRepo, s.Logger})
-	router.NotFound(NotFound)
-
-	s.Server = &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  120 * time.Second,
-		Addr:         s.Config.Addr,
-		Handler:      router,
-	}
-}
-
 func (s *Service) serve(ctx context.Context) error {
-	errChan := make(chan error)
+	g, ctx := errgroup.WithContext(ctx)
 
-	go func() {
+	appModules := []AppModule{
+		&TaskChecker{s.Config, s.Logger, s.TaskRepo, s.MessagingClient},
+		&UINotifier{s.Config, s.Logger, s.MessagingClient},
+		&EmailNotifier{s.Config, s.Logger, s.MessagingClient, s.EmailClient},
+		&HTTPService{s.Config, s.Logger, s.TaskRepo, s.FileExporter, nil},
+	}
+
+	for _, am := range appModules {
+		am := am
+		g.Go(func() error { return am.Run(ctx) })
+	}
+
+	g.Go(func() error {
 		<-ctx.Done()
-
 		s.Logger.Info("application is shutting down...")
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+		for _, am := range appModules {
+			am.Close()
+		}
 
-		_ = s.Server.Shutdown(ctx)
 		_ = s.MessagingClient.Close()
 		_ = s.DB.Close()
 
-		errChan <- nil
-	}()
+		return nil
+	})
 
-	s.TaskChecker = &TaskChecker{s.Config, s.Logger, s.TaskRepo, s.MessagingClient}
-	s.TaskChecker.Run(ctx)
-
-	s.UINotifier = &UINotifier{s.Config, s.Logger, s.MessagingClient}
-	s.UINotifier.Run(ctx)
-
-	s.EmailNotifier = &EmailNotifier{s.Config, s.Logger, s.MessagingClient, s.EmailClient}
-	s.EmailNotifier.Run(ctx)
-
-	s.Logger.Info("application is running", "port", s.Server.Addr)
-
-	if err := s.Server.ListenAndServe(); err != http.ErrServerClosed {
-		return err
-	}
-
-	return <-errChan
+	return g.Wait()
 }

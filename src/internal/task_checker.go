@@ -15,20 +15,22 @@ type TaskChecker struct {
 	MessagingClient MessagingClient
 }
 
-func (tc *TaskChecker) Run(ctx context.Context) {
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				tc.Logger.Info("exit task checker")
-				return
-			case <-time.After(tc.Config.TaskCheckInterval):
-				if err := tc.CheckTasks(ctx); err != nil {
-					tc.Logger.Error("run checks", "error", err)
-				}
+func (tc *TaskChecker) Run(ctx context.Context) error {
+	for {
+		select {
+		case <-ctx.Done():
+			tc.Logger.Info("exit task checker")
+			return nil
+		case <-time.After(tc.Config.TaskCheckInterval):
+			if err := tc.CheckTasks(ctx); err != nil {
+				tc.Logger.Error("run checks", "error", err)
 			}
 		}
-	}()
+	}
+}
+
+func (tc *TaskChecker) Close() error {
+	return nil
 }
 
 func (tc *TaskChecker) CheckTasks(ctx context.Context) (err error) {

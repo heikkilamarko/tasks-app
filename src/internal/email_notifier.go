@@ -15,8 +15,12 @@ type EmailNotifier struct {
 	EmailClient     EmailClient
 }
 
-func (n *EmailNotifier) Run(ctx context.Context) {
-	go n.MessagingClient.SubscribePersistent(ctx, "tasks", "tasks", n.HandleMessage)
+func (n *EmailNotifier) Run(ctx context.Context) error {
+	return n.MessagingClient.SubscribePersistent(ctx, "tasks", "tasks", n.HandleMessage)
+}
+
+func (n *EmailNotifier) Close() error {
+	return nil
 }
 
 func (n *EmailNotifier) HandleMessage(ctx context.Context, msg Message) (err error) {
