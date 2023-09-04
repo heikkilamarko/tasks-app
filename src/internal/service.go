@@ -2,27 +2,21 @@ package internal
 
 import (
 	"context"
-	"database/sql"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"golang.org/x/sync/errgroup"
-
-	// PostgreSQL driver
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Service struct {
 	Config          *Config
 	Logger          *slog.Logger
-	DB              *sql.DB
 	TaskRepo        TaskRepository
-	FileExporter    FileExporter
 	MessagingClient MessagingClient
 	EmailClient     EmailClient
+	FileExporter    FileExporter
 }
 
 func (s *Service) Run() {
@@ -39,26 +33,6 @@ func (s *Service) Run() {
 	s.initLogger()
 
 	s.Logger.Info("application is starting up...")
-
-	if err := s.initDB(ctx); err != nil {
-		s.Logger.Error("init db", "error", err)
-		os.Exit(1)
-	}
-
-	if err := s.initFileExporters(ctx); err != nil {
-		s.Logger.Error("init file exporters", "error", err)
-		os.Exit(1)
-	}
-
-	if err := s.initMessagingClient(ctx); err != nil {
-		s.Logger.Error("init messaging client", "error", err)
-		os.Exit(1)
-	}
-
-	if err := s.initEmailClient(ctx); err != nil {
-		s.Logger.Error("init email client", "error", err)
-		os.Exit(1)
-	}
 
 	if err := s.serve(ctx); err != nil {
 		s.Logger.Error("serve", "error", err)
@@ -99,48 +73,26 @@ func (s *Service) initLogger() {
 	s.Logger = logger
 }
 
-func (s *Service) initDB(ctx context.Context) error {
-	db, err := sql.Open("pgx", s.Config.PostgresConnectionString)
-	if err != nil {
+func (s *Service) serve(ctx context.Context) error {
+	g, ctx := errgroup.WithContext(ctx)
+
+	var err error
+
+	if s.TaskRepo, err = NewPostgresTaskRepository(ctx, PostgresTaskRepositoryOptions{
+		ConnectionString: s.Config.PostgresConnectionString,
+		Logger:           s.Logger,
+	}); err != nil {
 		return err
 	}
 
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(25)
-	db.SetConnMaxLifetime(10 * time.Minute)
-	db.SetConnMaxIdleTime(5 * time.Minute)
-
-	if err := db.PingContext(ctx); err != nil {
-		return err
-	}
-
-	s.DB = db
-	s.TaskRepo = &PostgresTaskRepository{s.DB}
-
-	return nil
-}
-
-func (s *Service) initFileExporters(ctx context.Context) error {
-	s.FileExporter = &ExcelFileExporter{s.Logger}
-	return nil
-}
-
-func (s *Service) initMessagingClient(ctx context.Context) error {
-	client, err := NewNATSMessagingClient(NATSMessagingClientOptions{
+	if s.MessagingClient, err = NewNATSMessagingClient(NATSMessagingClientOptions{
 		NATSURL:   s.Config.NATSURL,
 		NATSToken: s.Config.NATSToken,
 		Logger:    s.Logger,
-	})
-	if err != nil {
+	}); err != nil {
 		return err
 	}
 
-	s.MessagingClient = client
-
-	return nil
-}
-
-func (s *Service) initEmailClient(ctx context.Context) error {
 	s.EmailClient = &NullEmailClient{s.Logger}
 
 	// s.EmailClient = &SMTPEmailClient{SMTPEmailClientOptions{
@@ -151,11 +103,7 @@ func (s *Service) initEmailClient(ctx context.Context) error {
 	// 	Password:    s.Config.SMTPPassword,
 	// }}
 
-	return nil
-}
-
-func (s *Service) serve(ctx context.Context) error {
-	g, ctx := errgroup.WithContext(ctx)
+	s.FileExporter = &ExcelFileExporter{s.Logger}
 
 	appModules := []AppModule{
 		&TaskChecker{s.Config, s.Logger, s.TaskRepo, s.MessagingClient},
@@ -178,7 +126,7 @@ func (s *Service) serve(ctx context.Context) error {
 		}
 
 		_ = s.MessagingClient.Close()
-		_ = s.DB.Close()
+		_ = s.TaskRepo.Close()
 
 		return nil
 	})

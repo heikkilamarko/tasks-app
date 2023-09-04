@@ -3,11 +3,43 @@ package internal
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 	"time"
+
+	// PostgreSQL driver
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
+type PostgresTaskRepositoryOptions struct {
+	ConnectionString string
+	Logger           *slog.Logger
+}
+
 type PostgresTaskRepository struct {
-	db *sql.DB
+	Options PostgresTaskRepositoryOptions
+	db      *sql.DB
+}
+
+func NewPostgresTaskRepository(ctx context.Context, options PostgresTaskRepositoryOptions) (*PostgresTaskRepository, error) {
+	db, err := sql.Open("pgx", options.ConnectionString)
+	if err != nil {
+		return nil, err
+	}
+
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(10 * time.Minute)
+	db.SetConnMaxIdleTime(5 * time.Minute)
+
+	if err := db.PingContext(ctx); err != nil {
+		return nil, err
+	}
+
+	return &PostgresTaskRepository{options, db}, nil
+}
+
+func (repo *PostgresTaskRepository) Close() error {
+	return repo.db.Close()
 }
 
 func (repo *PostgresTaskRepository) Create(ctx context.Context, task *Task) error {

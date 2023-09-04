@@ -28,7 +28,7 @@ type NATSMessagingClientOptions struct {
 
 type NATSMessagingClient struct {
 	Options NATSMessagingClientOptions
-	Conn    *nats.Conn
+	conn    *nats.Conn
 }
 
 func NewNATSMessagingClient(options NATSMessagingClientOptions) (*NATSMessagingClient, error) {
@@ -57,13 +57,17 @@ func NewNATSMessagingClient(options NATSMessagingClientOptions) (*NATSMessagingC
 	return &NATSMessagingClient{options, conn}, nil
 }
 
+func (c *NATSMessagingClient) Close() error {
+	return c.conn.Drain()
+}
+
 func (c *NATSMessagingClient) Send(ctx context.Context, subject string, data any) error {
 	payload, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
-	return c.Conn.Publish(subject, payload)
+	return c.conn.Publish(subject, payload)
 }
 
 func (c *NATSMessagingClient) SendPersistent(ctx context.Context, subject string, data any) error {
@@ -72,7 +76,7 @@ func (c *NATSMessagingClient) SendPersistent(ctx context.Context, subject string
 		return err
 	}
 
-	js, err := jetstream.New(c.Conn)
+	js, err := jetstream.New(c.conn)
 	if err != nil {
 		return err
 	}
@@ -82,7 +86,7 @@ func (c *NATSMessagingClient) SendPersistent(ctx context.Context, subject string
 }
 
 func (c *NATSMessagingClient) Subscribe(ctx context.Context, subject string, handler func(ctx context.Context, msg Message) error) error {
-	sub, err := c.Conn.SubscribeSync(subject)
+	sub, err := c.conn.SubscribeSync(subject)
 	if err != nil {
 		return err
 	}
@@ -113,7 +117,7 @@ func (c *NATSMessagingClient) Subscribe(ctx context.Context, subject string, han
 }
 
 func (c *NATSMessagingClient) SubscribePersistent(ctx context.Context, stream string, consumer string, handler func(ctx context.Context, msg Message) error) error {
-	js, err := jetstream.New(c.Conn)
+	js, err := jetstream.New(c.conn)
 	if err != nil {
 		return err
 	}
@@ -145,8 +149,4 @@ func (c *NATSMessagingClient) SubscribePersistent(ctx context.Context, stream st
 			msg.Ack()
 		}
 	}
-}
-
-func (c *NATSMessagingClient) Close() error {
-	return c.Conn.Drain()
 }
