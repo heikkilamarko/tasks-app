@@ -22,6 +22,7 @@ type Service struct {
 	Logger          *slog.Logger
 	DB              *sql.DB
 	TaskRepo        TaskRepository
+	FileExporter    FileExporter
 	MessagingClient MessagingClient
 	EmailClient     EmailClient
 	TaskChecker     *TaskChecker
@@ -46,6 +47,11 @@ func (s *Service) Run() {
 
 	if err := s.initDB(ctx); err != nil {
 		s.Logger.Error("init db", "error", err)
+		os.Exit(1)
+	}
+
+	if err := s.initFileExporters(ctx); err != nil {
+		s.Logger.Error("init file exporters", "error", err)
 		os.Exit(1)
 	}
 
@@ -121,6 +127,11 @@ func (s *Service) initDB(ctx context.Context) error {
 	return nil
 }
 
+func (s *Service) initFileExporters(ctx context.Context) error {
+	s.FileExporter = &ExcelFileExporter{s.Logger}
+	return nil
+}
+
 func (s *Service) initMessagingClient(ctx context.Context) error {
 	client, err := NewNATSMessagingClient(NATSMessagingClientOptions{
 		NATSURL:   s.Config.NATSURL,
@@ -157,6 +168,7 @@ func (s *Service) initHTTPServer(ctx context.Context) {
 	router.Handle("/ui/static/*", http.FileServer(http.FS(UIStaticFS)))
 	router.Method(http.MethodGet, "/ui", &GetUIHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks", &GetUITasksHandler{s.TaskRepo, s.Logger})
+	router.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExportHandler{s.TaskRepo, s.FileExporter, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/new", &GetUITaskNewHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/{id}", &GetUITaskHandler{s.TaskRepo, s.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/{id}/edit", &GetUITaskEditHandler{s.TaskRepo, s.Logger})

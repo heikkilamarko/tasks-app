@@ -61,6 +61,34 @@ func (h *GetUITasksHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type GetUITasksExportHandler struct {
+	TaskRepo     TaskRepository
+	FileExporter FileExporter
+	Logger       *slog.Logger
+}
+
+func (h *GetUITasksExportHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	tasks, err := h.TaskRepo.GetActive(r.Context())
+	if err != nil {
+		h.Logger.Error("get tasks", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+
+	data, err := h.FileExporter.Export(tasks)
+	if err != nil {
+		h.Logger.Error("export tasks", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=export.xlsx")
+
+	if _, err := w.Write(data); err != nil {
+		h.Logger.Error("write response", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
+}
+
 type GetUITaskNewHandler struct {
 	TaskRepo TaskRepository
 	Logger   *slog.Logger
