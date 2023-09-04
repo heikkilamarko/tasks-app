@@ -9,7 +9,9 @@ type Message interface {
 }
 
 type MessagingClient interface {
-	SendMsg(ctx context.Context, subject string, data any) error
-	SendPersistentMsg(ctx context.Context, subject string, data any) error
-	PullPersistentMsgs(ctx context.Context, stream string, consumer string, batchSize int) ([]Message, error)
+	Send(ctx context.Context, subject string, data any) error
+	SendPersistent(ctx context.Context, subject string, data any) error
+	Subscribe(ctx context.Context, subject string, handler func(ctx context.Context, msg Message) error) error
+	SubscribePersistent(ctx context.Context, stream string, consumer string, handler func(ctx context.Context, msg Message) error) error
+	Close() error
 }

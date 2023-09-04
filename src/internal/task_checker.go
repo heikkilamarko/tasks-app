@@ -75,7 +75,7 @@ func (tc *TaskChecker) CheckExpiringTasks(ctx context.Context) error {
 
 	var errs []error
 	for _, task := range tasks {
-		if err := tc.MessagingClient.SendPersistentMsg(ctx, SubjectTasksExpiring, TaskExpiringMsg{task}); err != nil {
+		if err := tc.MessagingClient.SendPersistent(ctx, SubjectTasksExpiring, TaskExpiringMsg{task}); err != nil {
 			errs = append(errs, err)
 			continue
 		}
@@ -103,7 +103,7 @@ func (tc *TaskChecker) CheckExpiredTasks(ctx context.Context) error {
 
 	var errs []error
 	for _, task := range tasks {
-		if err := tc.MessagingClient.SendPersistentMsg(ctx, SubjectTasksExpired, TaskExpiredMsg{task}); err != nil {
+		if err := tc.MessagingClient.SendPersistent(ctx, SubjectTasksExpired, TaskExpiredMsg{task}); err != nil {
 			errs = append(errs, err)
 			continue
 		}

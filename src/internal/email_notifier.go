@@ -8,17 +8,18 @@ import (
 	"log/slog"
 )
 
-type UINotifier struct {
+type EmailNotifier struct {
 	Config          *Config
 	Logger          *slog.Logger
 	MessagingClient MessagingClient
+	EmailClient     EmailClient
 }
 
-func (n *UINotifier) Run(ctx context.Context) {
-	go n.MessagingClient.Subscribe(ctx, "tasks.*", n.HandleMessage)
+func (n *EmailNotifier) Run(ctx context.Context) {
+	go n.MessagingClient.SubscribePersistent(ctx, "tasks", "tasks", n.HandleMessage)
 }
 
-func (n *UINotifier) HandleMessage(ctx context.Context, msg Message) (err error) {
+func (n *EmailNotifier) HandleMessage(ctx context.Context, msg Message) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("panic: %v", r)
@@ -35,25 +36,25 @@ func (n *UINotifier) HandleMessage(ctx context.Context, msg Message) (err error)
 	}
 }
 
-func (n *UINotifier) HandleTaskExpiringMessage(ctx context.Context, msg Message) error {
+func (n *EmailNotifier) HandleTaskExpiringMessage(ctx context.Context, msg Message) error {
 	var data TaskExpiringMsg
 	if err := json.Unmarshal(msg.Data(), &data); err != nil {
 		return err
 	}
 
-	return n.MessagingClient.Send(ctx, SubjectTasksUIExpiring, data)
+	return n.EmailClient.SendEmail(ctx, "marko.heikkila@nortal.com", "Task Expiring", "task_expiring.html", data)
 }
 
-func (n *UINotifier) HandleTaskExpiredMessage(ctx context.Context, msg Message) error {
+func (n *EmailNotifier) HandleTaskExpiredMessage(ctx context.Context, msg Message) error {
 	var data TaskExpiredMsg
 	if err := json.Unmarshal(msg.Data(), &data); err != nil {
 		return err
 	}
 
-	return n.MessagingClient.Send(ctx, SubjectTasksUIExpired, data)
+	return n.EmailClient.SendEmail(ctx, "marko.heikkila@nortal.com", "Task Expired", "task_expired.html", data)
 }
 
-func (n *UINotifier) HandleUnknownMessage(ctx context.Context, msg Message) error {
+func (n *EmailNotifier) HandleUnknownMessage(ctx context.Context, msg Message) error {
 	n.Logger.Warn("handle unknown message",
 		slog.Group("message",
 			slog.String("subject", msg.Subject()),

@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"os"
 	"time"
@@ -10,6 +11,14 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 )
+
+type NATSMsg struct {
+	msg *nats.Msg
+}
+
+func (m *NATSMsg) Subject() string { return m.msg.Subject }
+func (m *NATSMsg) Data() []byte    { return m.msg.Data }
+func (m *NATSMsg) Ack() error      { return m.msg.Ack() }
 
 type NATSMessagingClientOptions struct {
 	NATSURL   string
@@ -48,7 +57,7 @@ func NewNATSMessagingClient(options NATSMessagingClientOptions) (*NATSMessagingC
 	return &NATSMessagingClient{options, conn}, nil
 }
 
-func (c *NATSMessagingClient) SendMsg(ctx context.Context, subject string, data any) error {
+func (c *NATSMessagingClient) Send(ctx context.Context, subject string, data any) error {
 	payload, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -57,7 +66,7 @@ func (c *NATSMessagingClient) SendMsg(ctx context.Context, subject string, data 
 	return c.Conn.Publish(subject, payload)
 }
 
-func (c *NATSMessagingClient) SendPersistentMsg(ctx context.Context, subject string, data any) error {
+func (c *NATSMessagingClient) SendPersistent(ctx context.Context, subject string, data any) error {
 	payload, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -72,30 +81,72 @@ func (c *NATSMessagingClient) SendPersistentMsg(ctx context.Context, subject str
 	return err
 }
 
-func (c *NATSMessagingClient) PullPersistentMsgs(ctx context.Context, stream string, consumer string, batchSize int) ([]Message, error) {
+func (c *NATSMessagingClient) Subscribe(ctx context.Context, subject string, handler func(ctx context.Context, msg Message) error) error {
+	sub, err := c.Conn.SubscribeSync(subject)
+	if err != nil {
+		return err
+	}
+	defer sub.Unsubscribe()
+
+	for {
+		select {
+		case <-ctx.Done():
+			c.Options.Logger.Info("exit subscriber")
+			return nil
+		default:
+			msg, err := sub.NextMsg(5 * time.Second)
+			if err != nil {
+				if !errors.Is(err, nats.ErrTimeout) {
+					c.Options.Logger.Error("get next message", "error", err)
+				}
+				continue
+			}
+
+			if err := handler(ctx, &NATSMsg{msg}); err != nil {
+				c.Options.Logger.Error("handle message", "error", err)
+				continue
+			}
+
+			msg.Ack()
+		}
+	}
+}
+
+func (c *NATSMessagingClient) SubscribePersistent(ctx context.Context, stream string, consumer string, handler func(ctx context.Context, msg Message) error) error {
 	js, err := jetstream.New(c.Conn)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	con, err := js.Consumer(ctx, stream, consumer)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	batch, err := con.Fetch(batchSize, jetstream.FetchMaxWait(5*time.Second))
-	if err != nil {
-		return nil, err
-	}
+	for {
+		select {
+		case <-ctx.Done():
+			c.Options.Logger.Info("exit persistent subscriber")
+			return nil
+		default:
+			msg, err := con.Next(jetstream.FetchMaxWait(5 * time.Second))
+			if err != nil {
+				if !errors.Is(err, nats.ErrTimeout) {
+					c.Options.Logger.Error("get next persistent message", "error", err)
+				}
+				continue
+			}
 
-	if err := batch.Error(); err != nil {
-		return nil, err
-	}
+			if err := handler(ctx, msg); err != nil {
+				c.Options.Logger.Error("handle persistent message", "error", err)
+				continue
+			}
 
-	var messages []Message
-	for msg := range batch.Messages() {
-		messages = append(messages, msg)
+			msg.Ack()
+		}
 	}
+}
 
-	return messages, nil
+func (c *NATSMessagingClient) Close() error {
+	return c.Conn.Drain()
 }

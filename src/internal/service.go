@@ -27,6 +27,7 @@ type Service struct {
 	EmailClient     EmailClient
 	TaskChecker     *TaskChecker
 	UINotifier      *UINotifier
+	EmailNotifier   *EmailNotifier
 	Server          *http.Server
 }
 
@@ -199,6 +200,7 @@ func (s *Service) serve(ctx context.Context) error {
 		defer cancel()
 
 		_ = s.Server.Shutdown(ctx)
+		_ = s.MessagingClient.Close()
 		_ = s.DB.Close()
 
 		errChan <- nil
@@ -209,6 +211,9 @@ func (s *Service) serve(ctx context.Context) error {
 
 	s.UINotifier = &UINotifier{s.Config, s.Logger, s.MessagingClient}
 	s.UINotifier.Run(ctx)
+
+	s.EmailNotifier = &EmailNotifier{s.Config, s.Logger, s.MessagingClient, s.EmailClient}
+	s.EmailNotifier.Run(ctx)
 
 	s.Logger.Info("application is running", "port", s.Server.Addr)
 
