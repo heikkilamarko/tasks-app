@@ -42,7 +42,7 @@ func (n *EmailNotifier) HandleTaskExpiringMessage(ctx context.Context, msg Messa
 		return err
 	}
 
-	return n.EmailClient.SendEmail(ctx, n.Config.EmailToAddress, "Task Expiring", "task_expiring.html", data)
+	return n.EmailClient.SendEmail(ctx, n.Config.EmailToAddress, "Task Expiring", "task_expiring.html", data.Task)
 }
 
 func (n *EmailNotifier) HandleTaskExpiredMessage(ctx context.Context, msg Message) error {
@@ -51,7 +51,7 @@ func (n *EmailNotifier) HandleTaskExpiredMessage(ctx context.Context, msg Messag
 		return err
 	}
 
-	return n.EmailClient.SendEmail(ctx, n.Config.EmailToAddress, "Task Expired", "task_expired.html", data)
+	return n.EmailClient.SendEmail(ctx, n.Config.EmailToAddress, "Task Expired", "task_expired.html", data.Task)
 }
 
 func (n *EmailNotifier) HandleUnknownMessage(ctx context.Context, msg Message) error {
