@@ -1,35 +1,6 @@
 version: "3.9"
 
 services:
-  caddy:
-    build: proxy/caddy
-    image: tasks-app/caddy
-    container_name: caddy
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file:
-      - config/dev/caddy.env
-    ports:
-      - 80:80
-    networks:
-      - tasks-app
-
-  tasks-app:
-    build: src
-    image: tasks-app/tasks-app
-    container_name: tasks-app
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file:
-      - config/dev/tasks-app.env
-    networks:
-      - tasks-app
-    depends_on:
-      - postgres
-      - nats
-
   postgres:
     build: db/postgres
     image: tasks-app/postgres

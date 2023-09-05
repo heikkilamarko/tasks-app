@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  caddy:
+    build: proxy/caddy
+    image: tasks-app/caddy
+    container_name: caddy
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/caddy.env
+    environment:
+      - CADDY_APP_ADDRESS=http://tasks-app-frontend
+    ports:
+      - 80:80
+    networks:
+      - tasks-app
+
+  tasks-app-frontend:
+    build: src
+    image: tasks-app/tasks-app-frontend
+    container_name: tasks-app-frontend
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/tasks-app.env
+    environment:
+      - APP_MODULES=ui
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
+      - nats
+
+  tasks-app-backend:
+    build: src
+    image: tasks-app/tasks-app-backend
+    container_name: tasks-app-backend
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/tasks-app.env
+    environment:
+      - APP_MODULES=taskchecker,emailnotifier,uinotifier
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
+      - nats

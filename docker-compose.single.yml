@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  caddy:
+    build: proxy/caddy
+    image: tasks-app/caddy
+    container_name: caddy
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/caddy.env
+    environment:
+      - CADDY_APP_ADDRESS=http://tasks-app-single
+    ports:
+      - 80:80
+    networks:
+      - tasks-app
+
+  tasks-app-single:
+    build: src
+    image: tasks-app/tasks-app-single
+    container_name: tasks-app-single
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/tasks-app.env
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
+      - nats
