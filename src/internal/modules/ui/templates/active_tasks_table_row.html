@@ -25,15 +25,8 @@
 			hx-swap="innerHTML"
 			hx-trigger="complete"
 			_="on click
-				app.showConfirmModal({
-					title: 'Confirm Task Completion',
-					text: 'Are you sure you want to complete the selected task?',
-					confirmButtonText: 'Complete'
-				})
-				if the result's isConfirmed is false
-					halt
-				end
-				trigger complete"
+				app.showConfirmModal('#confirm-complete-modal')
+				if result trigger complete"
 		>
 			Complete
 		</button>
@@ -44,15 +37,8 @@
 			hx-swap="innerHTML"
 			hx-trigger="delete"
 			_="on click
-				app.showConfirmModal({
-					title: 'Confirm Task Deletion',
-					text: 'Are you sure you want to delete the selected task? This action cannot be undone.',
-					confirmButtonText: 'Delete'
-				}, true)
-				if the result's isConfirmed is false
-					halt
-				end
-				trigger delete"
+				app.showConfirmModal('#confirm-delete-modal')
+				if result trigger delete"
 		>
 			Delete
 		</button>

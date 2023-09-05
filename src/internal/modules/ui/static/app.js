@@ -65,15 +65,20 @@ function getWsUrl(url) {
 	return url?.startsWith('ws') ? url : `${location.origin.replace(/^http/, 'ws')}/${url.replace(/^\//, '')}`;
 }
 
-function showConfirmModal(config, isError = false) {
-	return Swal.fire({
-		showCancelButton: true,
-		buttonsStyling: false,
-		customClass: {
-			confirmButton: isError ? 'btn btn-danger rounded-pill px-4' : 'btn btn-primary rounded-pill px-4',
-			cancelButton: 'btn btn-outline-secondary rounded-pill px-4 ms-3'
-		},
-		...config
+function showConfirmModal(selector) {
+	return new Promise((resolve) => {
+		const modal = new bootstrap.Modal(selector, { backdrop: 'static', keyboard: false });
+
+		modal._element.addEventListener(
+			'confirmResult',
+			(e) => {
+				resolve(!!e.detail.answer);
+				modal.hide();
+			},
+			{ once: true }
+		);
+
+		modal.show();
 	});
 }
 
