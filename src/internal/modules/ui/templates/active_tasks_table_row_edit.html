@@ -1,11 +1,21 @@
 <tr class="editing" hx-trigger="cancel" hx-get="/ui/tasks/{{ .ID }}" hx-swap="outerHTML">
 	<td>{{ .ID }}</td>
-	<td><input class="form-control form-control-sm" name="name" value="{{ .Name }}" /></td>
 	<td>
 		<input
+			type="text"
+			name="name"
+			form="task-edit-form"
 			class="form-control form-control-sm"
+			value="{{ .Name }}"
+			required
+		/>
+	</td>
+	<td>
+		<input
 			type="datetime-local"
 			name="expires_at"
+			form="task-edit-form"
+			class="form-control form-control-sm"
 			value="{{ with .ExpiresAt }}{{ FormatUITime . }}{{ end }}"
 		/>
 	</td>
@@ -14,6 +24,7 @@
 	<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
 	<td>
 		<button
+			type="button"
 			class="btn btn-sm btn-outline-danger rounded-pill px-3"
 			hx-get="/ui/tasks/{{ .ID }}"
 			hx-target="closest tr"
@@ -21,14 +32,15 @@
 		>
 			Cancel
 		</button>
-		<button
-			class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2"
-			hx-put="/ui/tasks/{{ .ID }}"
-			hx-include="closest tr"
-			hx-target="closest tr"
-			hx-swap="outerHTML"
-		>
+		<button type="submit" form="task-edit-form" class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2">
 			Save
 		</button>
 	</td>
 </tr>
+<form
+	id="task-edit-form"
+	hx-swap-oob="true"
+	hx-put="/ui/tasks/{{ .ID }}"
+	hx-target=".editing"
+	hx-swap="outerHTML"
+></form>

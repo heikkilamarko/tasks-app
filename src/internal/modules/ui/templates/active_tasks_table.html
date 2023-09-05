@@ -1,4 +1,8 @@
 {{ if or .Tasks .IsCreatingNew }}
+	{{ if .IsCreatingNew }}
+		<form id="task-new-form" hx-post="/ui/tasks" hx-target="#tasks-table" hx-swap="innerHTML"></form>
+	{{ end }}
+	<div id="task-edit-form"></div>
 	<div class="table-responsive">
 		<table class="table">
 			<thead>

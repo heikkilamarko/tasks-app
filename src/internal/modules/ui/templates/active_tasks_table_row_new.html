@@ -1,14 +1,15 @@
 <tr>
 	<td></td>
-	<td><input class="form-control form-control-sm" name="name" value="" /></td>
+	<td><input type="text" name="name" form="task-new-form" class="form-control form-control-sm" value="" required /></td>
 	<td>
-		<input class="form-control form-control-sm" type="datetime-local" name="expires_at" value="" />
+		<input type="datetime-local" name="expires_at" form="task-new-form" class="form-control form-control-sm" value="" />
 	</td>
 	<td></td>
 	<td></td>
 	<td></td>
 	<td>
 		<button
+			type="button"
 			class="btn btn-sm btn-outline-danger rounded-pill px-3"
 			hx-get="/ui/tasks"
 			hx-target="#tasks-table"
@@ -16,13 +17,7 @@
 		>
 			Cancel
 		</button>
-		<button
-			class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2"
-			hx-post="/ui/tasks"
-			hx-include="closest tr"
-			hx-target="#tasks-table"
-			hx-swap="innerHTML"
-		>
+		<button type="submit" form="task-new-form" class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2">
 			Create
 		</button>
 	</td>
