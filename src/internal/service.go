@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"slices"
 	"syscall"
 	"tasks-app/internal/modules/emailnotifier"
 	"tasks-app/internal/modules/taskchecker"
@@ -96,21 +97,21 @@ func (s *Service) serve(ctx context.Context) error {
 		return err
 	}
 
-	appModules := []shared.AppModule{
-		&taskchecker.TaskChecker{
+	var modules []shared.AppModule
+
+	isAllModules := len(s.Config.Modules) == 0
+
+	if isAllModules || slices.Contains(s.Config.Modules, "taskchecker") {
+		modules = append(modules, &taskchecker.TaskChecker{
 			Config:          s.Config,
 			Logger:          s.Logger,
 			TaskRepository:  s.TaskRepo,
 			MessagingClient: s.MessagingClient,
-		},
+		})
+	}
 
-		&uinotifier.UINotifier{
-			Config:          s.Config,
-			Logger:          s.Logger,
-			MessagingClient: s.MessagingClient,
-		},
-
-		&emailnotifier.EmailNotifier{
+	if isAllModules || slices.Contains(s.Config.Modules, "emailnotifier") {
+		modules = append(modules, &emailnotifier.EmailNotifier{
 			Config:          s.Config,
 			Logger:          s.Logger,
 			MessagingClient: s.MessagingClient,
@@ -125,31 +126,42 @@ func (s *Service) serve(ctx context.Context) error {
 			// 		FromAddress: s.Config.SMTPFromAddress,
 			// 		Password:    s.Config.SMTPPassword,
 			// 	}},
-		},
+		})
+	}
 
-		&ui.HTTPService{
+	if isAllModules || slices.Contains(s.Config.Modules, "uinotifier") {
+		modules = append(modules, &uinotifier.UINotifier{
+			Config:          s.Config,
+			Logger:          s.Logger,
+			MessagingClient: s.MessagingClient,
+		})
+	}
+
+	if isAllModules || slices.Contains(s.Config.Modules, "ui") {
+		modules = append(modules, &ui.HTTPService{
 			Config:   s.Config,
 			Logger:   s.Logger,
 			TaskRepo: s.TaskRepo,
 			FileExporter: &shared.ExcelFileExporter{
 				Logger: s.Logger},
-		},
+		})
 	}
 
-	for _, am := range appModules {
-		am := am
+	for _, m := range modules {
+		m := m
 		g.Go(func() error {
-			s.Logger.Info("run app module", slog.String("module", am.Name()))
-			return am.Run(ctx)
+			s.Logger.Info("run app module", slog.String("module", m.Name()))
+			return m.Run(ctx)
 		})
 	}
 
 	g.Go(func() error {
 		<-ctx.Done()
+
 		s.Logger.Info("application is shutting down...")
 
-		for _, am := range appModules {
-			am.Close()
+		for _, m := range modules {
+			m.Close()
 		}
 
 		_ = s.MessagingClient.Close()

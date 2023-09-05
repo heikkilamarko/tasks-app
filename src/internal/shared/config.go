@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	Modules                  []string      `env:"APP_MODULES" envDefault:"taskchecker,emailnotifier,uinotifier,ui"`
 	Addr                     string        `env:"APP_ADDR,notEmpty" envDefault:":8080"`
 	LogLevel                 string        `env:"APP_LOG_LEVEL" envDefault:"warn"`
 	PostgresConnectionString string        `env:"APP_POSTGRES_CONNECTION_STRING,notEmpty"`
