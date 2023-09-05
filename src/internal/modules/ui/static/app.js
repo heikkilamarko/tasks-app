@@ -42,7 +42,7 @@ function handleMsg(msg) {
 function handleTaskExpiringMsg(msg) {
 	const data = codec.decode(msg.data);
 	showToastMessage({
-		icon: 'warning',
+		type: 'warning',
 		title: 'Task Expiring',
 		text: data?.task?.name ?? '<no name>'
 	});
@@ -51,7 +51,7 @@ function handleTaskExpiringMsg(msg) {
 function handleTaskExpiredMsg(msg) {
 	const data = codec.decode(msg.data);
 	showToastMessage({
-		icon: 'error',
+		type: 'error',
 		title: 'Task Expired',
 		text: data?.task?.name ?? '<no name>'
 	});
@@ -83,12 +83,29 @@ function showConfirmModal(selector) {
 }
 
 function showToastMessage(config) {
-	return Swal.fire({
-		toast: true,
-		position: 'top-end',
-		icon: 'info',
-		showConfirmButton: false,
-		timer: 5000,
-		...config
-	});
+	let typeClass = 'text-bg-primary';
+	switch (config.type) {
+		case 'warning':
+			typeClass = 'text-bg-warning';
+			break;
+		case 'error':
+			typeClass = 'text-bg-danger';
+			break;
+	}
+
+	const toast = document.createElement('div');
+	toast.className = `toast fade ${typeClass}`;
+	toast.innerHTML = `
+		<div class="toast-body">
+			<strong class="me-auto">${config.title}</strong>:
+			${config.text}
+		</div>
+	`;
+
+	const toaster = document.getElementById('toaster');
+	toaster.appendChild(toast);
+
+	toast.addEventListener('hidden.bs.toast', () => toast.remove(), { once: true });
+
+	new bootstrap.Toast(toast).show();
 }
