@@ -7,7 +7,14 @@
 			form="task-edit-form"
 			class="form-control form-control-sm"
 			value="{{ .Name }}"
+			minlength="3"
+			maxlength="2000"
 			required
+			_="on input
+				if me.value == 'test'
+					me.setCustomValidity(`custom validation: 'test' not allowed`)
+				else
+					me.setCustomValidity('')"
 		/>
 	</td>
 	<td>
@@ -39,6 +46,7 @@
 </tr>
 <form
 	id="task-edit-form"
+	autocomplete="off"
 	hx-swap-oob="true"
 	hx-put="/ui/tasks/{{ .ID }}"
 	hx-target=".editing"
