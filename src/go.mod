@@ -1,6 +1,6 @@
 module tasks-app
 
-go 1.21.0
+go 1.21.1
 
 require (
 	github.com/caarlos0/env/v9 v9.0.0
