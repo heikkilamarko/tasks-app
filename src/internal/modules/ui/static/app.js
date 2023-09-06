@@ -83,6 +83,9 @@ function showConfirmModal(selector) {
 }
 
 function showToastMessage(config) {
+	const toaster = document.getElementById('toaster');
+	if (!toaster) return;
+
 	let typeClass = 'text-bg-primary';
 	switch (config.type) {
 		case 'warning':
@@ -102,7 +105,6 @@ function showToastMessage(config) {
 		</div>
 	`;
 
-	const toaster = document.getElementById('toaster');
 	toaster.appendChild(toast);
 
 	toast.addEventListener('hidden.bs.toast', () => toast.remove(), { once: true });
