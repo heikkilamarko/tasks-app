@@ -1,5 +1,7 @@
 package shared
 
+import "net/http"
+
 type FileExporter interface {
-	Export(tasks []*Task) ([]byte, error)
+	ExportTasks(w http.ResponseWriter, tasks []*Task, name string) error
 }
