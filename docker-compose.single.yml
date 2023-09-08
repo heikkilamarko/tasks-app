@@ -13,7 +13,7 @@ services:
     environment:
       - CADDY_APP_ADDRESS=http://tasks-app-single
     ports:
-      - 80:80
+      - 8000:80
     networks:
       - tasks-app
 
