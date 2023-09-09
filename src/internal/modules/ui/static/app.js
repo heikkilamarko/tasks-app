@@ -86,22 +86,22 @@ function showToastMessage(config) {
 	const toaster = document.getElementById('toaster');
 	if (!toaster) return;
 
-	let typeClass = 'text-bg-primary';
+	let typeClasses = 'border-primary text-primary';
 	switch (config.type) {
 		case 'warning':
-			typeClass = 'text-bg-warning';
+			typeClasses = 'border-warning text-warning';
 			break;
 		case 'error':
-			typeClass = 'text-bg-danger';
+			typeClasses = 'border-danger text-danger';
 			break;
 	}
 
 	const toast = document.createElement('div');
-	toast.className = `toast fade ${typeClass}`;
+	toast.className = `toast fade border ${typeClasses}`;
 	toast.innerHTML = `
-		<div class="toast-body">
-			<strong class="me-auto">${config.title}</strong>:
-			${config.text}
+		<div class="toast-body d-flex flex-column">
+			<div class="fw-bold">${config.title}</div>
+			<div>${config.text}</div>
 		</div>
 	`;
 
