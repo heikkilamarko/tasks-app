@@ -5,24 +5,33 @@
 		<main class="container">
 			<h1>Tasks App</h1>
 
-			<div class="mt-3">
-				<button
-					hx-get="/ui/tasks"
-					hx-target="#tasks-table"
-					hx-indicator=".loading-indicator"
-					class="btn btn-outline-primary rounded-pill px-4"
-					_="on click toggle @disabled until htmx:afterOnLoad"
-				>
-					Refresh
-					<span class="spinner-grow spinner-grow-sm ms-2 loading-indicator" aria-hidden="true"></span>
-				</button>
+			<div class="row g-2 mt-3">
+				<div class="col-auto">
+					<button
+						hx-get="/ui/tasks"
+						hx-target="#tasks-table"
+						hx-indicator=".loading-indicator"
+						class="btn btn-outline-primary rounded-pill px-4"
+						_="on click toggle @disabled until htmx:afterOnLoad"
+					>
+						Refresh
+						<span class="spinner-grow spinner-grow-sm ms-2 loading-indicator" aria-hidden="true"></span>
+					</button>
+				</div>
 
-				<button hx-get="/ui/tasks/new" hx-target="#tasks-table" class="btn btn-outline-primary rounded-pill px-4 ms-2">
-					New Task
-				</button>
+				<div class="col-auto">
+					<button hx-get="/ui/tasks/new" hx-target="#tasks-table" class="btn btn-outline-primary rounded-pill px-4">
+						New Task
+					</button>
+				</div>
 
-				<a href="/ui/tasks/export?filter=active" class="btn btn-outline-primary rounded-pill px-4 ms-2">Export Tasks</a>
-				<a href="/ui/completed" class="btn btn-outline-primary rounded-pill px-4 ms-2">Completed Tasks</a>
+				<div class="col-auto">
+					<a href="/ui/tasks/export?filter=active" class="btn btn-outline-primary rounded-pill px-4">Export Tasks</a>
+				</div>
+
+				<div class="col-auto">
+					<a href="/ui/completed" class="btn btn-outline-primary rounded-pill px-4">Completed Tasks</a>
+				</div>
 			</div>
 
 			<div id="tasks-table" class="mt-3">

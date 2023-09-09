@@ -1,6 +1,6 @@
 CREATE TABLE task (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(2000) NOT NULL,
+    name VARCHAR(200) NOT NULL,
     expires_at timestamptz,
     expiring_info_at timestamptz,
     expired_info_at timestamptz,

@@ -8,6 +8,8 @@ window.app = {
 const codec = JSONCodec();
 
 document.addEventListener('DOMContentLoaded', async (_event) => {
+	initBootstrap();
+
 	const nc = await connect({
 		servers: getWsUrl('/hub/v1'),
 		token: 'S3c_r3t!'
@@ -21,6 +23,21 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 		}
 	})();
 });
+
+htmx.onLoad((el) => {
+	initBootstrap(el);
+});
+
+function initBootstrap(root) {
+	const tooltips = (root ?? document).querySelectorAll('[data-bs-toggle="tooltip"]');
+	[...tooltips].forEach((tooltip) =>
+		bootstrap.Tooltip.getOrCreateInstance(tooltip, {
+			customClass: 'app-tooltip',
+			placement: 'left',
+			delay: { show: 1000, hide: 100 }
+		})
+	);
+}
 
 function handleMsg(msg) {
 	try {
@@ -101,7 +118,7 @@ function showToastMessage(config) {
 	toast.innerHTML = `
 		<div class="toast-body d-flex flex-column">
 			<div class="fw-bold">${config.title}</div>
-			<div>${config.text}</div>
+			<div class="app-text-multiline">${config.text}</div>
 		</div>
 	`;
 

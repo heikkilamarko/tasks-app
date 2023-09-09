@@ -1,27 +1,24 @@
 <tr>
 	<td></td>
-	<td>
-		<input
-			type="text"
+	<td class="task-name">
+		<textarea
 			name="name"
+			rows="5"
 			form="task-new-form"
 			class="form-control form-control-sm"
-			value=""
 			minlength="3"
-			maxlength="2000"
+			maxlength="200"
 			required
 			_="on input
 				if me.value == 'test'
-					me.setCustomValidity(`custom validation: 'test' not allowed`)
+				me.setCustomValidity(`'${me.value}' not allowed`)
 				else
 					me.setCustomValidity('')"
-		/>
+		></textarea>
 	</td>
 	<td>
 		<input type="datetime-local" name="expires_at" form="task-new-form" class="form-control form-control-sm" value="" />
 	</td>
-	<td></td>
-	<td></td>
 	<td></td>
 	<td>
 		<button

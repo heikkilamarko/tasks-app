@@ -1,6 +1,16 @@
 th,
 td {
 	white-space: nowrap;
+
+	&.task-name {
+		min-width: 15rem;
+		max-width: 30rem;
+	}
+}
+
+.toast {
+	--bs-toast-spacing: 1rem;
+	--bs-toast-max-width: 400px;
 }
 
 .loading-indicator {
@@ -14,4 +24,19 @@ td {
 tr.htmx-swapping td {
 	opacity: 0;
 	transition: opacity 0.2s ease-out;
+}
+
+.app-tooltip {
+	--bs-tooltip-max-width: 400px;
+	--bs-tooltip-bg: var(--bs-primary);
+	--bs-tooltip-color: var(--bs-white);
+
+	.tooltip-inner {
+		text-align: inherit;
+		white-space: break-spaces;
+	}
+}
+
+.app-text-multiline {
+	white-space: break-spaces;
 }

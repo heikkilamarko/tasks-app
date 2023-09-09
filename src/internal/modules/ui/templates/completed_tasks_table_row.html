@@ -1,8 +1,9 @@
 <tr>
 	<td>{{ .ID }}</td>
-	<td>{{ .Name }}</td>
+	<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
+		<span class="app-text-multiline">{{ .Name }}</span>
+	</td>
 	<td>{{ with .ExpiresAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
 	<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
-	<td>{{ with .UpdatedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
 	<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
 </tr>
