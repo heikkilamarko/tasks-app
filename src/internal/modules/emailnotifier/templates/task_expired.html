@@ -43,6 +43,12 @@
 				padding: 10px;
 				text-align: left;
 				border-bottom: 1px solid #ddd;
+				white-space: nowrap;
+			}
+
+			td.task-name {
+				white-space: break-spaces;
+				word-break: break-word;
 			}
 		</style>
 	</head>
@@ -54,7 +60,7 @@
 				<table>
 					<tr>
 						<th>Task:</th>
-						<td>{{ .Name }}</td>
+						<td class="task-name">{{ .Name }}</td>
 					</tr>
 					<tr>
 						<th>Expiration Date:</th>
