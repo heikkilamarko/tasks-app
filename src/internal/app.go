@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -12,6 +13,7 @@ import (
 	"tasks-app/internal/modules/ui"
 	"tasks-app/internal/modules/uinotifier"
 	"tasks-app/internal/shared"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -36,14 +38,12 @@ func (a *App) Run() {
 
 	a.initLogger()
 
-	a.Logger.Info("app is starting up...")
-
 	if err := a.serve(ctx); err != nil {
 		a.Logger.Error("serve", "error", err)
 		os.Exit(1)
 	}
 
-	a.Logger.Info("app is shut down")
+	a.Logger.Info("exit app")
 }
 
 func (a *App) loadConfig() error {
@@ -158,14 +158,22 @@ func (a *App) serve(ctx context.Context) error {
 	g.Go(func() error {
 		<-ctx.Done()
 
-		a.Logger.Info("app is shutting down...")
+		a.Logger.Info("graceful shutdown")
+
+		var errs []error
 
 		for _, m := range modules {
-			m.Close()
+			errs = append(errs, m.Close())
 		}
 
-		_ = a.MessagingClient.Close()
-		_ = a.TaskRepo.Close()
+		time.Sleep(5 * time.Second)
+
+		errs = append(errs, a.MessagingClient.Close())
+		errs = append(errs, a.TaskRepo.Close())
+
+		if err := errors.Join(errs...); err != nil {
+			a.Logger.Error("graceful shutdown", "error", err)
+		}
 
 		return nil
 	})

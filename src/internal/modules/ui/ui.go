@@ -47,7 +47,7 @@ func (s *UI) Run(ctx context.Context) error {
 		Handler:      router,
 	}
 
-	s.Logger.Info("http server is running", "port", s.server.Addr)
+	s.Logger.Info("run http server", "addr", s.server.Addr)
 
 	if err := s.server.ListenAndServe(); err != http.ErrServerClosed {
 		return err
