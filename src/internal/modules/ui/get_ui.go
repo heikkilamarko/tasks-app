@@ -7,12 +7,12 @@ import (
 )
 
 type GetUI struct {
-	TaskRepo shared.TaskRepository
-	Logger   *slog.Logger
+	TaskRepository shared.TaskRepository
+	Logger         *slog.Logger
 }
 
 func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.TaskRepo.GetActive(r.Context())
+	tasks, err := h.TaskRepository.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)

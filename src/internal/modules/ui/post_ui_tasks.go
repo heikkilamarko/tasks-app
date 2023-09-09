@@ -8,8 +8,8 @@ import (
 )
 
 type PostUITasks struct {
-	TaskRepo shared.TaskRepository
-	Logger   *slog.Logger
+	TaskRepository shared.TaskRepository
+	Logger         *slog.Logger
 }
 
 func (h *PostUITasks) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -38,14 +38,14 @@ func (h *PostUITasks) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	task := shared.NewTask(name, expiresAt)
 
-	err = h.TaskRepo.Create(r.Context(), task)
+	err = h.TaskRepository.Create(r.Context(), task)
 	if err != nil {
 		h.Logger.Error("create task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
-	tasks, err := h.TaskRepo.GetActive(r.Context())
+	tasks, err := h.TaskRepository.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)

@@ -7,12 +7,12 @@ import (
 )
 
 type GetUICompleted struct {
-	TaskRepo shared.TaskRepository
-	Logger   *slog.Logger
+	TaskRepository shared.TaskRepository
+	Logger         *slog.Logger
 }
 
 func (h *GetUICompleted) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.TaskRepo.GetCompleted(r.Context())
+	tasks, err := h.TaskRepository.GetCompleted(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)

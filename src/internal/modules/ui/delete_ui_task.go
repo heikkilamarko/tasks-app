@@ -10,8 +10,8 @@ import (
 )
 
 type DeleteUITask struct {
-	TaskRepo shared.TaskRepository
-	Logger   *slog.Logger
+	TaskRepository shared.TaskRepository
+	Logger         *slog.Logger
 }
 
 func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +21,7 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := h.TaskRepo.GetByID(r.Context(), id)
+	task, err := h.TaskRepository.GetByID(r.Context(), id)
 	if err != nil {
 		h.Logger.Error("get task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -33,14 +33,14 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.TaskRepo.Delete(r.Context(), id)
+	err = h.TaskRepository.Delete(r.Context(), id)
 	if err != nil {
 		h.Logger.Error("delete task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
-	tasks, err := h.TaskRepo.GetActive(r.Context())
+	tasks, err := h.TaskRepository.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)

@@ -10,8 +10,8 @@ import (
 )
 
 type GetUITaskEdit struct {
-	TaskRepo shared.TaskRepository
-	Logger   *slog.Logger
+	TaskRepository shared.TaskRepository
+	Logger         *slog.Logger
 }
 
 func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +21,7 @@ func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := h.TaskRepo.GetByID(r.Context(), id)
+	task, err := h.TaskRepository.GetByID(r.Context(), id)
 	if err != nil {
 		h.Logger.Error("get task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)

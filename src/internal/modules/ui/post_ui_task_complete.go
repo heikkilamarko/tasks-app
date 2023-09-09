@@ -10,8 +10,8 @@ import (
 )
 
 type PostUITaskComplete struct {
-	TaskRepo shared.TaskRepository
-	Logger   *slog.Logger
+	TaskRepository shared.TaskRepository
+	Logger         *slog.Logger
 }
 
 func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +21,7 @@ func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := h.TaskRepo.GetByID(r.Context(), id)
+	task, err := h.TaskRepository.GetByID(r.Context(), id)
 	if err != nil {
 		h.Logger.Error("get task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -35,14 +35,14 @@ func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	task.SetCompleted()
 
-	err = h.TaskRepo.Update(r.Context(), task)
+	err = h.TaskRepository.Update(r.Context(), task)
 	if err != nil {
 		h.Logger.Error("update task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
-	tasks, err := h.TaskRepo.GetActive(r.Context())
+	tasks, err := h.TaskRepository.GetActive(r.Context())
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
