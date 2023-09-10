@@ -1,19 +1,14 @@
 package internal
 
-import (
-	"log/slog"
-	"tasks-app/internal/shared"
-)
+import "tasks-app/internal/shared"
 
 func (a *App) loadConfig() error {
-	c := &shared.Config{}
-	if err := c.Load(); err != nil {
+	config := &shared.Config{}
+
+	if err := config.Load(); err != nil {
 		return err
 	}
 
-	slog.Debug("app config", slog.Any("config", c))
-
-	a.Config = c
-
+	a.Config = config
 	return nil
 }

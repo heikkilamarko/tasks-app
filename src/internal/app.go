@@ -3,19 +3,19 @@ package internal
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 	"tasks-app/internal/shared"
-	"time"
 
 	"golang.org/x/sync/errgroup"
 )
 
 type App struct {
-	Config          *shared.Config
 	Logger          *slog.Logger
+	Config          *shared.Config
 	TaskRepository  shared.TaskRepository
 	MessagingClient shared.MessagingClient
 	Modules         []shared.AppModule
@@ -25,34 +25,52 @@ func (a *App) Run() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	a.initDefaultLogger()
-
-	if err := a.loadConfig(); err != nil {
-		slog.Error("load config", "error", err)
+	if err := a.init(ctx); err != nil {
+		a.Logger.Error("app init", "error", err)
 		os.Exit(1)
 	}
 
-	a.initLogger()
+	if err := a.run(ctx); err != nil {
+		a.Logger.Error("app run", "error", err)
+		os.Exit(1)
+	}
+
+	if err := a.close(ctx); err != nil {
+		a.Logger.Error("app close", "error", err)
+	}
+
+	a.Logger.Info("app exit")
+}
+
+func (a *App) init(ctx context.Context) error {
+	if err := a.createLogger(); err != nil {
+		return fmt.Errorf("create logger: %w", err)
+	}
+
+	if err := a.loadConfig(); err != nil {
+		return fmt.Errorf("load config: %w", err)
+	}
 
 	if err := a.createServices(ctx); err != nil {
-		slog.Error("create services", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("create services: %w", err)
 	}
 
 	if err := a.createModules(); err != nil {
-		slog.Error("create modules", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("create modules: %w", err)
 	}
 
-	if err := a.serve(ctx); err != nil {
-		a.Logger.Error("serve", "error", err)
-		os.Exit(1)
-	}
-
-	a.Logger.Info("exit app")
+	return nil
 }
 
-func (a *App) serve(ctx context.Context) error {
+func (a *App) close(ctx context.Context) error {
+	if err := errors.Join(a.closeServices()...); err != nil {
+		return fmt.Errorf("close services: %w", err)
+	}
+
+	return nil
+}
+
+func (a *App) run(ctx context.Context) error {
 	g, ctx := errgroup.WithContext(ctx)
 
 	for _, m := range a.Modules {
@@ -68,15 +86,7 @@ func (a *App) serve(ctx context.Context) error {
 
 		a.Logger.Info("graceful shutdown")
 
-		var errs []error
-
-		errs = append(errs, a.closeModules()...)
-
-		time.Sleep(5 * time.Second)
-
-		errs = append(errs, a.closeServices()...)
-
-		if err := errors.Join(errs...); err != nil {
+		if err := errors.Join(a.closeModules()...); err != nil {
 			a.Logger.Error("graceful shutdown", "error", err)
 		}
 
