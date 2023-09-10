@@ -84,7 +84,7 @@ function getWsUrl(url) {
 
 function showConfirmModal(selector) {
 	return new Promise((resolve) => {
-		const modal = new bootstrap.Modal(selector, { backdrop: 'static', keyboard: false });
+		const modal = bootstrap.Modal.getOrCreateInstance(selector, { backdrop: 'static', keyboard: false });
 
 		modal._element.addEventListener(
 			'confirmResult',
@@ -100,31 +100,39 @@ function showConfirmModal(selector) {
 }
 
 function showToastMessage(config) {
-	const toaster = document.getElementById('toaster');
-	if (!toaster) return;
+	const toasterEl = document.getElementById('toaster');
+	if (!toasterEl) return;
 
-	let typeClasses = 'border-primary text-primary';
+	let classes = 'border-primary text-primary';
 	switch (config.type) {
 		case 'warning':
-			typeClasses = 'border-warning text-warning';
+			classes = 'border-warning text-warning';
 			break;
 		case 'error':
-			typeClasses = 'border-danger text-danger';
+			classes = 'border-danger text-danger';
 			break;
 	}
 
-	const toast = document.createElement('div');
-	toast.className = `toast fade border ${typeClasses}`;
-	toast.innerHTML = `
+	const toastEl = document.createElement('div');
+	toastEl.className = `toast fade border ${classes}`;
+	toastEl.innerHTML = `
 		<div class="toast-body d-flex flex-column">
 			<div class="fw-bold">${config.title}</div>
 			<div class="app-text-multiline">${config.text}</div>
 		</div>
 	`;
 
-	toaster.appendChild(toast);
+	toasterEl.appendChild(toastEl);
 
-	toast.addEventListener('hidden.bs.toast', () => toast.remove(), { once: true });
+	toastEl.addEventListener(
+		'hidden.bs.toast',
+		() => {
+			toast?.dispose();
+			toastEl.remove();
+		},
+		{ once: true }
+	);
 
-	new bootstrap.Toast(toast).show();
+	const toast = new bootstrap.Toast(toastEl);
+	toast.show();
 }
