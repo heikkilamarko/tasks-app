@@ -3,10 +3,8 @@ package shared
 import "time"
 
 const (
-	SubjectTasksExpiring   = "tasks.expiring"
-	SubjectTasksExpired    = "tasks.expired"
-	SubjectTasksUIExpiring = "tasks.ui.expiring"
-	SubjectTasksUIExpired  = "tasks.ui.expired"
+	SubjectTasksExpiring = "tasks.expiring"
+	SubjectTasksExpired  = "tasks.expired"
 )
 
 type Task struct {

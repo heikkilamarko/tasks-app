@@ -5,7 +5,6 @@ import (
 	"tasks-app/internal/modules/emailnotifier"
 	"tasks-app/internal/modules/taskchecker"
 	"tasks-app/internal/modules/ui"
-	"tasks-app/internal/modules/uinotifier"
 	"tasks-app/internal/shared"
 )
 
@@ -46,14 +45,6 @@ func (a *App) createModules() error {
 			Logger:          a.Logger,
 			MessagingClient: a.MessagingClient,
 			EmailClient:     emailClient,
-		})
-	}
-
-	if slices.Contains(a.Config.Modules, "uinotifier") {
-		modules = append(modules, &uinotifier.UINotifier{
-			Config:          a.Config,
-			Logger:          a.Logger,
-			MessagingClient: a.MessagingClient,
 		})
 	}
 

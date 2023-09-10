@@ -1,10 +1,11 @@
 {
-  "durable_name": "tasks",
-  "deliver_policy": "all",
   "ack_policy": "explicit",
   "ack_wait": 30000000000,
+  "deliver_policy": "all",
+  "durable_name": "tasks",
+  "max_ack_pending": 1000,
   "max_deliver": -1,
-  "filter_subject": "tasks.*",
+  "max_waiting": 512,
   "replay_policy": "instant",
-  "max_ack_pending": 20000
+  "num_replicas": 0
 }

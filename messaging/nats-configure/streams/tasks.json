@@ -3,6 +3,7 @@
   "subjects": ["tasks.*"],
   "retention": "workqueue",
   "max_consumers": -1,
+  "max_msgs_per_subject": -1,
   "max_msgs": -1,
   "max_bytes": -1,
   "max_age": 0,
@@ -10,5 +11,15 @@
   "storage": "file",
   "discard": "old",
   "num_replicas": 1,
-  "duplicate_window": 120000000000
+  "duplicate_window": 120000000000,
+  "republish": {
+    "src": "tasks.*",
+    "dest": "tasks.ui.{{wildcard(1)}}"
+  },
+  "sealed": false,
+  "deny_delete": false,
+  "deny_purge": false,
+  "allow_rollup_hdrs": false,
+  "allow_direct": false,
+  "mirror_direct": false
 }
