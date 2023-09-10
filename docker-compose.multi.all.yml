@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  caddy:
+    build: proxy/caddy
+    image: tasks-app/caddy
+    container_name: caddy
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/caddy.env
+    environment:
+      - CADDY_APP_ADDRESS=http://tasks-app-ui
+    ports:
+      - 8000:80
+    networks:
+      - tasks-app
+
+  tasks-app-ui:
+    build: src
+    image: tasks-app/tasks-app-ui
+    container_name: tasks-app-ui
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/tasks-app.env
+    environment:
+      - APP_SERVICES=db:postgres
+      - APP_MODULES=ui
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
+      - nats
+
+  tasks-app-taskchecker:
+    build: src
+    image: tasks-app/tasks-app-taskchecker
+    container_name: tasks-app-taskchecker
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/tasks-app.env
+    environment:
+      - APP_SERVICES=db:postgres,messaging:nats
+      - APP_MODULES=taskchecker
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
+      - nats
+
+  tasks-app-emailnotifier:
+    build: src
+    image: tasks-app/tasks-app-emailnotifier
+    container_name: tasks-app-emailnotifier
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - config/dev/tasks-app.env
+    environment:
+      - APP_SERVICES=db:postgres,messaging:nats,emailnotifier:null
+      - APP_MODULES=emailnotifier
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
+      - nats

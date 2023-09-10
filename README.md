@@ -30,16 +30,18 @@ To stop the single-process setup, use the following command:
 
 ## Multi-process setup
 
-The example multi-process setup divides the app into two processes: one for the UI module and another for the backend modules.
+The example multi-process setups divide the app into two or more processes.
 
 Note. Users have the flexibility to run any combination of the modules to tailor the setup to their specific requirements.
 
 ### Run
 
-To start the multi-process setup, run the following commands:
+To start a multi-process setup, run the following commands:
 
 ```bash
-./multi_up.sh
+./multi_frontend_backend_up.sh
+# or
+./multi_all_up.sh
 ```
 
 ```bash
@@ -48,8 +50,10 @@ open http://localhost:8000/ui
 
 ### Teardown
 
-To stop the multi-process setup, use the following command:
+To stop a multi-process setup, use the following command:
 
 ```bash
-./multi_down.sh
+./multi_frontend_backend_down.sh
+# or
+./multi_all_down.sh
 ```
