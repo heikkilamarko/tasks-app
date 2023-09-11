@@ -144,8 +144,8 @@ func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Dura
 		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
 		FROM task
 		WHERE completed_at IS NULL
-		AND expires_at IS NOT NULL
 		AND expiring_info_at IS NULL
+		AND expires_at IS NOT NULL
 		AND expires_at >= $1
 		AND expires_at <= $2
 		ORDER BY created_at ASC
@@ -162,8 +162,8 @@ func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, er
 		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
 		FROM task
 		WHERE completed_at IS NULL
-		AND expires_at IS NOT NULL
 		AND expired_info_at IS NULL
+		AND expires_at IS NOT NULL
 		AND expires_at < $1
 		ORDER BY created_at ASC
 	`

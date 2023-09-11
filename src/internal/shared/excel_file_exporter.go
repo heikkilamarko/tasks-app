@@ -42,21 +42,21 @@ func (e *ExcelFileExporter) ExportTasks(w http.ResponseWriter, tasks []*Task, na
 		return err
 	}
 
-	for i, t := range tasks {
+	for i, task := range tasks {
 		cell, err := excelize.CoordinatesToCellName(1, i+2)
 		if err != nil {
 			return err
 		}
 
 		if err := f.SetSheetRow("Tasks", cell, &[]any{
-			t.ID,
-			t.Name,
-			t.ExpiresAt,
-			t.ExpiringInfoAt,
-			t.ExpiredInfoAt,
-			t.CreatedAt,
-			t.UpdatedAt,
-			t.CompletedAt,
+			task.ID,
+			task.Name,
+			task.ExpiresAt,
+			task.ExpiringInfoAt,
+			task.ExpiredInfoAt,
+			task.CreatedAt,
+			task.UpdatedAt,
+			task.CompletedAt,
 		}); err != nil {
 			return err
 		}

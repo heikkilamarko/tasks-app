@@ -47,15 +47,9 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := struct {
-		Tasks         []*shared.Task
-		IsCreatingNew bool
-	}{
-		Tasks:         tasks,
-		IsCreatingNew: false,
-	}
+	vm := TasksViewModel{tasks, false}
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks_table.html", data); err != nil {
+	if err := Templates.ExecuteTemplate(w, "active_tasks_table.html", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}

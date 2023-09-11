@@ -19,13 +19,9 @@ func (h *GetUICompleted) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := struct {
-		Tasks []*shared.Task
-	}{
-		Tasks: tasks,
-	}
+	vm := TasksViewModel{Tasks: tasks}
 
-	if err := Templates.ExecuteTemplate(w, "completed_tasks.html", data); err != nil {
+	if err := Templates.ExecuteTemplate(w, "completed_tasks.html", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
