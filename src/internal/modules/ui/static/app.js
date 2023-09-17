@@ -24,6 +24,19 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 	})();
 });
 
+document.body.addEventListener('htmx:responseError', (e) => {
+	const {
+		xhr: { status, statusText },
+		error
+	} = e.detail;
+
+	showToastMessage({
+		type: 'error',
+		title: `${status} ${statusText}`,
+		text: error
+	});
+});
+
 htmx.onLoad((el) => {
 	initBootstrap(el);
 });

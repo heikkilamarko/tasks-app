@@ -7,11 +7,13 @@
 
 			<div class="row g-2 mt-3">
 				<div class="col-auto">
-					<a href="/ui" class="btn btn-outline-primary rounded-pill px-4">Home</a>
+					<a href="/ui" hx-boost="true" class="btn btn-outline-primary rounded-pill px-4">Home</a>
 				</div>
 
 				<div class="col-auto">
-					<a href="/ui/tasks/export?filter=completed" class="btn btn-outline-primary rounded-pill px-4">Export Tasks</a>
+					<a href="/ui/tasks/export?filter=completed" download class="btn btn-outline-primary rounded-pill px-4"
+						>Export Tasks</a
+					>
 				</div>
 			</div>
 
