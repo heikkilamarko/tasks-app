@@ -46,8 +46,8 @@ services:
     env_file:
       - ../config/dev/tasks-app.env
     environment:
-      - APP_SERVICES=messaging:nats,emailnotifier:null
-      - APP_MODULES=emailnotifier
+      - APP_SERVICES=messaging:nats
+      - APP_MODULES=emailnotifier:null
     networks:
       - tasks-app
     depends_on:

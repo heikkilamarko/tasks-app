@@ -16,8 +16,6 @@ type EmailNotifier struct {
 	EmailClient     EmailClient
 }
 
-func (*EmailNotifier) Name() string { return "emailnotifier" }
-
 func (n *EmailNotifier) Run(ctx context.Context) error {
 	return n.MessagingClient.SubscribePersistent(ctx, "tasks", "tasks", n.HandleMessage)
 }

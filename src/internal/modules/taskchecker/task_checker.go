@@ -16,8 +16,6 @@ type TaskChecker struct {
 	MessagingClient shared.MessagingClient
 }
 
-func (*TaskChecker) Name() string { return "taskchecker" }
-
 func (tc *TaskChecker) Run(ctx context.Context) error {
 	for {
 		select {

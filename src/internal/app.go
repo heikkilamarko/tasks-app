@@ -10,12 +10,19 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+const (
+	AppModuleUI                = "ui"
+	AppModuleTaskChecker       = "taskchecker"
+	AppModuleEmailNotifierNull = "emailnotifier:null"
+	AppModuleEmailNotifierSMTP = "emailnotifier:smtp"
+)
+
 type App struct {
 	Logger          *slog.Logger
 	Config          *shared.Config
 	TaskRepository  shared.TaskRepository
 	MessagingClient shared.MessagingClient
-	Modules         []shared.AppModule
+	Modules         map[string]shared.AppModule
 }
 
 func (a *App) Run(ctx context.Context) error {
@@ -57,11 +64,11 @@ func (a *App) init(ctx context.Context) error {
 func (a *App) run(ctx context.Context) error {
 	g, ctx := errgroup.WithContext(ctx)
 
-	for _, m := range a.Modules {
-		m := m
+	for key, module := range a.Modules {
+		key, module := key, module
 		g.Go(func() error {
-			a.Logger.Info("run app module", slog.String("module", m.Name()))
-			return m.Run(ctx)
+			a.Logger.Info("run app module", slog.String("module", key))
+			return module.Run(ctx)
 		})
 	}
 

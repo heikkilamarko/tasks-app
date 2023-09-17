@@ -19,8 +19,6 @@ type UI struct {
 	server         *http.Server
 }
 
-func (*UI) Name() string { return "ui" }
-
 func (s *UI) Run(ctx context.Context) error {
 	router := chi.NewRouter()
 

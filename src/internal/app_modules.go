@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"log/slog"
 	"slices"
 	"tasks-app/internal/modules/emailnotifier"
 	"tasks-app/internal/modules/taskchecker"
@@ -9,53 +10,60 @@ import (
 )
 
 func (a *App) createModules() error {
-	var modules []shared.AppModule
+	modules := make(map[string]shared.AppModule)
 
-	if slices.Contains(a.Config.Modules, "taskchecker") {
-		modules = append(modules, &taskchecker.TaskChecker{
-			Config:          a.Config,
-			Logger:          a.Logger,
-			TaskRepository:  a.TaskRepository,
-			MessagingClient: a.MessagingClient,
-		})
+	if slices.Contains(a.Config.Modules, AppModuleUI) {
+		logger := a.Logger.With(slog.String("module", AppModuleUI))
+
+		modules[AppModuleUI] = &ui.UI{
+			Config:         a.Config,
+			Logger:         logger,
+			TaskRepository: a.TaskRepository,
+			FileExporter: &shared.ExcelFileExporter{
+				Logger: logger},
+		}
 	}
 
-	if slices.Contains(a.Config.Modules, "emailnotifier") {
-		var emailClient emailnotifier.EmailClient
+	if slices.Contains(a.Config.Modules, AppModuleTaskChecker) {
+		logger := a.Logger.With(slog.String("module", AppModuleTaskChecker))
 
-		if slices.Contains(a.Config.Services, "emailnotifier:null") {
-			emailClient = &emailnotifier.NullEmailClient{
-				Logger: a.Logger,
-			}
+		modules[AppModuleTaskChecker] = &taskchecker.TaskChecker{
+			Config:          a.Config,
+			Logger:          logger,
+			TaskRepository:  a.TaskRepository,
+			MessagingClient: a.MessagingClient,
 		}
+	}
 
-		if slices.Contains(a.Config.Services, "emailnotifier:smtp") {
-			emailClient = &emailnotifier.SMTPEmailClient{
+	if slices.Contains(a.Config.Modules, AppModuleEmailNotifierNull) {
+		logger := a.Logger.With(slog.String("module", AppModuleEmailNotifierNull))
+
+		modules[AppModuleEmailNotifierNull] = &emailnotifier.EmailNotifier{
+			Config:          a.Config,
+			Logger:          logger,
+			MessagingClient: a.MessagingClient,
+			EmailClient: &emailnotifier.NullEmailClient{
+				Logger: logger,
+			},
+		}
+	}
+
+	if slices.Contains(a.Config.Modules, AppModuleEmailNotifierSMTP) {
+		logger := a.Logger.With(slog.String("module", AppModuleEmailNotifierSMTP))
+
+		modules[AppModuleEmailNotifierSMTP] = &emailnotifier.EmailNotifier{
+			Config:          a.Config,
+			Logger:          logger,
+			MessagingClient: a.MessagingClient,
+			EmailClient: &emailnotifier.SMTPEmailClient{
 				Options: emailnotifier.SMTPEmailClientOptions{
 					Host:        a.Config.SMTPHost,
 					Port:        a.Config.SMTPPort,
 					FromName:    a.Config.SMTPFromName,
 					FromAddress: a.Config.SMTPFromAddress,
 					Password:    a.Config.SMTPPassword,
-				}}
+				}},
 		}
-
-		modules = append(modules, &emailnotifier.EmailNotifier{
-			Config:          a.Config,
-			Logger:          a.Logger,
-			MessagingClient: a.MessagingClient,
-			EmailClient:     emailClient,
-		})
-	}
-
-	if slices.Contains(a.Config.Modules, "ui") {
-		modules = append(modules, &ui.UI{
-			Config:         a.Config,
-			Logger:         a.Logger,
-			TaskRepository: a.TaskRepository,
-			FileExporter: &shared.ExcelFileExporter{
-				Logger: a.Logger},
-		})
 	}
 
 	a.Modules = modules
