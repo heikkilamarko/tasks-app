@@ -5,9 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"os"
-	"os/signal"
-	"syscall"
 	"tasks-app/internal/shared"
 
 	"golang.org/x/sync/errgroup"
@@ -21,25 +18,20 @@ type App struct {
 	Modules         []shared.AppModule
 }
 
-func (a *App) Run() {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
-
+func (a *App) Run(ctx context.Context) error {
 	if err := a.init(ctx); err != nil {
-		a.Logger.Error("app init", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("init: %w", err)
 	}
 
 	if err := a.run(ctx); err != nil {
-		a.Logger.Error("app run", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("run: %w", err)
 	}
 
 	if err := a.close(ctx); err != nil {
-		a.Logger.Error("app close", "error", err)
+		return fmt.Errorf("close: %w", err)
 	}
 
-	a.Logger.Info("app exit")
+	return nil
 }
 
 func (a *App) init(ctx context.Context) error {
@@ -57,14 +49,6 @@ func (a *App) init(ctx context.Context) error {
 
 	if err := a.createModules(); err != nil {
 		return fmt.Errorf("create modules: %w", err)
-	}
-
-	return nil
-}
-
-func (a *App) close(ctx context.Context) error {
-	if err := errors.Join(a.closeServices()...); err != nil {
-		return fmt.Errorf("close services: %w", err)
 	}
 
 	return nil
@@ -94,4 +78,12 @@ func (a *App) run(ctx context.Context) error {
 	})
 
 	return g.Wait()
+}
+
+func (a *App) close(ctx context.Context) error {
+	if err := errors.Join(a.closeServices()...); err != nil {
+		return fmt.Errorf("close services: %w", err)
+	}
+
+	return nil
 }

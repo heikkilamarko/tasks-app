@@ -47,7 +47,7 @@ func NewNATSMessagingClient(options NATSMessagingClientOptions) (*NATSMessagingC
 			}),
 		nats.ErrorHandler(
 			func(_ *nats.Conn, _ *nats.Subscription, err error) {
-				options.Logger.Error("nats error", "err", err)
+				options.Logger.Error("nats error", "error", err)
 				os.Exit(1)
 			}),
 	)
