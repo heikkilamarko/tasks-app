@@ -11,6 +11,11 @@ import (
 )
 
 const (
+	AppServiceDBPostgres    = "db:postgres"
+	AppServiceMessagingNATS = "messaging:nats"
+)
+
+const (
 	AppModuleUI                = "ui"
 	AppModuleTaskChecker       = "taskchecker"
 	AppModuleEmailNotifierNull = "emailnotifier:null"

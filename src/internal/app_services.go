@@ -10,24 +10,24 @@ import (
 func (a *App) createServices(ctx context.Context) error {
 	var err error
 
-	if slices.Contains(a.Config.Services, "db:postgres") {
+	if slices.Contains(a.Config.Services, AppServiceDBPostgres) {
 		a.TaskRepository, err = shared.NewPostgresTaskRepository(ctx, shared.PostgresTaskRepositoryOptions{
 			ConnectionString: a.Config.PostgresConnectionString,
 			Logger:           a.Logger,
 		})
 		if err != nil {
-			return fmt.Errorf("create service db:postgres: %w", err)
+			return fmt.Errorf("create service %s: %w", AppServiceDBPostgres, err)
 		}
 	}
 
-	if slices.Contains(a.Config.Services, "messaging:nats") {
+	if slices.Contains(a.Config.Services, AppServiceMessagingNATS) {
 		a.MessagingClient, err = shared.NewNATSMessagingClient(shared.NATSMessagingClientOptions{
 			NATSURL:   a.Config.NATSURL,
 			NATSToken: a.Config.NATSToken,
 			Logger:    a.Logger,
 		})
 		if err != nil {
-			return fmt.Errorf("create service messaging:nats: %w", err)
+			return fmt.Errorf("create service %s: %w", AppServiceMessagingNATS, err)
 		}
 	}
 
