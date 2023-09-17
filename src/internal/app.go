@@ -10,18 +10,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const (
-	AppServiceDBPostgres    = "db:postgres"
-	AppServiceMessagingNATS = "messaging:nats"
-)
-
-const (
-	AppModuleUI                = "ui"
-	AppModuleTaskChecker       = "taskchecker"
-	AppModuleEmailNotifierNull = "emailnotifier:null"
-	AppModuleEmailNotifierSMTP = "emailnotifier:smtp"
-)
-
 type App struct {
 	Logger          *slog.Logger
 	Config          *shared.Config

@@ -7,6 +7,11 @@ import (
 	"tasks-app/internal/shared"
 )
 
+const (
+	AppServiceDBPostgres    = "db:postgres"
+	AppServiceMessagingNATS = "messaging:nats"
+)
+
 func (a *App) createServices(ctx context.Context) error {
 	var err error
 

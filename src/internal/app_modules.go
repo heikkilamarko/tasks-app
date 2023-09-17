@@ -9,6 +9,13 @@ import (
 	"tasks-app/internal/shared"
 )
 
+const (
+	AppModuleUI                = "ui"
+	AppModuleTaskChecker       = "taskchecker"
+	AppModuleEmailNotifierNull = "emailnotifier:null"
+	AppModuleEmailNotifierSMTP = "emailnotifier:smtp"
+)
+
 func (a *App) createModules() error {
 	modules := make(map[string]shared.AppModule)
 
