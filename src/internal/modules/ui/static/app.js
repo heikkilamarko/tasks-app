@@ -1,9 +1,9 @@
 import { connect, JSONCodec } from 'https://unpkg.com/nats.ws@1.17.0/esm/nats.js';
 
-window.app = {
+window.app = Object.assign({}, window.app, {
 	showConfirmModal,
 	showToastMessage
-};
+});
 
 const codec = JSONCodec();
 
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 	initBootstrap();
 
 	const nc = await connect({
-		servers: getWsUrl('/hub/v1'),
+		servers: getWsUrl(window.app.HUB_URL),
 		token: 'S3c_r3t!'
 	});
 

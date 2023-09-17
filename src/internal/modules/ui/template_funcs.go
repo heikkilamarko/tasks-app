@@ -1,12 +1,19 @@
 package ui
 
-import "time"
+import (
+	"os"
+	"time"
+)
 
 const (
 	uiTimezone          = "Europe/Helsinki"
 	uiTimeFormat        = "2006-01-02T15:04"
 	uiDisplayTimeFormat = "02.01.2006 15.04"
 )
+
+func Env(key string) string {
+	return os.Getenv(key)
+}
 
 func FormatUITime(from time.Time) string {
 	l, err := time.LoadLocation(uiTimezone)

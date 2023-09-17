@@ -10,6 +10,7 @@ var TemplatesFS embed.FS
 
 var Templates = template.Must(template.New("").
 	Funcs(template.FuncMap{
+		"Env":                 Env,
 		"FormatUITime":        FormatUITime,
 		"FormatUIDisplayTime": FormatUIDisplayTime,
 		"ParseUITime":         ParseUITime,

@@ -57,6 +57,7 @@ services:
     ports:
       - 4222:4222
       - 8222:8222
+      - 9222:9222
     volumes:
       - nats:/nats
     networks:
