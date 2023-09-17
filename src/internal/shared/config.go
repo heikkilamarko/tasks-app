@@ -11,6 +11,7 @@ type Config struct {
 	Modules                  []string      `env:"APP_MODULES" envDefault:"ui,taskchecker,emailnotifier:null"`
 	Addr                     string        `env:"APP_ADDR,notEmpty" envDefault:":8080"`
 	LogLevel                 string        `env:"APP_LOG_LEVEL" envDefault:"warn"`
+	UIHubURL                 string        `env:"APP_UI_HUB_URL,notEmpty"`
 	PostgresConnectionString string        `env:"APP_POSTGRES_CONNECTION_STRING,notEmpty"`
 	NATSURL                  string        `env:"APP_NATS_URL,notEmpty"`
 	NATSToken                string        `env:"APP_NATS_TOKEN,notEmpty"`
