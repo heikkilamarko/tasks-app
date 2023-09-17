@@ -28,6 +28,8 @@
 
 	header -Server
 
+	redir / /ui
+
 	handle_path /hub/v1 {
 		reverse_proxy {$CADDY_HUB_ADDRESS}
 	}
