@@ -96,7 +96,6 @@ func (c *NATSMessagingClient) Subscribe(ctx context.Context, subject string, han
 	for {
 		select {
 		case <-ctx.Done():
-			c.Options.Logger.Info("exit subscriber")
 			return nil
 		default:
 			msg, err := sub.NextMsg(5 * time.Second)
@@ -126,7 +125,6 @@ func (c *NATSMessagingClient) SubscribePersistent(ctx context.Context, stream st
 	for {
 		select {
 		case <-ctx.Done():
-			c.Options.Logger.Info("exit persistent subscriber")
 			return nil
 		default:
 			msg, err := con.Next(jetstream.FetchMaxWait(5 * time.Second))

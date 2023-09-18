@@ -61,21 +61,10 @@ func (a *App) run(ctx context.Context) error {
 		key, module := key, module
 		g.Go(func() error {
 			a.Logger.Info("run app module", slog.String("module", key))
+			defer a.Logger.Info("exit app module", slog.String("module", key))
 			return module.Run(ctx)
 		})
 	}
-
-	g.Go(func() error {
-		<-ctx.Done()
-
-		a.Logger.Info("graceful shutdown")
-
-		if err := errors.Join(a.closeModules()...); err != nil {
-			a.Logger.Error("graceful shutdown", "error", err)
-		}
-
-		return nil
-	})
 
 	return g.Wait()
 }

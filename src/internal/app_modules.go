@@ -22,7 +22,7 @@ func (a *App) createModules() error {
 	if slices.Contains(a.Config.Modules, AppModuleUI) {
 		logger := a.Logger.With(slog.String("module", AppModuleUI))
 
-		modules[AppModuleUI] = &ui.UI{
+		modules[AppModuleUI] = &ui.Module{
 			Config:         a.Config,
 			Logger:         logger,
 			TaskRepository: a.TaskRepository,
@@ -34,7 +34,7 @@ func (a *App) createModules() error {
 	if slices.Contains(a.Config.Modules, AppModuleTaskChecker) {
 		logger := a.Logger.With(slog.String("module", AppModuleTaskChecker))
 
-		modules[AppModuleTaskChecker] = &taskchecker.TaskChecker{
+		modules[AppModuleTaskChecker] = &taskchecker.Module{
 			Config:          a.Config,
 			Logger:          logger,
 			TaskRepository:  a.TaskRepository,
@@ -45,7 +45,7 @@ func (a *App) createModules() error {
 	if slices.Contains(a.Config.Modules, AppModuleEmailNotifierNull) {
 		logger := a.Logger.With(slog.String("module", AppModuleEmailNotifierNull))
 
-		modules[AppModuleEmailNotifierNull] = &emailnotifier.EmailNotifier{
+		modules[AppModuleEmailNotifierNull] = &emailnotifier.Module{
 			Config:          a.Config,
 			Logger:          logger,
 			MessagingClient: a.MessagingClient,
@@ -58,7 +58,7 @@ func (a *App) createModules() error {
 	if slices.Contains(a.Config.Modules, AppModuleEmailNotifierSMTP) {
 		logger := a.Logger.With(slog.String("module", AppModuleEmailNotifierSMTP))
 
-		modules[AppModuleEmailNotifierSMTP] = &emailnotifier.EmailNotifier{
+		modules[AppModuleEmailNotifierSMTP] = &emailnotifier.Module{
 			Config:          a.Config,
 			Logger:          logger,
 			MessagingClient: a.MessagingClient,
@@ -76,14 +76,4 @@ func (a *App) createModules() error {
 	a.Modules = modules
 
 	return nil
-}
-
-func (a *App) closeModules() []error {
-	var errs []error
-
-	for _, m := range a.Modules {
-		errs = append(errs, m.Close())
-	}
-
-	return errs
 }
