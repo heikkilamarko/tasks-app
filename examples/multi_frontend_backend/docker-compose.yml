@@ -4,7 +4,6 @@ services:
   tasks-app:
     build: ../src
     image: tasks-app/tasks-app
-    container_name: tasks-app
     deploy:
       restart_policy:
         condition: on-failure
@@ -21,7 +20,6 @@ services:
   tasks-app-backend:
     build: ../src
     image: tasks-app/tasks-app-backend
-    container_name: tasks-app-backend
     deploy:
       restart_policy:
         condition: on-failure

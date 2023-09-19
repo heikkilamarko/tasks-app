@@ -4,7 +4,6 @@ services:
   tasks-app:
     build: ../src
     image: tasks-app/tasks-app
-    container_name: tasks-app
     deploy:
       restart_policy:
         condition: on-failure

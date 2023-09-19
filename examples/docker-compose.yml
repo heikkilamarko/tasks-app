@@ -4,7 +4,6 @@ services:
   caddy:
     build: ../proxy/caddy
     image: tasks-app/caddy
-    container_name: caddy
     deploy:
       restart_policy:
         condition: on-failure
@@ -18,7 +17,6 @@ services:
   postgres:
     build: ../db/postgres
     image: tasks-app/postgres
-    container_name: postgres
     deploy:
       restart_policy:
         condition: on-failure
@@ -34,7 +32,6 @@ services:
   postgres-migrations:
     build: ../db/postgres-migrations
     image: tasks-app/postgres-migrations
-    container_name: postgres-migrations
     deploy:
       restart_policy:
         condition: on-failure
@@ -48,7 +45,6 @@ services:
   nats:
     build: ../messaging/nats
     image: tasks-app/nats
-    container_name: nats
     deploy:
       restart_policy:
         condition: on-failure
@@ -66,7 +62,6 @@ services:
   nats-configure:
     build: ../messaging/nats-configure
     image: tasks-app/nats-configure
-    container_name: nats-configure
     deploy:
       restart_policy:
         condition: on-failure

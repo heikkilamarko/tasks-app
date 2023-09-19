@@ -4,7 +4,6 @@ services:
   tasks-app:
     build: ../src
     image: tasks-app/tasks-app
-    container_name: tasks-app
     deploy:
       restart_policy:
         condition: on-failure
@@ -21,7 +20,6 @@ services:
   tasks-app-taskchecker:
     build: ../src
     image: tasks-app/tasks-app-taskchecker
-    container_name: tasks-app-taskchecker
     deploy:
       restart_policy:
         condition: on-failure
@@ -39,8 +37,8 @@ services:
   tasks-app-emailnotifier:
     build: ../src
     image: tasks-app/tasks-app-emailnotifier
-    container_name: tasks-app-emailnotifier
     deploy:
+      replicas: 2
       restart_policy:
         condition: on-failure
     env_file:
