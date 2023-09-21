@@ -23,6 +23,8 @@ func (m *Module) Run(ctx context.Context) error {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
+	router.Use(SessionMiddleware)
+
 	router.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
 	router.Method(http.MethodGet, "/ui", &GetUI{m.TaskRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui/tasks", &GetUITasks{m.TaskRepository, m.Logger})
