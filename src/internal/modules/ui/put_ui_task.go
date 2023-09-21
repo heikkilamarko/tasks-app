@@ -66,7 +66,7 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks_table_row.html", task); err != nil {
+	if err := Templates.ExecuteTemplate(w, "active_tasks_table_row", task); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}

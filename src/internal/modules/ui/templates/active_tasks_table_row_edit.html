@@ -1,53 +1,55 @@
-<tr class="editing" hx-trigger="cancel" hx-get="/ui/tasks/{{ .ID }}" hx-swap="outerHTML">
-	<td>{{ .ID }}</td>
-	<td class="task-name">
-		<textarea
-			name="name"
-			rows="5"
-			form="task-edit-form"
-			class="form-control form-control-sm"
-			minlength="3"
-			maxlength="200"
-			required
-			_="on input
+{{ define "active_tasks_table_row_edit" }}
+	<tr class="editing" hx-trigger="cancel" hx-get="/ui/tasks/{{ .ID }}" hx-swap="outerHTML">
+		<td>{{ .ID }}</td>
+		<td class="task-name">
+			<textarea
+				name="name"
+				rows="5"
+				form="task-edit-form"
+				class="form-control form-control-sm"
+				minlength="3"
+				maxlength="200"
+				required
+				_="on input
 				if me.value == 'test'
 					me.setCustomValidity(`'${me.value}' is not allowed`)
 				else
 					me.setCustomValidity('')"
-		>
+			>
 {{ .Name }}</textarea
-		>
-	</td>
-	<td>
-		<input
-			type="datetime-local"
-			name="expires_at"
-			form="task-edit-form"
-			class="form-control form-control-sm"
-			value="{{ with .ExpiresAt }}{{ FormatUITime . }}{{ end }}"
-		/>
-	</td>
-	<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
-	<td>
-		<button
-			type="button"
-			class="btn btn-sm btn-outline-danger rounded-pill px-3"
-			hx-get="/ui/tasks/{{ .ID }}"
-			hx-target="closest tr"
-			hx-swap="outerHTML"
-		>
-			Cancel
-		</button>
-		<button type="submit" form="task-edit-form" class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2">
-			Save
-		</button>
-	</td>
-</tr>
-<form
-	id="task-edit-form"
-	autocomplete="off"
-	hx-swap-oob="true"
-	hx-put="/ui/tasks/{{ .ID }}"
-	hx-target=".editing"
-	hx-swap="outerHTML"
-></form>
+			>
+		</td>
+		<td>
+			<input
+				type="datetime-local"
+				name="expires_at"
+				form="task-edit-form"
+				class="form-control form-control-sm"
+				value="{{ with .ExpiresAt }}{{ FormatUITime . }}{{ end }}"
+			/>
+		</td>
+		<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
+		<td>
+			<button
+				type="button"
+				class="btn btn-sm btn-outline-danger rounded-pill px-3"
+				hx-get="/ui/tasks/{{ .ID }}"
+				hx-target="closest tr"
+				hx-swap="outerHTML"
+			>
+				Cancel
+			</button>
+			<button type="submit" form="task-edit-form" class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2">
+				Save
+			</button>
+		</td>
+	</tr>
+	<form
+		id="task-edit-form"
+		autocomplete="off"
+		hx-swap-oob="true"
+		hx-put="/ui/tasks/{{ .ID }}"
+		hx-target=".editing"
+		hx-swap="outerHTML"
+	></form>
+{{ end }}

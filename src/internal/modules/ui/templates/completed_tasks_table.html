@@ -1,22 +1,24 @@
-{{ if .Tasks }}
-	<div class="table-responsive">
-		<table class="table">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th class="task-name">Name</th>
-					<th>Expiration</th>
-					<th>Created</th>
-					<th>Completed</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{ range .Tasks }}
-					{{ template "completed_tasks_table_row.html" . }}
-				{{ end }}
-			</tbody>
-		</table>
-	</div>
-{{ else }}
-	<div class="fw-bold text-muted">No completed tasks</div>
+{{ define "completed_tasks_table" }}
+	{{ if .Tasks }}
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th class="task-name">Name</th>
+						<th>Expiration</th>
+						<th>Created</th>
+						<th>Completed</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{ range .Tasks }}
+						{{ template "completed_tasks_table_row" . }}
+					{{ end }}
+				</tbody>
+			</table>
+		</div>
+	{{ else }}
+		<div class="fw-bold text-muted">No completed tasks</div>
+	{{ end }}
 {{ end }}

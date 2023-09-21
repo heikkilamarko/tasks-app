@@ -1,9 +1,11 @@
-<tr>
-	<td>{{ .ID }}</td>
-	<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
-		<span class="app-text-multiline">{{ .Name }}</span>
-	</td>
-	<td>{{ with .ExpiresAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
-	<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
-	<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
-</tr>
+{{ define "completed_tasks_table_row" }}
+	<tr>
+		<td>{{ .ID }}</td>
+		<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
+			<span class="app-text-multiline">{{ .Name }}</span>
+		</td>
+		<td>{{ with .ExpiresAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+		<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
+		<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+	</tr>
+{{ end }}

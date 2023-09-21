@@ -51,7 +51,7 @@ func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	vm := TasksViewModel{tasks, false}
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks_table.html", vm); err != nil {
+	if err := Templates.ExecuteTemplate(w, "active_tasks_table", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}

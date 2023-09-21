@@ -1,46 +1,48 @@
-<tr>
-	<td>{{ .ID }}</td>
-	<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
-		<span class="app-text-multiline">{{ .Name }}</span>
-	</td>
-	<td>{{ with .ExpiresAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
-	<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
-	<td>
-		<button
-			class="btn btn-sm btn-outline-primary rounded-pill px-3"
-			hx-get="/ui/tasks/{{ .ID }}/edit"
-			hx-target="closest tr"
-			hx-swap="outerHTML"
-			hx-trigger="edit"
-			_="on click
+{{ define "active_tasks_table_row" }}
+	<tr>
+		<td>{{ .ID }}</td>
+		<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
+			<span class="app-text-multiline">{{ .Name }}</span>
+		</td>
+		<td>{{ with .ExpiresAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+		<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
+		<td>
+			<button
+				class="btn btn-sm btn-outline-primary rounded-pill px-3"
+				hx-get="/ui/tasks/{{ .ID }}/edit"
+				hx-target="closest tr"
+				hx-swap="outerHTML"
+				hx-trigger="edit"
+				_="on click
 				send cancel to .editing
 				trigger edit"
-		>
-			Edit
-		</button>
-		<button
-			class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2"
-			hx-post="/ui/tasks/{{ .ID }}/complete"
-			hx-target="#tasks-table"
-			hx-swap="innerHTML"
-			hx-trigger="complete"
-			_="on click
+			>
+				Edit
+			</button>
+			<button
+				class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2"
+				hx-post="/ui/tasks/{{ .ID }}/complete"
+				hx-target="#tasks-table"
+				hx-swap="innerHTML"
+				hx-trigger="complete"
+				_="on click
 				app.showConfirmModal('#confirm-complete-modal')
 				if result trigger complete"
-		>
-			Complete
-		</button>
-		<button
-			class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-2"
-			hx-delete="/ui/tasks/{{ .ID }}"
-			hx-target="#tasks-table"
-			hx-swap="innerHTML"
-			hx-trigger="delete"
-			_="on click
+			>
+				Complete
+			</button>
+			<button
+				class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-2"
+				hx-delete="/ui/tasks/{{ .ID }}"
+				hx-target="#tasks-table"
+				hx-swap="innerHTML"
+				hx-trigger="delete"
+				_="on click
 				app.showConfirmModal('#confirm-delete-modal')
 				if result trigger delete"
-		>
-			Delete
-		</button>
-	</td>
-</tr>
+			>
+				Delete
+			</button>
+		</td>
+	</tr>
+{{ end }}

@@ -1,63 +1,65 @@
-<div class="modal fade" id="confirm-delete-modal" tabindex="-1">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h1 class="modal-title fs-5">Confirm Task Deletion</h1>
-				<button
-					type="button"
-					class="btn-close"
-					_="on click send confirmResult(answer: false) to #confirm-delete-modal"
-				></button>
-			</div>
-			<div class="modal-body">Are you sure you want to delete the selected task? This action cannot be undone.</div>
-			<div class="modal-footer">
-				<button
-					type="button"
-					class="btn btn-danger rounded-pill px-4"
-					_="on click send confirmResult(answer: true) to #confirm-delete-modal"
-				>
-					Delete
-				</button>
-				<button
-					type="button"
-					class="btn btn-secondary rounded-pill px-4"
-					_="on click send confirmResult(answer: false) to #confirm-delete-modal"
-				>
-					Cancel
-				</button>
+{{ define "active_tasks_modals" }}
+	<div class="modal fade" id="confirm-delete-modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5">Confirm Task Deletion</h1>
+					<button
+						type="button"
+						class="btn-close"
+						_="on click send confirmResult(answer: false) to #confirm-delete-modal"
+					></button>
+				</div>
+				<div class="modal-body">Are you sure you want to delete the selected task? This action cannot be undone.</div>
+				<div class="modal-footer">
+					<button
+						type="button"
+						class="btn btn-danger rounded-pill px-4"
+						_="on click send confirmResult(answer: true) to #confirm-delete-modal"
+					>
+						Delete
+					</button>
+					<button
+						type="button"
+						class="btn btn-secondary rounded-pill px-4"
+						_="on click send confirmResult(answer: false) to #confirm-delete-modal"
+					>
+						Cancel
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<div class="modal fade" id="confirm-complete-modal" tabindex="-1">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h1 class="modal-title fs-5">Confirm Task Completion</h1>
-				<button
-					type="button"
-					class="btn-close"
-					_="on click send confirmResult(answer: false) to #confirm-complete-modal"
-				></button>
-			</div>
-			<div class="modal-body">Are you sure you want to complete the selected task?</div>
-			<div class="modal-footer">
-				<button
-					type="button"
-					class="btn btn-primary rounded-pill px-4"
-					_="on click send confirmResult(answer: true) to #confirm-complete-modal"
-				>
-					Complete
-				</button>
-				<button
-					type="button"
-					class="btn btn-secondary rounded-pill px-4"
-					_="on click send confirmResult(answer: false) to #confirm-complete-modal"
-				>
-					Cancel
-				</button>
+	<div class="modal fade" id="confirm-complete-modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5">Confirm Task Completion</h1>
+					<button
+						type="button"
+						class="btn-close"
+						_="on click send confirmResult(answer: false) to #confirm-complete-modal"
+					></button>
+				</div>
+				<div class="modal-body">Are you sure you want to complete the selected task?</div>
+				<div class="modal-footer">
+					<button
+						type="button"
+						class="btn btn-primary rounded-pill px-4"
+						_="on click send confirmResult(answer: true) to #confirm-complete-modal"
+					>
+						Complete
+					</button>
+					<button
+						type="button"
+						class="btn btn-secondary rounded-pill px-4"
+						_="on click send confirmResult(answer: false) to #confirm-complete-modal"
+					>
+						Cancel
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+{{ end }}

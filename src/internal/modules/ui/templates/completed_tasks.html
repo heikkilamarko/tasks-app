@@ -1,26 +1,28 @@
-<!doctype html>
-<html>
-	{{ template "html_head.html" }}
-	<body class="p-3">
-		<main class="container">
-			<h1>Completed Tasks</h1>
+{{ define "completed_tasks" }}
+	<!doctype html>
+	<html>
+		{{ template "html_head" }}
+		<body class="p-3">
+			<main class="container">
+				<h1>Completed Tasks</h1>
 
-			<div class="row g-2 mt-3">
-				<div class="col-auto">
-					<a href="/ui" hx-boost="true" class="btn btn-outline-primary rounded-pill px-4">Home</a>
+				<div class="row g-2 mt-3">
+					<div class="col-auto">
+						<a href="/ui" hx-boost="true" class="btn btn-outline-primary rounded-pill px-4">Home</a>
+					</div>
+
+					<div class="col-auto">
+						<a href="/ui/tasks/export?filter=completed" download class="btn btn-outline-primary rounded-pill px-4"
+							>Export Tasks</a
+						>
+					</div>
 				</div>
 
-				<div class="col-auto">
-					<a href="/ui/tasks/export?filter=completed" download class="btn btn-outline-primary rounded-pill px-4"
-						>Export Tasks</a
-					>
+				<div id="tasks-table" class="mt-3">
+					{{ template "completed_tasks_table" . }}
 				</div>
-			</div>
-
-			<div id="tasks-table" class="mt-3">
-				{{ template "completed_tasks_table.html" . }}
-			</div>
-		</main>
-		{{ template "toaster.html" }}
-	</body>
-</html>
+			</main>
+			{{ template "toaster" }}
+		</body>
+	</html>
+{{ end }}

@@ -21,7 +21,7 @@ func (h *GetUICompleted) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	vm := TasksViewModel{Tasks: tasks}
 
-	if err := Templates.ExecuteTemplate(w, "completed_tasks.html", vm); err != nil {
+	if err := Templates.ExecuteTemplate(w, "completed_tasks", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}

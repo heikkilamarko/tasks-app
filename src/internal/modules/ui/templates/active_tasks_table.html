@@ -1,29 +1,37 @@
-{{ if or .Tasks .IsCreatingNew }}
-	{{ if .IsCreatingNew }}
-		<form id="task-new-form" autocomplete="off" hx-post="/ui/tasks" hx-target="#tasks-table" hx-swap="innerHTML"></form>
+{{ define "active_tasks_table" }}
+	{{ if or .Tasks .IsCreatingNew }}
+		{{ if .IsCreatingNew }}
+			<form
+				id="task-new-form"
+				autocomplete="off"
+				hx-post="/ui/tasks"
+				hx-target="#tasks-table"
+				hx-swap="innerHTML"
+			></form>
+		{{ end }}
+		<div id="task-edit-form"></div>
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th class="task-name">Name</th>
+						<th>Expiration</th>
+						<th>Created</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{{ if .IsCreatingNew }}
+						{{ template "active_tasks_table_row_new" }}
+					{{ end }}
+					{{ range .Tasks }}
+						{{ template "active_tasks_table_row" . }}
+					{{ end }}
+				</tbody>
+			</table>
+		</div>
+	{{ else }}
+		<div class="fw-bold text-muted">No tasks</div>
 	{{ end }}
-	<div id="task-edit-form"></div>
-	<div class="table-responsive">
-		<table class="table">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th class="task-name">Name</th>
-					<th>Expiration</th>
-					<th>Created</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				{{ if .IsCreatingNew }}
-					{{ template "active_tasks_table_row_new.html" }}
-				{{ end }}
-				{{ range .Tasks }}
-					{{ template "active_tasks_table_row.html" . }}
-				{{ end }}
-			</tbody>
-		</table>
-	</div>
-{{ else }}
-	<div class="fw-bold text-muted">No tasks</div>
 {{ end }}

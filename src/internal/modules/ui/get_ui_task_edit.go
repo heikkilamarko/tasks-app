@@ -33,7 +33,7 @@ func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks_table_row_edit.html", task); err != nil {
+	if err := Templates.ExecuteTemplate(w, "active_tasks_table_row_edit", task); err != nil {
 		h.Logger.Error("execute template", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
