@@ -3,7 +3,6 @@ package ui
 import (
 	"log/slog"
 	"net/http"
-	"strconv"
 	"tasks-app/internal/shared"
 
 	"github.com/go-chi/chi/v5"
@@ -15,8 +14,8 @@ type GetUITaskEdit struct {
 }
 
 func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
+	id, ok := ValidateID(chi.URLParam(r, "id"))
+	if !ok {
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
 	}

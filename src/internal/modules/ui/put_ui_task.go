@@ -3,9 +3,7 @@ package ui
 import (
 	"log/slog"
 	"net/http"
-	"strconv"
 	"tasks-app/internal/shared"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -16,32 +14,21 @@ type PutUITask struct {
 }
 
 func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		http.Error(w, "failed to parse form data", http.StatusBadRequest)
+	id, ok := ValidateID(chi.URLParam(r, "id"))
+	if !ok {
+		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
-	name := r.FormValue("name")
-	if len(name) < 1 {
+	name, ok := ValidateName(r.FormValue("name"))
+	if !ok {
 		http.Error(w, "invalid name", http.StatusBadRequest)
 		return
 	}
 
-	var expiresAt *time.Time
-	expiresAtStr := r.FormValue("expires_at")
-	if expiresAtStr != "" {
-		expiresAtTemp, err := ParseUITime(expiresAtStr)
-		if err != nil {
-			http.Error(w, "invalid expires_at format", http.StatusBadRequest)
-			return
-		}
-		expiresAt = &expiresAtTemp
-	}
-
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+	expiresAt, ok := ValidateExpiresAt(r.FormValue("expires_at"))
+	if !ok {
+		http.Error(w, "invalid expires_at", http.StatusBadRequest)
 		return
 	}
 

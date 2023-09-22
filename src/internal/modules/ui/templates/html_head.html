@@ -19,7 +19,7 @@
 		></script>
 	<script>
 		window.app = {
-			HUB_URL: '{{ Env "APP_UI_HUB_URL" }}'
+			HUB_URL: '{{ RenderEnv "APP_UI_HUB_URL" }}'
 		}
 	</script>
 		<script src="/ui/static/app.js" type="module"></script>

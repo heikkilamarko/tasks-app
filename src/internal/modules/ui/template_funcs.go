@@ -5,46 +5,24 @@ import (
 	"time"
 )
 
-const (
-	uiTimezone          = "Europe/Helsinki"
-	uiTimeFormat        = "2006-01-02T15:04"
-	uiDisplayTimeFormat = "02.01.2006 15.04"
-)
-
-func Env(key string) string {
+func RenderEnv(key string) string {
 	return os.Getenv(key)
 }
 
-func FormatUITime(from time.Time) string {
-	l, err := time.LoadLocation(uiTimezone)
+func RenderTime(from time.Time) string {
+	l, err := time.LoadLocation(timezone)
 	if err != nil {
 		return ""
 	}
 
-	return from.In(l).Format(uiTimeFormat)
+	return from.In(l).Format(timeFormat)
 }
 
-func FormatUIDisplayTime(from time.Time) string {
-	l, err := time.LoadLocation(uiTimezone)
+func RenderISOTime(from time.Time) string {
+	l, err := time.LoadLocation(timezone)
 	if err != nil {
 		return ""
 	}
 
-	return from.In(l).Format(uiDisplayTimeFormat)
-}
-
-func ParseUITime(t string) (time.Time, error) {
-	var empty time.Time
-
-	l, err := time.LoadLocation(uiTimezone)
-	if err != nil {
-		return empty, err
-	}
-
-	pt, err := time.ParseInLocation(uiTimeFormat, t, l)
-	if err != nil {
-		return empty, err
-	}
-
-	return pt.UTC(), nil
+	return from.In(l).Format(timeFormatISO)
 }

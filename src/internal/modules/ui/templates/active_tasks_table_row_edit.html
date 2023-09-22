@@ -25,10 +25,10 @@
 				name="expires_at"
 				form="task-edit-form"
 				class="form-control form-control-sm"
-				value="{{ with .ExpiresAt }}{{ FormatUITime . }}{{ end }}"
+				value="{{ with .ExpiresAt }}{{ RenderISOTime . }}{{ end }}"
 			/>
 		</td>
-		<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
+		<td>{{ RenderTime .CreatedAt }}</td>
 		<td>
 			<button
 				type="button"

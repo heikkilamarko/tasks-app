@@ -4,8 +4,8 @@
 		<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
 			<span class="app-text-multiline">{{ .Name }}</span>
 		</td>
-		<td>{{ with .ExpiresAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
-		<td>{{ FormatUIDisplayTime .CreatedAt }}</td>
-		<td>{{ with .CompletedAt }}{{ FormatUIDisplayTime . }}{{ else }}{{ end }}</td>
+		<td>{{ with .ExpiresAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>
+		<td>{{ RenderTime .CreatedAt }}</td>
+		<td>{{ with .CompletedAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>
 	</tr>
 {{ end }}
