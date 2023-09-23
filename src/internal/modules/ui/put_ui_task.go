@@ -4,8 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 	"tasks-app/internal/shared"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type PutUITask struct {
@@ -14,25 +12,14 @@ type PutUITask struct {
 }
 
 func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	id, ok := ValidateID(chi.URLParam(r, "id"))
-	if !ok {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+	req, err := ParseUpdateTaskRequest(r)
+	if err != nil {
+		h.Logger.Error("parse request", "error", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	name, ok := ValidateName(r.FormValue("name"))
-	if !ok {
-		http.Error(w, "invalid name", http.StatusBadRequest)
-		return
-	}
-
-	expiresAt, ok := ValidateExpiresAt(r.FormValue("expires_at"))
-	if !ok {
-		http.Error(w, "invalid expires_at", http.StatusBadRequest)
-		return
-	}
-
-	task, err := h.TaskRepository.GetByID(r.Context(), id)
+	task, err := h.TaskRepository.GetByID(r.Context(), req.ID)
 	if err != nil {
 		h.Logger.Error("get task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -44,7 +31,7 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task.Update(name, expiresAt)
+	task.Update(req.Name, req.ExpiresAt)
 
 	err = h.TaskRepository.Update(r.Context(), task)
 	if err != nil {

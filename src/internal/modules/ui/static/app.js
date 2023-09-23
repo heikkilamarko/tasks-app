@@ -26,14 +26,15 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 
 document.body.addEventListener('htmx:responseError', (e) => {
 	const {
-		xhr: { status, statusText },
+		xhr: { status, statusText, responseText },
 		error
 	} = e.detail;
 
 	showToastMessage({
 		type: 'error',
 		title: `${status} ${statusText}`,
-		text: error
+		text: error,
+		details: responseText
 	});
 });
 
@@ -132,6 +133,7 @@ function showToastMessage(config) {
 		<div class="toast-body d-flex flex-column">
 			<div class="fw-bold">${config.title}</div>
 			<div class="app-text-multiline">${config.text}</div>
+			${config.details ? `<div class="app-text-multiline"><code>${config.details}</code></div>` : ''}
 		</div>
 	`;
 

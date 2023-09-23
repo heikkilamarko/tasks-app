@@ -4,8 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 	"tasks-app/internal/shared"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type PostUITaskComplete struct {
@@ -14,13 +12,14 @@ type PostUITaskComplete struct {
 }
 
 func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	id, ok := ValidateID(chi.URLParam(r, "id"))
-	if !ok {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+	req, err := ParseTaskRequest(r)
+	if err != nil {
+		h.Logger.Error("parse request", "error", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	task, err := h.TaskRepository.GetByID(r.Context(), id)
+	task, err := h.TaskRepository.GetByID(r.Context(), req.ID)
 	if err != nil {
 		h.Logger.Error("get task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -48,7 +47,7 @@ func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := TasksViewModel{tasks, false}
+	vm := TasksResponse{tasks, false}
 
 	if err := Templates.ExecuteTemplate(w, "active_tasks_table", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)

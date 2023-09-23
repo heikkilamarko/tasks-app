@@ -19,7 +19,7 @@ func (h *GetUITasksNew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := TasksViewModel{tasks, true}
+	vm := TasksResponse{tasks, true}
 
 	if err := Templates.ExecuteTemplate(w, "active_tasks_table", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)
