@@ -3,7 +3,7 @@
 	<html>
 		{{ template "html_head" }}
 		<body class="p-3">
-			<main class="container">
+			<main class="container slide-transition">
 				<h1>Tasks App</h1>
 
 				<div class="row g-2 mt-3">
@@ -33,7 +33,11 @@
 					</div>
 
 					<div class="col-auto">
-						<a href="/ui/completed" hx-boost="true" class="btn btn-outline-primary rounded-pill px-4"
+						<a
+							href="/ui/completed"
+							hx-boost="true"
+							hx-swap="innerHTML transition:true"
+							class="btn btn-outline-primary rounded-pill px-4"
 							>Completed Tasks</a
 						>
 					</div>

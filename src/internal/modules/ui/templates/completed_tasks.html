@@ -3,12 +3,18 @@
 	<html>
 		{{ template "html_head" }}
 		<body class="p-3">
-			<main class="container">
+			<main class="container slide-transition">
 				<h1>Completed Tasks</h1>
 
 				<div class="row g-2 mt-3">
 					<div class="col-auto">
-						<a href="/ui" hx-boost="true" class="btn btn-outline-primary rounded-pill px-4">Home</a>
+						<a
+							href="/ui"
+							hx-boost="true"
+							hx-swap="innerHTML transition:true"
+							class="btn btn-outline-primary rounded-pill px-4"
+							>Home</a
+						>
 					</div>
 
 					<div class="col-auto">
