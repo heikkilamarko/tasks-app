@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"os"
 	"tasks-app/internal/shared"
 	"time"
 
@@ -20,21 +21,29 @@ type Module struct {
 }
 
 func (m *Module) Run(ctx context.Context) error {
+	if _, err := os.Stat(m.Config.UIAttachmentsPath); os.IsNotExist(err) {
+		err := os.Mkdir(m.Config.UIAttachmentsPath, 0755)
+		if err != nil {
+			return err
+		}
+	}
+
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
 	router.Use(SessionMiddleware)
 
 	router.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
+	router.Handle("/ui/attachments/*", http.StripPrefix("/ui/attachments/", http.FileServer(http.Dir(m.Config.UIAttachmentsPath))))
 	router.Method(http.MethodGet, "/ui", &GetUI{m.TaskRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui/tasks", &GetUITasks{m.TaskRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/new", &GetUITasksNew{m.TaskRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/{id}", &GetUITask{m.TaskRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/{id}/edit", &GetUITaskEdit{m.TaskRepository, m.Logger})
-	router.Method(http.MethodPost, "/ui/tasks", &PostUITasks{m.TaskRepository, m.Logger})
+	router.Method(http.MethodPost, "/ui/tasks", &PostUITasks{m.TaskRepository, m.Config, m.Logger})
 	router.Method(http.MethodPost, "/ui/tasks/{id}/complete", &PostUITaskComplete{m.TaskRepository, m.Logger})
-	router.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITask{m.TaskRepository, m.Logger})
+	router.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITask{m.TaskRepository, m.Config, m.Logger})
 	router.Method(http.MethodDelete, "/ui/tasks/{id}", &DeleteUITask{m.TaskRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui/completed", &GetUICompleted{m.TaskRepository, m.Logger})
 	router.NotFound(NotFound)

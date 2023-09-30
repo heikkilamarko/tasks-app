@@ -8,14 +8,31 @@ const (
 )
 
 type Task struct {
-	ID             int        `json:"id"`
-	Name           string     `json:"name"`
-	ExpiresAt      *time.Time `json:"expires_at"`
-	ExpiringInfoAt *time.Time `json:"expiring_info_at"`
-	ExpiredInfoAt  *time.Time `json:"expired_info_at"`
-	CreatedAt      time.Time  `json:"created_at"`
-	UpdatedAt      *time.Time `json:"updated_at"`
-	CompletedAt    *time.Time `json:"completed_at"`
+	ID             int           `json:"id"`
+	Name           string        `json:"name"`
+	ExpiresAt      *time.Time    `json:"expires_at"`
+	ExpiringInfoAt *time.Time    `json:"expiring_info_at"`
+	ExpiredInfoAt  *time.Time    `json:"expired_info_at"`
+	CreatedAt      time.Time     `json:"created_at"`
+	UpdatedAt      *time.Time    `json:"updated_at"`
+	CompletedAt    *time.Time    `json:"completed_at"`
+	Attachments    []*Attachment `json:"attachments"`
+}
+
+type Attachment struct {
+	ID        int        `json:"id"`
+	TaskID    int        `json:"task_id"`
+	FileName  string     `json:"file_name"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
+}
+
+type EmptyAttachment struct {
+	ID        *int
+	TaskID    *int
+	FileName  *string
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
 }
 
 type TaskExpiringMsg struct {

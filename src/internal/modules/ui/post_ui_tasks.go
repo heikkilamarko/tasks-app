@@ -8,11 +8,12 @@ import (
 
 type PostUITasks struct {
 	TaskRepository shared.TaskRepository
+	Config         *shared.Config
 	Logger         *slog.Logger
 }
 
 func (h *PostUITasks) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	req, err := ParseNewTaskRequest(r)
+	req, err := ParseNewTaskRequest(r, h.Config)
 	if err != nil {
 		h.Logger.Error("parse request", "error", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -24,6 +25,13 @@ func (h *PostUITasks) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = h.TaskRepository.Create(r.Context(), task)
 	if err != nil {
 		h.Logger.Error("create task", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	err = h.TaskRepository.UpdateAttachments(r.Context(), task.ID, req.AttachmentNames)
+	if err != nil {
+		h.Logger.Error("update attachments", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}

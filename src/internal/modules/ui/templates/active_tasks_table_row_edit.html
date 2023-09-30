@@ -21,6 +21,27 @@
 		</td>
 		<td>
 			<input
+				type="file"
+				multiple
+				name="attachments"
+				form="task-edit-form"
+				class="form-control form-control-sm"
+				value=""
+			/>
+			<div>
+				{{ range .Attachments }}
+					<div class="d-flex justify-content-between mt-2">
+						<input type="hidden" name="attachments" form="task-edit-form" value="{{ .FileName }}" />
+						{{ .FileName }}
+						<button class="btn btn-outline-danger btn-sm rounded-pill px-3" _="on click remove closest parent <div/>">
+							Delete
+						</button>
+					</div>
+				{{ end }}
+			</div>
+		</td>
+		<td>
+			<input
 				type="datetime-local"
 				name="expires_at"
 				form="task-edit-form"
@@ -46,6 +67,7 @@
 	</tr>
 	<form
 		id="task-edit-form"
+		enctype="multipart/form-data"
 		autocomplete="off"
 		hx-swap-oob="true"
 		hx-put="/ui/tasks/{{ .ID }}"

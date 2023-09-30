@@ -3,6 +3,7 @@
 		{{ if .IsCreatingNew }}
 			<form
 				id="task-new-form"
+				enctype="multipart/form-data"
 				autocomplete="off"
 				hx-post="/ui/tasks"
 				hx-target="#tasks-table"
@@ -16,6 +17,7 @@
 					<tr>
 						<th>ID</th>
 						<th class="task-name">Name</th>
+						<th>Attachments</th>
 						<th>Expiration</th>
 						<th>Created</th>
 						<th></th>

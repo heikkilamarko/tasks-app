@@ -4,6 +4,11 @@
 		<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
 			<span class="app-text-multiline">{{ .Name }}</span>
 		</td>
+		<td>
+			{{ range .Attachments }}
+				<a href="/ui/attachments/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
+			{{ end }}
+		</td>
 		<td>{{ with .ExpiresAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>
 		<td>{{ RenderTime .CreatedAt }}</td>
 		<td>{{ with .CompletedAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>

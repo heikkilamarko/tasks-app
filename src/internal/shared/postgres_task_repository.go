@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"time"
 
-	// PostgreSQL driver
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -80,6 +79,75 @@ func (repo *PostgresTaskRepository) Update(ctx context.Context, task *Task) erro
 	return nil
 }
 
+func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskID int, attachmentNames []string) error {
+	now := time.Now().UTC()
+
+	tx, err := repo.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(ctx,
+		"SELECT id, file_name FROM attachment WHERE task_id = $1",
+		taskID,
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	currentAttachments := make(map[int]string)
+	for rows.Next() {
+		var attachmentID int
+		var fileName string
+		if err := rows.Scan(&attachmentID, &fileName); err != nil {
+			return err
+		}
+		currentAttachments[attachmentID] = fileName
+	}
+
+	for _, attachmentName := range attachmentNames {
+		var attachmentID int
+		var exists bool
+		for id, fileName := range currentAttachments {
+			if fileName == attachmentName {
+				attachmentID = id
+				exists = true
+				break
+			}
+		}
+
+		if exists {
+			delete(currentAttachments, attachmentID)
+		} else {
+			_, err := tx.ExecContext(ctx,
+				"INSERT INTO attachment (task_id, file_name, created_at) VALUES ($1, $2, $3)",
+				taskID, attachmentName, now,
+			)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	for attachmentID := range currentAttachments {
+		_, err := tx.ExecContext(ctx,
+			"DELETE FROM attachment WHERE id = $1",
+			attachmentID,
+		)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (repo *PostgresTaskRepository) Delete(ctx context.Context, id int) error {
 	query := `
 		DELETE FROM task
@@ -96,33 +164,61 @@ func (repo *PostgresTaskRepository) Delete(ctx context.Context, id int) error {
 
 func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task, error) {
 	query := `
-		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
-		FROM task
-		WHERE id = $1
+		SELECT
+			t.id,
+			t.name,
+			t.expires_at,
+			t.expiring_info_at,
+			t.expired_info_at,
+			t.created_at,
+			t.updated_at,
+			t.completed_at,
+			a.id,
+			a.task_id,
+			a.file_name,
+			a.created_at,
+			a.updated_at
+		FROM
+			task t
+		LEFT JOIN
+			attachment a ON t.id = a.task_id
+		WHERE t.id = $1
 	`
 
-	row := repo.db.QueryRowContext(ctx, query, id)
-
-	task := &Task{}
-	err := row.Scan(
-		&task.ID, &task.Name, &task.ExpiresAt, &task.ExpiringInfoAt, &task.ExpiredInfoAt, &task.CreatedAt, &task.UpdatedAt, &task.CompletedAt,
-	)
+	tasks, err := repo.getTasks(ctx, query, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, err
 	}
 
-	return task, nil
+	if len(tasks) == 0 {
+		return nil, nil
+	}
+
+	return tasks[0], nil
 }
 
 func (repo *PostgresTaskRepository) GetActive(ctx context.Context) ([]*Task, error) {
 	query := `
-		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
-		FROM task
-		WHERE completed_at IS NULL
-		ORDER BY created_at DESC
+		SELECT
+			t.id,
+			t.name,
+			t.expires_at,
+			t.expiring_info_at,
+			t.expired_info_at,
+			t.created_at,
+			t.updated_at,
+			t.completed_at,
+			a.id,
+			a.task_id,
+			a.file_name,
+			a.created_at,
+			a.updated_at
+		FROM
+			task t
+		LEFT JOIN
+			attachment a ON t.id = a.task_id
+		WHERE t.completed_at IS NULL
+		ORDER BY t.created_at DESC
 	`
 
 	return repo.getTasks(ctx, query)
@@ -130,10 +226,26 @@ func (repo *PostgresTaskRepository) GetActive(ctx context.Context) ([]*Task, err
 
 func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context) ([]*Task, error) {
 	query := `
-		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
-		FROM task
-		WHERE completed_at IS NOT NULL
-		ORDER BY completed_at DESC
+		SELECT
+			t.id,
+			t.name,
+			t.expires_at,
+			t.expiring_info_at,
+			t.expired_info_at,
+			t.created_at,
+			t.updated_at,
+			t.completed_at,
+			a.id,
+			a.task_id,
+			a.file_name,
+			a.created_at,
+			a.updated_at
+		FROM
+			task t
+		LEFT JOIN
+			attachment a ON t.id = a.task_id
+		WHERE t.completed_at IS NOT NULL
+		ORDER BY t.completed_at DESC
 	`
 
 	return repo.getTasks(ctx, query)
@@ -141,14 +253,30 @@ func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context) ([]*Task, 
 
 func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Duration) ([]*Task, error) {
 	query := `
-		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
-		FROM task
-		WHERE completed_at IS NULL
-		AND expiring_info_at IS NULL
-		AND expires_at IS NOT NULL
-		AND expires_at >= $1
-		AND expires_at <= $2
-		ORDER BY created_at ASC
+		SELECT
+			t.id,
+			t.name,
+			t.expires_at,
+			t.expiring_info_at,
+			t.expired_info_at,
+			t.created_at,
+			t.updated_at,
+			t.completed_at,
+			a.id,
+			a.task_id,
+			a.file_name,
+			a.created_at,
+			a.updated_at
+		FROM
+			task t
+		LEFT JOIN
+			attachment a ON t.id = a.task_id
+		WHERE t.completed_at IS NULL
+		AND t.expiring_info_at IS NULL
+		AND t.expires_at IS NOT NULL
+		AND t.expires_at >= $1
+		AND t.expires_at <= $2
+		ORDER BY t.created_at ASC
 	`
 
 	t1 := time.Now().UTC()
@@ -159,13 +287,29 @@ func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Dura
 
 func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, error) {
 	query := `
-		SELECT id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at
-		FROM task
-		WHERE completed_at IS NULL
-		AND expired_info_at IS NULL
-		AND expires_at IS NOT NULL
-		AND expires_at < $1
-		ORDER BY created_at ASC
+		SELECT
+			t.id,
+			t.name,
+			t.expires_at,
+			t.expiring_info_at,
+			t.expired_info_at,
+			t.created_at,
+			t.updated_at,
+			t.completed_at,
+			a.id,
+			a.task_id,
+			a.file_name,
+			a.created_at,
+			a.updated_at
+		FROM
+			task t
+		LEFT JOIN
+			attachment a ON t.id = a.task_id
+		WHERE t.completed_at IS NULL
+		AND t.expired_info_at IS NULL
+		AND t.expires_at IS NOT NULL
+		AND t.expires_at < $1
+		ORDER BY t.created_at ASC
 	`
 
 	now := time.Now().UTC()
@@ -202,18 +346,49 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, query string, 
 	}
 	defer rows.Close()
 
+	tasksMap := make(map[int]*Task)
 	var tasks []*Task
+
 	for rows.Next() {
 		task := &Task{}
+		attachment := &EmptyAttachment{}
 
 		err := rows.Scan(
-			&task.ID, &task.Name, &task.ExpiresAt, &task.ExpiringInfoAt, &task.ExpiredInfoAt, &task.CreatedAt, &task.UpdatedAt, &task.CompletedAt,
+			&task.ID,
+			&task.Name,
+			&task.ExpiresAt,
+			&task.ExpiringInfoAt,
+			&task.ExpiredInfoAt,
+			&task.CreatedAt,
+			&task.UpdatedAt,
+			&task.CompletedAt,
+			&attachment.ID,
+			&attachment.TaskID,
+			&attachment.FileName,
+			&attachment.CreatedAt,
+			&attachment.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		tasks = append(tasks, task)
+		existingTask, ok := tasksMap[task.ID]
+		if !ok {
+			task.Attachments = []*Attachment{}
+			tasksMap[task.ID] = task
+			tasks = append(tasks, task)
+			existingTask = task
+		}
+
+		if attachment.ID != nil {
+			existingTask.Attachments = append(existingTask.Attachments, &Attachment{
+				ID:        *attachment.ID,
+				TaskID:    *attachment.TaskID,
+				FileName:  *attachment.FileName,
+				CreatedAt: *attachment.CreatedAt,
+				UpdatedAt: attachment.UpdatedAt,
+			})
+		}
 	}
 
 	if err := rows.Err(); err != nil {
