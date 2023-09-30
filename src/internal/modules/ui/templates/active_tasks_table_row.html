@@ -17,10 +17,10 @@
 				hx-get="/ui/tasks/{{ .ID }}/edit"
 				hx-target="closest tr"
 				hx-swap="outerHTML"
-				hx-trigger="edit"
+				hx-trigger="editTask"
 				_="on click
-					send cancel to .editing
-					trigger edit"
+					send cancelEdit to .editing
+					trigger editTask"
 			>
 				Edit
 			</button>
@@ -29,10 +29,10 @@
 				hx-post="/ui/tasks/{{ .ID }}/complete"
 				hx-target="#tasks-table"
 				hx-swap="innerHTML"
-				hx-trigger="complete"
+				hx-trigger="completeTask"
 				_="on click
 					app.showConfirmModal('#confirm-complete-modal')
-					if result trigger complete"
+					if result trigger completeTask"
 			>
 				Complete
 			</button>
@@ -41,10 +41,10 @@
 				hx-delete="/ui/tasks/{{ .ID }}"
 				hx-target="#tasks-table"
 				hx-swap="innerHTML"
-				hx-trigger="delete"
+				hx-trigger="deleteTask"
 				_="on click
 					app.showConfirmModal('#confirm-delete-modal')
-					if result trigger delete"
+					if result trigger deleteTask"
 			>
 				Delete
 			</button>

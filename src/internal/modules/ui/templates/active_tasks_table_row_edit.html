@@ -1,5 +1,5 @@
 {{ define "active_tasks_table_row_edit" }}
-	<tr class="editing" hx-trigger="cancel" hx-get="/ui/tasks/{{ .ID }}" hx-swap="outerHTML">
+	<tr class="editing" hx-trigger="cancelEdit" hx-get="/ui/tasks/{{ .ID }}" hx-swap="outerHTML">
 		<td>{{ .ID }}</td>
 		<td class="task-name">
 			<textarea
