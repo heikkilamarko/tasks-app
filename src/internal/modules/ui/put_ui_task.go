@@ -7,13 +7,13 @@ import (
 )
 
 type PutUITask struct {
-	TaskRepository shared.TaskRepository
-	Config         *shared.Config
-	Logger         *slog.Logger
+	TaskRepository            shared.TaskRepository
+	TaskAttachmentsRepository shared.TaskAttachmentsRepository
+	Logger                    *slog.Logger
 }
 
 func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	req, err := ParseUpdateTaskRequest(r, h.Config)
+	req, err := ParseUpdateTaskRequest(r)
 	if err != nil {
 		h.Logger.Error("parse request", "error", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -41,9 +41,16 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.TaskRepository.UpdateAttachments(r.Context(), task.ID, req.AttachmentNames)
+	attachmentNames, err := ParseTaskAttachments(r, task.ID, h.TaskAttachmentsRepository)
 	if err != nil {
-		h.Logger.Error("update attachments", "error", err)
+		h.Logger.Error("parse task attachments", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	err = h.TaskRepository.UpdateAttachments(r.Context(), task.ID, attachmentNames)
+	if err != nil {
+		h.Logger.Error("update task attachments", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}

@@ -5,8 +5,9 @@
 			<span class="app-text-multiline">{{ .Name }}</span>
 		</td>
 		<td>
+			{{ $parent := . }}
 			{{ range .Attachments }}
-				<a href="/ui/attachments/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
+				<a href="/ui/attachments/{{ $parent.ID }}/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
 			{{ end }}
 		</td>
 		<td>{{ with .ExpiresAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>

@@ -26,8 +26,12 @@ func (a *App) createModules() error {
 			Config:         a.Config,
 			Logger:         logger,
 			TaskRepository: a.TaskRepository,
+			TaskAttachmentsRepository: &shared.FileTaskAttachmentsRepository{
+				Config: a.Config,
+			},
 			FileExporter: &shared.ExcelFileExporter{
-				Logger: logger},
+				Logger: logger,
+			},
 		}
 	}
 
@@ -69,7 +73,8 @@ func (a *App) createModules() error {
 					FromName:    a.Config.SMTPFromName,
 					FromAddress: a.Config.SMTPFromAddress,
 					Password:    a.Config.SMTPPassword,
-				}},
+				},
+			},
 		}
 	}
 

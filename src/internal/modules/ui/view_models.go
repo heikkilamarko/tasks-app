@@ -2,10 +2,7 @@ package ui
 
 import (
 	"errors"
-	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 	"slices"
 	"strconv"
 	"tasks-app/internal/shared"
@@ -19,16 +16,14 @@ type TaskRequest struct {
 }
 
 type NewTaskRequest struct {
-	Name            string
-	AttachmentNames []string
-	ExpiresAt       *time.Time
+	Name      string
+	ExpiresAt *time.Time
 }
 
 type UpdateTaskRequest struct {
-	ID              int
-	Name            string
-	AttachmentNames []string
-	ExpiresAt       *time.Time
+	ID        int
+	Name      string
+	ExpiresAt *time.Time
 }
 
 type TasksResponse struct {
@@ -51,13 +46,8 @@ func ParseTaskRequest(r *http.Request) (*TaskRequest, error) {
 	return &TaskRequest{id}, nil
 }
 
-func ParseNewTaskRequest(r *http.Request, config *shared.Config) (*NewTaskRequest, error) {
+func ParseNewTaskRequest(r *http.Request) (*NewTaskRequest, error) {
 	var errs []error
-
-	err := r.ParseMultipartForm(10 << 20) // 10 MB
-	if err != nil {
-		return nil, err
-	}
 
 	name, err := ParseTaskName(r.FormValue("name"))
 	if err != nil {
@@ -69,49 +59,15 @@ func ParseNewTaskRequest(r *http.Request, config *shared.Config) (*NewTaskReques
 		errs = append(errs, err)
 	}
 
-	var attachmentNames []string
-
-	for _, attachment := range r.MultipartForm.File["attachments"] {
-		file, err := attachment.Open()
-		if err != nil {
-			errs = append(errs, errors.New("attachment: error"))
-			continue
-		}
-		defer file.Close()
-
-		newFile, err := os.Create(filepath.Join(config.UIAttachmentsPath, attachment.Filename))
-		if err != nil {
-			errs = append(errs, errors.New("attachment: error"))
-			continue
-		}
-		defer newFile.Close()
-
-		_, err = io.Copy(newFile, file)
-		if err != nil {
-			errs = append(errs, errors.New("attachment: error"))
-			continue
-		}
-
-		attachmentNames = append(attachmentNames, attachment.Filename)
-	}
-
-	slices.Sort(attachmentNames)
-	attachmentNames = slices.Compact(attachmentNames)
-
 	if err := errors.Join(errs...); err != nil {
 		return nil, err
 	}
 
-	return &NewTaskRequest{name, attachmentNames, expiresAt}, nil
+	return &NewTaskRequest{name, expiresAt}, nil
 }
 
-func ParseUpdateTaskRequest(r *http.Request, config *shared.Config) (*UpdateTaskRequest, error) {
+func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
 	var errs []error
-
-	err := r.ParseMultipartForm(10 << 20) // 10 MB
-	if err != nil {
-		return nil, err
-	}
 
 	id, err := ParseTaskID(chi.URLParam(r, "id"))
 	if err != nil {
@@ -128,44 +84,39 @@ func ParseUpdateTaskRequest(r *http.Request, config *shared.Config) (*UpdateTask
 		errs = append(errs, err)
 	}
 
-	var attachmentNames []string
-
-	for _, name := range r.Form["attachments"] {
-		attachmentNames = append(attachmentNames, name)
-	}
-
-	for _, attachment := range r.MultipartForm.File["attachments"] {
-		file, err := attachment.Open()
-		if err != nil {
-			errs = append(errs, errors.New("attachment: error"))
-			continue
-		}
-		defer file.Close()
-
-		newFile, err := os.Create(filepath.Join(config.UIAttachmentsPath, attachment.Filename))
-		if err != nil {
-			errs = append(errs, errors.New("attachment: error"))
-			continue
-		}
-		defer newFile.Close()
-
-		_, err = io.Copy(newFile, file)
-		if err != nil {
-			errs = append(errs, errors.New("attachment: error"))
-			continue
-		}
-
-		attachmentNames = append(attachmentNames, attachment.Filename)
-	}
-
-	slices.Sort(attachmentNames)
-	attachmentNames = slices.Compact(attachmentNames)
-
 	if err := errors.Join(errs...); err != nil {
 		return nil, err
 	}
 
-	return &UpdateTaskRequest{id, name, attachmentNames, expiresAt}, nil
+	return &UpdateTaskRequest{id, name, expiresAt}, nil
+}
+
+func ParseTaskAttachments(r *http.Request, taskID int, taskAttachmentsRepository shared.TaskAttachmentsRepository) ([]string, error) {
+	err := r.ParseMultipartForm(10 << 20) // 10 MB
+	if err != nil {
+		return nil, err
+	}
+
+	existingAttachments := r.Form["attachments"]
+	newAttachments := r.MultipartForm.File["attachments"]
+
+	if err = taskAttachmentsRepository.SaveAttachments(r.Context(), taskID, newAttachments); err != nil {
+		return nil, err
+	}
+
+	var names []string
+
+	for _, name := range existingAttachments {
+		names = append(names, name)
+	}
+
+	for _, header := range newAttachments {
+		names = append(names, header.Filename)
+	}
+
+	slices.Sort(names)
+
+	return slices.Compact(names), nil
 }
 
 func ParseTaskID(value string) (int, error) {
