@@ -79,7 +79,7 @@ func (repo *PostgresTaskRepository) Update(ctx context.Context, task *Task) erro
 	return nil
 }
 
-func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskID int, attachmentNames []string) error {
+func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskID int, inserted []string, deleted map[int]string) error {
 	now := time.Now().UTC()
 
 	tx, err := repo.db.BeginTx(ctx, nil)
@@ -88,53 +88,20 @@ func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskI
 	}
 	defer tx.Rollback()
 
-	rows, err := tx.QueryContext(ctx,
-		"SELECT id, file_name FROM attachment WHERE task_id = $1",
-		taskID,
-	)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	currentAttachments := make(map[int]string)
-	for rows.Next() {
-		var attachmentID int
-		var fileName string
-		if err := rows.Scan(&attachmentID, &fileName); err != nil {
+	for _, name := range inserted {
+		_, err := tx.ExecContext(ctx,
+			"INSERT INTO attachment (task_id, file_name, created_at) VALUES ($1, $2, $3)",
+			taskID, name, now,
+		)
+		if err != nil {
 			return err
 		}
-		currentAttachments[attachmentID] = fileName
 	}
 
-	for _, attachmentName := range attachmentNames {
-		var attachmentID int
-		var exists bool
-		for id, fileName := range currentAttachments {
-			if fileName == attachmentName {
-				attachmentID = id
-				exists = true
-				break
-			}
-		}
-
-		if exists {
-			delete(currentAttachments, attachmentID)
-		} else {
-			_, err := tx.ExecContext(ctx,
-				"INSERT INTO attachment (task_id, file_name, created_at) VALUES ($1, $2, $3)",
-				taskID, attachmentName, now,
-			)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	for attachmentID := range currentAttachments {
+	for id := range deleted {
 		_, err := tx.ExecContext(ctx,
 			"DELETE FROM attachment WHERE id = $1",
-			attachmentID,
+			id,
 		)
 		if err != nil {
 			return err

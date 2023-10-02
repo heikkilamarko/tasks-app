@@ -40,6 +40,15 @@ func (repo *FileTaskAttachmentsRepository) SaveAttachments(ctx context.Context, 
 	return nil
 }
 
+func (repo *FileTaskAttachmentsRepository) DeleteAttachments(ctx context.Context, taskID int, deleted map[int]string) error {
+	for _, name := range deleted {
+		if err := os.Remove(repo.getAttachmentPath(taskID, name)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (repo *FileTaskAttachmentsRepository) DeleteTask(ctx context.Context, taskID int) error {
 	if err := os.RemoveAll(repo.getTaskPath(taskID)); err != nil {
 		return err

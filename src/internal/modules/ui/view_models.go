@@ -2,6 +2,7 @@ package ui
 
 import (
 	"errors"
+	"mime/multipart"
 	"net/http"
 	"slices"
 	"strconv"
@@ -16,14 +17,21 @@ type TaskRequest struct {
 }
 
 type NewTaskRequest struct {
-	Name      string
-	ExpiresAt *time.Time
+	Name        string
+	ExpiresAt   *time.Time
+	Attachments *AttachmentsRequest
 }
 
 type UpdateTaskRequest struct {
-	ID        int
-	Name      string
-	ExpiresAt *time.Time
+	ID          int
+	Name        string
+	ExpiresAt   *time.Time
+	Attachments *AttachmentsRequest
+}
+
+type AttachmentsRequest struct {
+	Names []string
+	Files []*multipart.FileHeader
 }
 
 type TasksResponse struct {
@@ -59,11 +67,16 @@ func ParseNewTaskRequest(r *http.Request) (*NewTaskRequest, error) {
 		errs = append(errs, err)
 	}
 
+	attachments, err := ParseTaskAttachments(r)
+	if err != nil {
+		errs = append(errs, err)
+	}
+
 	if err := errors.Join(errs...); err != nil {
 		return nil, err
 	}
 
-	return &NewTaskRequest{name, expiresAt}, nil
+	return &NewTaskRequest{name, expiresAt, attachments}, nil
 }
 
 func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
@@ -84,39 +97,16 @@ func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
 		errs = append(errs, err)
 	}
 
+	attachments, err := ParseTaskAttachments(r)
+	if err != nil {
+		errs = append(errs, err)
+	}
+
 	if err := errors.Join(errs...); err != nil {
 		return nil, err
 	}
 
-	return &UpdateTaskRequest{id, name, expiresAt}, nil
-}
-
-func ParseTaskAttachments(r *http.Request, taskID int, taskAttachmentsRepository shared.TaskAttachmentsRepository) ([]string, error) {
-	err := r.ParseMultipartForm(10 << 20) // 10 MB
-	if err != nil {
-		return nil, err
-	}
-
-	existingAttachments := r.Form["attachments"]
-	newAttachments := r.MultipartForm.File["attachments"]
-
-	if err = taskAttachmentsRepository.SaveAttachments(r.Context(), taskID, newAttachments); err != nil {
-		return nil, err
-	}
-
-	var names []string
-
-	for _, name := range existingAttachments {
-		names = append(names, name)
-	}
-
-	for _, header := range newAttachments {
-		names = append(names, header.Filename)
-	}
-
-	slices.Sort(names)
-
-	return slices.Compact(names), nil
+	return &UpdateTaskRequest{id, name, expiresAt, attachments}, nil
 }
 
 func ParseTaskID(value string) (int, error) {
@@ -147,6 +137,24 @@ func ParseTaskExpiresAt(value string) (*time.Time, error) {
 	}
 
 	return v, nil
+}
+
+func ParseTaskAttachments(r *http.Request) (*AttachmentsRequest, error) {
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		return nil, errors.New("attachments: max size is 10MB")
+	}
+
+	files := r.MultipartForm.File["attachments"]
+
+	names := r.Form["attachments"]
+	for _, file := range files {
+		names = append(names, file.Filename)
+	}
+
+	slices.Sort(names)
+	names = slices.Compact(names)
+
+	return &AttachmentsRequest{names, files}, nil
 }
 
 func ParseTime(t string) (*time.Time, error) {

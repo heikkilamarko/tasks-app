@@ -9,7 +9,7 @@ type TaskRepository interface {
 	Close() error
 	Create(ctx context.Context, task *Task) error
 	Update(ctx context.Context, task *Task) error
-	UpdateAttachments(ctx context.Context, taskID int, attachmentNames []string) error
+	UpdateAttachments(ctx context.Context, taskID int, inserted []string, deleted map[int]string) error
 	Delete(ctx context.Context, id int) error
 	GetByID(ctx context.Context, id int) (*Task, error)
 	GetActive(ctx context.Context) ([]*Task, error)
