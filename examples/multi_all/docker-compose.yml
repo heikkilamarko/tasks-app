@@ -10,8 +10,8 @@ services:
     env_file:
       - ../config/dev/tasks-app.env
     environment:
-      - APP_SERVICES=db:postgres
-      - APP_MODULES=ui
+      - APP_SHARED_SERVICES=db:postgres
+      - APP_SHARED_MODULES=ui
     networks:
       - tasks-app
     depends_on:
@@ -26,8 +26,8 @@ services:
     env_file:
       - ../config/dev/tasks-app.env
     environment:
-      - APP_SERVICES=db:postgres,messaging:nats
-      - APP_MODULES=taskchecker
+      - APP_SHARED_SERVICES=db:postgres,messaging:nats
+      - APP_SHARED_MODULES=taskchecker
     networks:
       - tasks-app
     depends_on:
@@ -44,8 +44,8 @@ services:
     env_file:
       - ../config/dev/tasks-app.env
     environment:
-      - APP_SERVICES=messaging:nats
-      - APP_MODULES=emailnotifier:null
+      - APP_SHARED_SERVICES=messaging:nats
+      - APP_SHARED_MODULES=emailnotifier:null
     networks:
       - tasks-app
     depends_on:

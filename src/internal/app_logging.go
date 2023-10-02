@@ -8,7 +8,7 @@ import (
 func (a *App) createLogger() (err error) {
 	level := slog.LevelWarn
 
-	levelEnv := os.Getenv("APP_LOG_LEVEL")
+	levelEnv := os.Getenv("APP_SHARED_LOG_LEVEL")
 	if levelEnv != "" {
 		err = level.UnmarshalText([]byte(levelEnv))
 	}

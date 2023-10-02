@@ -68,5 +68,5 @@ func (repo *FileTaskAttachmentsRepository) getAttachmentPath(taskID int, name st
 }
 
 func (repo *FileTaskAttachmentsRepository) getTaskPath(taskID int) string {
-	return filepath.Join(repo.Config.UIAttachmentsPath, strconv.Itoa(taskID))
+	return filepath.Join(repo.Config.Shared.AttachmentsPath, strconv.Itoa(taskID))
 }

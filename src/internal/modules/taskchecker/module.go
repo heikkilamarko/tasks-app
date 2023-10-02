@@ -21,7 +21,7 @@ func (m *Module) Run(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			return nil
-		case <-time.After(m.Config.TaskCheckInterval):
+		case <-time.After(m.Config.TaskChecker.CheckInterval):
 			if err := m.checkTasks(ctx); err != nil {
 				m.Logger.Error("run checks", "error", err)
 			}
@@ -46,7 +46,7 @@ func (m *Module) checkTasks(ctx context.Context) (err error) {
 func (m *Module) checkCompletedTasks(ctx context.Context) error {
 	m.Logger.Info("check completed tasks")
 
-	count, err := m.TaskRepository.DeleteCompleted(ctx, m.Config.TaskCheckDeleteWindow)
+	count, err := m.TaskRepository.DeleteCompleted(ctx, m.Config.TaskChecker.DeleteWindow)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (m *Module) checkCompletedTasks(ctx context.Context) error {
 func (m *Module) checkExpiringTasks(ctx context.Context) error {
 	m.Logger.Info("check expiring tasks")
 
-	tasks, err := m.TaskRepository.GetExpiring(ctx, m.Config.TaskCheckExpiringWindow)
+	tasks, err := m.TaskRepository.GetExpiring(ctx, m.Config.TaskChecker.ExpiringWindow)
 	if err != nil {
 		return err
 	}

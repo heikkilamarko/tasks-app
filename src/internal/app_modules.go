@@ -19,7 +19,7 @@ const (
 func (a *App) createModules() error {
 	modules := make(map[string]shared.AppModule)
 
-	if slices.Contains(a.Config.Modules, AppModuleUI) {
+	if slices.Contains(a.Config.Shared.Modules, AppModuleUI) {
 		logger := a.Logger.With(slog.String("module", AppModuleUI))
 
 		modules[AppModuleUI] = &ui.Module{
@@ -35,7 +35,7 @@ func (a *App) createModules() error {
 		}
 	}
 
-	if slices.Contains(a.Config.Modules, AppModuleTaskChecker) {
+	if slices.Contains(a.Config.Shared.Modules, AppModuleTaskChecker) {
 		logger := a.Logger.With(slog.String("module", AppModuleTaskChecker))
 
 		modules[AppModuleTaskChecker] = &taskchecker.Module{
@@ -46,7 +46,7 @@ func (a *App) createModules() error {
 		}
 	}
 
-	if slices.Contains(a.Config.Modules, AppModuleEmailNotifierNull) {
+	if slices.Contains(a.Config.Shared.Modules, AppModuleEmailNotifierNull) {
 		logger := a.Logger.With(slog.String("module", AppModuleEmailNotifierNull))
 
 		modules[AppModuleEmailNotifierNull] = &emailnotifier.Module{
@@ -59,7 +59,7 @@ func (a *App) createModules() error {
 		}
 	}
 
-	if slices.Contains(a.Config.Modules, AppModuleEmailNotifierSMTP) {
+	if slices.Contains(a.Config.Shared.Modules, AppModuleEmailNotifierSMTP) {
 		logger := a.Logger.With(slog.String("module", AppModuleEmailNotifierSMTP))
 
 		modules[AppModuleEmailNotifierSMTP] = &emailnotifier.Module{
@@ -68,11 +68,11 @@ func (a *App) createModules() error {
 			MessagingClient: a.MessagingClient,
 			EmailClient: &emailnotifier.SMTPEmailClient{
 				Options: emailnotifier.SMTPEmailClientOptions{
-					Host:        a.Config.SMTPHost,
-					Port:        a.Config.SMTPPort,
-					FromName:    a.Config.SMTPFromName,
-					FromAddress: a.Config.SMTPFromAddress,
-					Password:    a.Config.SMTPPassword,
+					Host:        a.Config.EmailNotifier.SMTPHost,
+					Port:        a.Config.EmailNotifier.SMTPPort,
+					FromName:    a.Config.EmailNotifier.SMTPFromName,
+					FromAddress: a.Config.EmailNotifier.SMTPFromAddress,
+					Password:    a.Config.EmailNotifier.SMTPPassword,
 				},
 			},
 		}

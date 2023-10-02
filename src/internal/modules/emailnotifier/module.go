@@ -43,7 +43,7 @@ func (m *Module) handleTaskExpiringMessage(ctx context.Context, msg shared.Messa
 		return err
 	}
 
-	return m.EmailClient.SendEmail(ctx, m.Config.EmailToAddress, "Task Expiring", "task_expiring", data.Task)
+	return m.EmailClient.SendEmail(ctx, m.Config.EmailNotifier.ToAddress, "Task Expiring", "task_expiring", data.Task)
 }
 
 func (m *Module) handleTaskExpiredMessage(ctx context.Context, msg shared.Message) error {
@@ -52,7 +52,7 @@ func (m *Module) handleTaskExpiredMessage(ctx context.Context, msg shared.Messag
 		return err
 	}
 
-	return m.EmailClient.SendEmail(ctx, m.Config.EmailToAddress, "Task Expired", "task_expired", data.Task)
+	return m.EmailClient.SendEmail(ctx, m.Config.EmailNotifier.ToAddress, "Task Expired", "task_expired", data.Task)
 }
 
 func (m *Module) handleUnknownMessage(ctx context.Context, msg shared.Message) error {
