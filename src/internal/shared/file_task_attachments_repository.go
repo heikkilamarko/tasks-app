@@ -50,17 +50,11 @@ func (repo *FileTaskAttachmentsRepository) DeleteAttachments(ctx context.Context
 }
 
 func (repo *FileTaskAttachmentsRepository) DeleteTask(ctx context.Context, taskID int) error {
-	if err := os.RemoveAll(repo.getTaskPath(taskID)); err != nil {
-		return err
-	}
-	return nil
+	return os.RemoveAll(repo.getTaskPath(taskID))
 }
 
 func (repo *FileTaskAttachmentsRepository) ensureTaskDir(taskID int) error {
-	if err := os.MkdirAll(repo.getTaskPath(taskID), 0755); err != nil {
-		return err
-	}
-	return nil
+	return os.MkdirAll(repo.getTaskPath(taskID), 0755)
 }
 
 func (repo *FileTaskAttachmentsRepository) getAttachmentPath(taskID int, name string) string {
