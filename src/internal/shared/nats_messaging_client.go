@@ -20,34 +20,29 @@ func (m *NATSMsg) Subject() string { return m.msg.Subject }
 func (m *NATSMsg) Data() []byte    { return m.msg.Data }
 func (m *NATSMsg) Ack() error      { return m.msg.Ack() }
 
-type NATSMessagingClientOptions struct {
-	NATSURL   string
-	NATSToken string
-	Logger    *slog.Logger
-}
-
 type NATSMessagingClient struct {
-	Options NATSMessagingClientOptions
-	conn    *nats.Conn
-	js      jetstream.JetStream
+	Config *Config
+	Logger *slog.Logger
+	conn   *nats.Conn
+	js     jetstream.JetStream
 }
 
-func NewNATSMessagingClient(options NATSMessagingClientOptions) (*NATSMessagingClient, error) {
+func NewNATSMessagingClient(config *Config, logger *slog.Logger) (*NATSMessagingClient, error) {
 	conn, err := nats.Connect(
-		options.NATSURL,
-		nats.Token(options.NATSToken),
+		config.Shared.NATSURL,
+		nats.Token(config.Shared.NATSToken),
 		nats.MaxReconnects(-1),
 		nats.DisconnectErrHandler(
 			func(_ *nats.Conn, err error) {
-				options.Logger.Info("nats disconnected", "reason", err)
+				logger.Info("nats disconnected", "reason", err)
 			}),
 		nats.ReconnectHandler(
 			func(c *nats.Conn) {
-				options.Logger.Info("nats reconnected", "address", c.ConnectedUrl())
+				logger.Info("nats reconnected", "address", c.ConnectedUrl())
 			}),
 		nats.ErrorHandler(
 			func(_ *nats.Conn, _ *nats.Subscription, err error) {
-				options.Logger.Error("nats error", "error", err)
+				logger.Error("nats error", "error", err)
 				os.Exit(1)
 			}),
 	)
@@ -60,7 +55,7 @@ func NewNATSMessagingClient(options NATSMessagingClientOptions) (*NATSMessagingC
 		return nil, err
 	}
 
-	return &NATSMessagingClient{options, conn, js}, nil
+	return &NATSMessagingClient{config, logger, conn, js}, nil
 }
 
 func (c *NATSMessagingClient) Close() error {
@@ -101,13 +96,13 @@ func (c *NATSMessagingClient) Subscribe(ctx context.Context, subject string, han
 			msg, err := sub.NextMsg(5 * time.Second)
 			if err != nil {
 				if !errors.Is(err, nats.ErrTimeout) {
-					c.Options.Logger.Error("get next message", "error", err)
+					c.Logger.Error("get next message", "error", err)
 				}
 				continue
 			}
 
 			if err := handler(ctx, &NATSMsg{msg}); err != nil {
-				c.Options.Logger.Error("handle message", "error", err)
+				c.Logger.Error("handle message", "error", err)
 				continue
 			}
 
@@ -130,13 +125,13 @@ func (c *NATSMessagingClient) SubscribePersistent(ctx context.Context, stream st
 			msg, err := con.Next(jetstream.FetchMaxWait(5 * time.Second))
 			if err != nil {
 				if !errors.Is(err, nats.ErrTimeout) {
-					c.Options.Logger.Error("get next persistent message", "error", err)
+					c.Logger.Error("get next persistent message", "error", err)
 				}
 				continue
 			}
 
 			if err := handler(ctx, msg); err != nil {
-				c.Options.Logger.Error("handle persistent message", "error", err)
+				c.Logger.Error("handle persistent message", "error", err)
 				continue
 			}
 

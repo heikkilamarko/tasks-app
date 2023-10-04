@@ -16,21 +16,14 @@ func (a *App) createServices(ctx context.Context) error {
 	var err error
 
 	if slices.Contains(a.Config.Shared.Services, AppServiceDBPostgres) {
-		a.TaskRepository, err = shared.NewPostgresTaskRepository(ctx, shared.PostgresTaskRepositoryOptions{
-			ConnectionString: a.Config.Shared.PostgresConnectionString,
-			Logger:           a.Logger,
-		})
+		a.TaskRepository, err = shared.NewPostgresTaskRepository(ctx, a.Config)
 		if err != nil {
 			return fmt.Errorf("create service %s: %w", AppServiceDBPostgres, err)
 		}
 	}
 
 	if slices.Contains(a.Config.Shared.Services, AppServiceMessagingNATS) {
-		a.MessagingClient, err = shared.NewNATSMessagingClient(shared.NATSMessagingClientOptions{
-			NATSURL:   a.Config.Shared.NATSURL,
-			NATSToken: a.Config.Shared.NATSToken,
-			Logger:    a.Logger,
-		})
+		a.MessagingClient, err = shared.NewNATSMessagingClient(a.Config, a.Logger)
 		if err != nil {
 			return fmt.Errorf("create service %s: %w", AppServiceMessagingNATS, err)
 		}

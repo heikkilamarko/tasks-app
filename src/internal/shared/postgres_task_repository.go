@@ -3,24 +3,17 @@ package shared
 import (
 	"context"
 	"database/sql"
-	"log/slog"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-type PostgresTaskRepositoryOptions struct {
-	ConnectionString string
-	Logger           *slog.Logger
-}
-
 type PostgresTaskRepository struct {
-	Options PostgresTaskRepositoryOptions
-	db      *sql.DB
+	db *sql.DB
 }
 
-func NewPostgresTaskRepository(ctx context.Context, options PostgresTaskRepositoryOptions) (*PostgresTaskRepository, error) {
-	db, err := sql.Open("pgx", options.ConnectionString)
+func NewPostgresTaskRepository(ctx context.Context, config *Config) (*PostgresTaskRepository, error) {
+	db, err := sql.Open("pgx", config.Shared.PostgresConnectionString)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +27,7 @@ func NewPostgresTaskRepository(ctx context.Context, options PostgresTaskReposito
 		return nil, err
 	}
 
-	return &PostgresTaskRepository{options, db}, nil
+	return &PostgresTaskRepository{db}, nil
 }
 
 func (repo *PostgresTaskRepository) Close() error {
@@ -209,6 +202,8 @@ func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.
 }
 
 func (repo *PostgresTaskRepository) getTasks(ctx context.Context, query string, args ...any) ([]*Task, error) {
+	var tasks []*Task
+
 	query = `
 		SELECT
 			t.id,
@@ -237,53 +232,44 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, query string, 
 	defer rows.Close()
 
 	tasksMap := make(map[int]*Task)
-	var tasks []*Task
 
 	for rows.Next() {
-		task := &Task{}
-		attachment := struct {
+		var t Task
+		var a struct {
 			ID        *int
 			TaskID    *int
 			FileName  *string
 			CreatedAt *time.Time
 			UpdatedAt *time.Time
-		}{}
+		}
 
-		err := rows.Scan(
-			&task.ID,
-			&task.Name,
-			&task.ExpiresAt,
-			&task.ExpiringInfoAt,
-			&task.ExpiredInfoAt,
-			&task.CreatedAt,
-			&task.UpdatedAt,
-			&task.CompletedAt,
-			&attachment.ID,
-			&attachment.TaskID,
-			&attachment.FileName,
-			&attachment.CreatedAt,
-			&attachment.UpdatedAt,
-		)
-		if err != nil {
+		if err := rows.Scan(
+			&t.ID,
+			&t.Name,
+			&t.ExpiresAt,
+			&t.ExpiringInfoAt,
+			&t.ExpiredInfoAt,
+			&t.CreatedAt,
+			&t.UpdatedAt,
+			&t.CompletedAt,
+			&a.ID,
+			&a.TaskID,
+			&a.FileName,
+			&a.CreatedAt,
+			&a.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 
-		t, ok := tasksMap[task.ID]
+		task, ok := tasksMap[t.ID]
 		if !ok {
-			task.Attachments = []*Attachment{}
-			tasksMap[task.ID] = task
+			task = &t
 			tasks = append(tasks, task)
-			t = task
+			tasksMap[task.ID] = task
 		}
 
-		if attachment.ID != nil {
-			t.Attachments = append(t.Attachments, &Attachment{
-				ID:        *attachment.ID,
-				TaskID:    *attachment.TaskID,
-				FileName:  *attachment.FileName,
-				CreatedAt: *attachment.CreatedAt,
-				UpdatedAt: attachment.UpdatedAt,
-			})
+		if a.ID != nil {
+			task.Attachments = append(task.Attachments, &Attachment{*a.ID, *a.TaskID, *a.FileName, *a.CreatedAt, a.UpdatedAt})
 		}
 	}
 
