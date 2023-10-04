@@ -241,7 +241,13 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, query string, 
 
 	for rows.Next() {
 		task := &Task{}
-		attachment := &EmptyAttachment{}
+		attachment := struct {
+			ID        *int
+			TaskID    *int
+			FileName  *string
+			CreatedAt *time.Time
+			UpdatedAt *time.Time
+		}{}
 
 		err := rows.Scan(
 			&task.ID,

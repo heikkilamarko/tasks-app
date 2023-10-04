@@ -27,14 +27,6 @@ type Attachment struct {
 	UpdatedAt *time.Time `json:"updated_at"`
 }
 
-type EmptyAttachment struct {
-	ID        *int
-	TaskID    *int
-	FileName  *string
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
-}
-
 type TaskExpiringMsg struct {
 	Task *Task `json:"task"`
 }
