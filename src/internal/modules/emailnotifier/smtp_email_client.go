@@ -3,20 +3,13 @@ package emailnotifier
 import (
 	"context"
 	"strings"
+	"tasks-app/internal/shared"
 
 	"github.com/wneessen/go-mail"
 )
 
-type SMTPEmailClientOptions struct {
-	Host        string
-	Port        int
-	FromName    string
-	FromAddress string
-	Password    string
-}
-
 type SMTPEmailClient struct {
-	Options SMTPEmailClientOptions
+	Config *shared.Config
 }
 
 func (c *SMTPEmailClient) SendEmail(ctx context.Context, to string, subject string, templateName string, data any) error {
@@ -28,7 +21,7 @@ func (c *SMTPEmailClient) SendEmail(ctx context.Context, to string, subject stri
 
 	msg := mail.NewMsg()
 
-	if err := msg.FromFormat(c.Options.FromName, c.Options.FromAddress); err != nil {
+	if err := msg.FromFormat(c.Config.EmailNotifier.SMTPFromName, c.Config.EmailNotifier.SMTPFromAddress); err != nil {
 		return err
 	}
 
@@ -40,12 +33,12 @@ func (c *SMTPEmailClient) SendEmail(ctx context.Context, to string, subject stri
 
 	msg.SetBodyString(mail.TypeTextHTML, body)
 
-	client, err := mail.NewClient(c.Options.Host,
-		mail.WithPort(c.Options.Port),
+	client, err := mail.NewClient(c.Config.EmailNotifier.SMTPHost,
+		mail.WithPort(c.Config.EmailNotifier.SMTPPort),
 		mail.WithTLSPolicy(mail.TLSMandatory),
 		mail.WithSMTPAuth(mail.SMTPAuthLogin),
-		mail.WithUsername(c.Options.FromAddress),
-		mail.WithPassword(c.Options.Password),
+		mail.WithUsername(c.Config.EmailNotifier.SMTPFromAddress),
+		mail.WithPassword(c.Config.EmailNotifier.SMTPPassword),
 	)
 	if err != nil {
 		return err

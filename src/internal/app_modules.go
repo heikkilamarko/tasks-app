@@ -67,13 +67,7 @@ func (a *App) createModules() error {
 			Logger:          logger,
 			MessagingClient: a.MessagingClient,
 			EmailClient: &emailnotifier.SMTPEmailClient{
-				Options: emailnotifier.SMTPEmailClientOptions{
-					Host:        a.Config.EmailNotifier.SMTPHost,
-					Port:        a.Config.EmailNotifier.SMTPPort,
-					FromName:    a.Config.EmailNotifier.SMTPFromName,
-					FromAddress: a.Config.EmailNotifier.SMTPFromAddress,
-					Password:    a.Config.EmailNotifier.SMTPPassword,
-				},
+				Config: a.Config,
 			},
 		}
 	}
