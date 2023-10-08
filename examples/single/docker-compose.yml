@@ -11,6 +11,3 @@ services:
       - ../config/dev/tasks-app.env
     networks:
       - tasks-app
-    depends_on:
-      - postgres
-      - nats

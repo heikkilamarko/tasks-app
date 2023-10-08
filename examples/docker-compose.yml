@@ -42,20 +42,46 @@ services:
     depends_on:
       - postgres
 
-  nats:
+  nats-1:
     build: ../messaging/nats
     image: tasks-app/nats
     deploy:
       restart_policy:
         condition: on-failure
     env_file:
-      - ../config/dev/nats.env
+      - ../config/dev/nats-1.env
     ports:
       - 4222:4222
       - 8222:8222
       - 9222:9222
     volumes:
-      - nats:/nats
+      - nats-1:/nats
+    networks:
+      - tasks-app
+
+  nats-2:
+    build: ../messaging/nats
+    image: tasks-app/nats
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - ../config/dev/nats-2.env
+    volumes:
+      - nats-2:/nats
+    networks:
+      - tasks-app
+
+  nats-3:
+    build: ../messaging/nats
+    image: tasks-app/nats
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - ../config/dev/nats-3.env
+    volumes:
+      - nats-3:/nats
     networks:
       - tasks-app
 
@@ -70,7 +96,9 @@ services:
     networks:
       - tasks-app
     depends_on:
-      - nats
+      - nats-1
+      - nats-2
+      - nats-3
 
 networks:
   tasks-app:
@@ -78,4 +106,6 @@ networks:
 
 volumes:
   postgres:
-  nats:
+  nats-1:
+  nats-2:
+  nats-3:

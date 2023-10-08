@@ -14,8 +14,6 @@ services:
       - APP_SHARED_MODULES=ui
     networks:
       - tasks-app
-    depends_on:
-      - postgres
 
   tasks-app-backend:
     build: ../src
@@ -30,6 +28,3 @@ services:
       - APP_SHARED_MODULES=taskchecker,emailnotifier:null
     networks:
       - tasks-app
-    depends_on:
-      - postgres
-      - nats
