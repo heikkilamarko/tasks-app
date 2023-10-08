@@ -1,6 +1,6 @@
 module tasks-app
 
-go 1.21.1
+go 1.21.2
 
 require (
 	github.com/caarlos0/env/v9 v9.0.0
@@ -11,7 +11,7 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/wneessen/go-mail v0.4.0
 	github.com/xuri/excelize/v2 v2.8.0
-	golang.org/x/sync v0.3.0
+	golang.org/x/sync v0.4.0
 )
 
 require (
