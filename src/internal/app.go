@@ -57,12 +57,12 @@ func (a *App) init(ctx context.Context) error {
 func (a *App) run(ctx context.Context) error {
 	g, ctx := errgroup.WithContext(ctx)
 
-	for key, module := range a.Modules {
-		key, module := key, module
+	for k, m := range a.Modules {
+		k, m := k, m
 		g.Go(func() error {
-			a.Logger.Info("run app module", slog.String("module", key))
-			defer a.Logger.Info("exit app module", slog.String("module", key))
-			return module.Run(ctx)
+			a.Logger.Info("run app module", slog.String("module", k))
+			defer a.Logger.Info("exit app module", slog.String("module", k))
+			return m.Run(ctx)
 		})
 	}
 

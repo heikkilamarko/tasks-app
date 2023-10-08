@@ -2,7 +2,6 @@ package internal
 
 import (
 	"log/slog"
-	"slices"
 	"tasks-app/internal/modules/emailnotifier"
 	"tasks-app/internal/modules/taskchecker"
 	"tasks-app/internal/modules/ui"
@@ -19,7 +18,7 @@ const (
 func (a *App) createModules() error {
 	modules := make(map[string]shared.AppModule)
 
-	if slices.Contains(a.Config.Shared.Modules, AppModuleUI) {
+	if a.Config.IsModuleEnabled(AppModuleUI) {
 		logger := a.Logger.With(slog.String("module", AppModuleUI))
 
 		modules[AppModuleUI] = &ui.Module{
@@ -35,7 +34,7 @@ func (a *App) createModules() error {
 		}
 	}
 
-	if slices.Contains(a.Config.Shared.Modules, AppModuleTaskChecker) {
+	if a.Config.IsModuleEnabled(AppModuleTaskChecker) {
 		logger := a.Logger.With(slog.String("module", AppModuleTaskChecker))
 
 		modules[AppModuleTaskChecker] = &taskchecker.Module{
@@ -46,7 +45,7 @@ func (a *App) createModules() error {
 		}
 	}
 
-	if slices.Contains(a.Config.Shared.Modules, AppModuleEmailNotifierNull) {
+	if a.Config.IsModuleEnabled(AppModuleEmailNotifierNull) {
 		logger := a.Logger.With(slog.String("module", AppModuleEmailNotifierNull))
 
 		modules[AppModuleEmailNotifierNull] = &emailnotifier.Module{
@@ -59,7 +58,7 @@ func (a *App) createModules() error {
 		}
 	}
 
-	if slices.Contains(a.Config.Shared.Modules, AppModuleEmailNotifierSMTP) {
+	if a.Config.IsModuleEnabled(AppModuleEmailNotifierSMTP) {
 		logger := a.Logger.With(slog.String("module", AppModuleEmailNotifierSMTP))
 
 		modules[AppModuleEmailNotifierSMTP] = &emailnotifier.Module{

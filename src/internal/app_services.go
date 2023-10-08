@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"fmt"
-	"slices"
 	"tasks-app/internal/shared"
 )
 
@@ -15,14 +14,14 @@ const (
 func (a *App) createServices(ctx context.Context) error {
 	var err error
 
-	if slices.Contains(a.Config.Shared.Services, AppServiceDBPostgres) {
+	if a.Config.IsServiceEnabled(AppServiceDBPostgres) {
 		a.TaskRepository, err = shared.NewPostgresTaskRepository(ctx, a.Config)
 		if err != nil {
 			return fmt.Errorf("create service %s: %w", AppServiceDBPostgres, err)
 		}
 	}
 
-	if slices.Contains(a.Config.Shared.Services, AppServiceMessagingNATS) {
+	if a.Config.IsServiceEnabled(AppServiceMessagingNATS) {
 		a.MessagingClient, err = shared.NewNATSMessagingClient(a.Config, a.Logger)
 		if err != nil {
 			return fmt.Errorf("create service %s: %w", AppServiceMessagingNATS, err)

@@ -1,6 +1,7 @@
 package shared
 
 import (
+	"slices"
 	"time"
 
 	"github.com/caarlos0/env/v9"
@@ -45,4 +46,12 @@ type Config struct {
 
 func (c *Config) Load() error {
 	return env.Parse(c)
+}
+
+func (c *Config) IsServiceEnabled(name string) bool {
+	return slices.Contains(c.Shared.Services, name)
+}
+
+func (c *Config) IsModuleEnabled(name string) bool {
+	return slices.Contains(c.Shared.Modules, name)
 }
