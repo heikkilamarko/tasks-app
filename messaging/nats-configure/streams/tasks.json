@@ -10,7 +10,7 @@
   "max_msg_size": -1,
   "storage": "file",
   "discard": "old",
-  "num_replicas": 1,
+  "num_replicas": 3,
   "duplicate_window": 120000000000,
   "republish": {
     "src": "tasks.*",
