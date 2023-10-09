@@ -4,4 +4,6 @@ A simple single binary task management app, built as a modular monolith. The app
 
 Modules communicate using the [NATS](https://nats.io/) messaging system.
 
+![components](doc/components.png)
+
 See the `/examples` directory for some example setups.
