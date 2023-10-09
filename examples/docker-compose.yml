@@ -49,6 +49,7 @@ services:
       restart_policy:
         condition: on-failure
     env_file:
+      - ../config/dev/nats.env
       - ../config/dev/nats-1.env
     ports:
       - 4222:4222
@@ -66,6 +67,7 @@ services:
       restart_policy:
         condition: on-failure
     env_file:
+      - ../config/dev/nats.env
       - ../config/dev/nats-2.env
     volumes:
       - nats-2:/nats
@@ -79,6 +81,7 @@ services:
       restart_policy:
         condition: on-failure
     env_file:
+      - ../config/dev/nats.env
       - ../config/dev/nats-3.env
     volumes:
       - nats-3:/nats

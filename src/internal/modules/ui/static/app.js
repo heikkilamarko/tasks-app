@@ -12,7 +12,12 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 
 	const nc = await connect({
 		servers: getWsUrl(window.app.HUB_URL),
-		token: 'S3c_r3t!'
+		user: 'ui',
+		pass: 'S3c_r3t!',
+		name: 'ui',
+		timeout: 120_000,
+		maxReconnectAttempts: -1,
+		waitOnFirstConnect: true
 	});
 
 	const sub = nc.subscribe('tasks.ui.>');

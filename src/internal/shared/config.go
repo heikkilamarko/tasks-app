@@ -13,7 +13,8 @@ type SharedConfig struct {
 	LogLevel                 string   `env:"APP_SHARED_LOG_LEVEL" envDefault:"warn"`
 	PostgresConnectionString string   `env:"APP_SHARED_POSTGRES_CONNECTION_STRING,notEmpty"`
 	NATSURL                  string   `env:"APP_SHARED_NATS_URL,notEmpty"`
-	NATSToken                string   `env:"APP_SHARED_NATS_TOKEN,notEmpty"`
+	NATSUser                 string   `env:"APP_SHARED_NATS_USER,notEmpty"`
+	NATSPassword             string   `env:"APP_SHARED_NATS_PASSWORD,notEmpty"`
 	AttachmentsPath          string   `env:"APP_SHARED_ATTACHMENTS_PATH" envDefault:"attachments"`
 }
 

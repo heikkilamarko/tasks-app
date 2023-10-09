@@ -31,7 +31,7 @@
 	redir / /ui
 
 	handle_path /hub/v1 {
-		reverse_proxy {$CADDY_HUB_ADDRESS}
+		reverse_proxy {$CADDY_NATS_WS_ADDRESS}
 	}
 
 	handle {
