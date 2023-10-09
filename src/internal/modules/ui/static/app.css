@@ -11,15 +11,6 @@ td {
 input,
 textarea,
 select {
-	&:valid {
-		border-color: var(--bs-form-valid-border-color);
-
-		&:focus {
-			border-color: var(--bs-form-valid-border-color);
-			box-shadow: 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25);
-		}
-	}
-
 	&:invalid {
 		border-color: var(--bs-form-invalid-border-color);
 

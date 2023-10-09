@@ -7,12 +7,12 @@
 				<h1>Tasks App</h1>
 
 				<div class="row g-2 mt-3">
-					<div class="col-auto">
+					<div class="col-6 col-md-auto">
 						<button
 							hx-get="/ui/tasks"
 							hx-target="#tasks-table"
 							hx-indicator=".loading-indicator"
-							class="btn btn-outline-primary rounded-pill px-4"
+							class="btn btn-outline-primary rounded-pill px-4 w-100"
 							_="on click toggle @disabled until htmx:afterOnLoad"
 						>
 							Refresh
@@ -20,24 +20,28 @@
 						</button>
 					</div>
 
-					<div class="col-auto">
-						<button hx-get="/ui/tasks/new" hx-target="#tasks-table" class="btn btn-outline-primary rounded-pill px-4">
+					<div class="col-6 col-md-auto">
+						<button
+							hx-get="/ui/tasks/new"
+							hx-target="#tasks-table"
+							class="btn btn-outline-primary rounded-pill px-4 w-100"
+						>
 							New Task
 						</button>
 					</div>
 
-					<div class="col-auto">
-						<a href="/ui/tasks/export?filter=active" download class="btn btn-outline-primary rounded-pill px-4"
+					<div class="col-6 col-md-auto">
+						<a href="/ui/tasks/export?filter=active" download class="btn btn-outline-primary rounded-pill px-4 w-100"
 							>Export Tasks</a
 						>
 					</div>
 
-					<div class="col-auto">
+					<div class="col-6 col-md-auto">
 						<a
 							href="/ui/completed"
 							hx-boost="true"
 							hx-swap="innerHTML transition:true"
-							class="btn btn-outline-primary rounded-pill px-4"
+							class="btn btn-outline-primary rounded-pill px-4 w-100"
 							>Completed Tasks</a
 						>
 					</div>
