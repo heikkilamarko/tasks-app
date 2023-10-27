@@ -20,7 +20,7 @@ fi
 case "$action" in
     up)
         echo "Bringing up containers..."
-        docker compose -f docker-compose.yml -f "$example_directory/docker-compose.yml" up --build -d
+        docker compose -f docker-compose.yml -f "$example_directory/docker-compose.yml" up --quiet-pull --build -d
         ;;
     down)
         echo "Bringing down containers..."
