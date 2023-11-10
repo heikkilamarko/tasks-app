@@ -7,8 +7,10 @@ import (
 )
 
 const (
-	AppServiceDBPostgres    = "db:postgres"
-	AppServiceMessagingNATS = "messaging:nats"
+	AppServiceDBPostgres      = "db:postgres"
+	AppServiceAttachmentsFile = "attachments:file"
+	AppServiceAttachmentsNATS = "attachments:nats"
+	AppServiceMessagingNATS   = "messaging:nats"
 )
 
 func (a *App) createServices(ctx context.Context) error {
@@ -18,6 +20,19 @@ func (a *App) createServices(ctx context.Context) error {
 		a.TaskRepository, err = shared.NewPostgresTaskRepository(ctx, a.Config)
 		if err != nil {
 			return fmt.Errorf("create service %s: %w", AppServiceDBPostgres, err)
+		}
+	}
+
+	if a.Config.IsServiceEnabled(AppServiceAttachmentsNATS) {
+		a.TaskAttachmentsRepository, err = shared.NewNATSTaskAttachmentsRepository(a.Config, a.Logger)
+		if err != nil {
+			return fmt.Errorf("create service %s: %w", AppServiceAttachmentsNATS, err)
+		}
+	}
+
+	if a.Config.IsServiceEnabled(AppServiceAttachmentsFile) {
+		a.TaskAttachmentsRepository = &shared.FileTaskAttachmentsRepository{
+			Config: a.Config,
 		}
 	}
 
@@ -36,6 +51,10 @@ func (a *App) closeServices() []error {
 
 	if a.MessagingClient != nil {
 		errs = append(errs, a.MessagingClient.Close())
+	}
+
+	if a.TaskAttachmentsRepository != nil {
+		errs = append(errs, a.TaskAttachmentsRepository.Close())
 	}
 
 	if a.TaskRepository != nil {

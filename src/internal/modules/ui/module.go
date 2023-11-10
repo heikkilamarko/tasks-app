@@ -27,7 +27,7 @@ func (m *Module) Run(ctx context.Context) error {
 	router.Use(SessionMiddleware)
 
 	router.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
-	router.Handle("/ui/attachments/*", http.StripPrefix("/ui/attachments/", http.FileServer(http.Dir(m.Config.Shared.AttachmentsPath))))
+	router.Method(http.MethodGet, "/ui/attachments/{id}/{name}", &GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui", &GetUI{m.TaskRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui/tasks", &GetUITasks{m.TaskRepository, m.Logger})
 	router.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger})

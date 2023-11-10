@@ -11,11 +11,12 @@ import (
 )
 
 type App struct {
-	Logger          *slog.Logger
-	Config          *shared.Config
-	TaskRepository  shared.TaskRepository
-	MessagingClient shared.MessagingClient
-	Modules         map[string]shared.AppModule
+	Logger                    *slog.Logger
+	Config                    *shared.Config
+	TaskRepository            shared.TaskRepository
+	TaskAttachmentsRepository shared.TaskAttachmentsRepository
+	MessagingClient           shared.MessagingClient
+	Modules                   map[string]shared.AppModule
 }
 
 func (a *App) Run(ctx context.Context) error {

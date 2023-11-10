@@ -22,12 +22,10 @@ func (a *App) createModules() error {
 		logger := a.Logger.With(slog.String("module", AppModuleUI))
 
 		modules[AppModuleUI] = &ui.Module{
-			Config:         a.Config,
-			Logger:         logger,
-			TaskRepository: a.TaskRepository,
-			TaskAttachmentsRepository: &shared.FileTaskAttachmentsRepository{
-				Config: a.Config,
-			},
+			Config:                    a.Config,
+			Logger:                    logger,
+			TaskRepository:            a.TaskRepository,
+			TaskAttachmentsRepository: a.TaskAttachmentsRepository,
 			FileExporter: &shared.ExcelFileExporter{
 				Logger: logger,
 			},

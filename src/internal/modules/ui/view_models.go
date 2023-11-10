@@ -16,6 +16,11 @@ type TaskRequest struct {
 	ID int
 }
 
+type TaskAttachmentRequest struct {
+	ID   int
+	Name string
+}
+
 type NewTaskRequest struct {
 	Name        string
 	ExpiresAt   *time.Time
@@ -52,6 +57,22 @@ func ParseTaskRequest(r *http.Request) (*TaskRequest, error) {
 	}
 
 	return &TaskRequest{id}, nil
+}
+
+func ParseTaskAttachmentRequest(r *http.Request) (*TaskAttachmentRequest, error) {
+	var errs []error
+
+	id, err := ParseTaskID(chi.URLParam(r, "id"))
+	if err != nil {
+		errs = append(errs, err)
+	}
+
+	name, err := ParseTaskAttachmentName(chi.URLParam(r, "name"))
+	if err != nil {
+		errs = append(errs, err)
+	}
+
+	return &TaskAttachmentRequest{id, name}, nil
 }
 
 func ParseNewTaskRequest(r *http.Request) (*NewTaskRequest, error) {
@@ -116,6 +137,14 @@ func ParseTaskID(value string) (int, error) {
 	}
 
 	return v, nil
+}
+
+func ParseTaskAttachmentName(value string) (string, error) {
+	l := len(value)
+	if l < 1 || 1000 < l {
+		return "", errors.New("name: required, must be between 1 and 1000 characters")
+	}
+	return value, nil
 }
 
 func ParseTaskName(value string) (string, error) {

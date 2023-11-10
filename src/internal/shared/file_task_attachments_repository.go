@@ -13,6 +13,14 @@ type FileTaskAttachmentsRepository struct {
 	Config *Config
 }
 
+func (repo *FileTaskAttachmentsRepository) Close() error {
+	return nil
+}
+
+func (repo *FileTaskAttachmentsRepository) GetAttachment(ctx context.Context, taskID int, name string) ([]byte, error) {
+	return os.ReadFile(repo.getAttachmentPath(taskID, name))
+}
+
 func (repo *FileTaskAttachmentsRepository) SaveAttachments(ctx context.Context, taskID int, fileHeaders []*multipart.FileHeader) error {
 	if err := repo.ensureTaskDir(taskID); err != nil {
 		return err

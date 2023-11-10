@@ -8,7 +8,7 @@ import (
 )
 
 type SharedConfig struct {
-	Services                 []string `env:"APP_SHARED_SERVICES" envDefault:"db:postgres,messaging:nats"`
+	Services                 []string `env:"APP_SHARED_SERVICES" envDefault:"db:postgres,attachments:nats,messaging:nats"`
 	Modules                  []string `env:"APP_SHARED_MODULES" envDefault:"ui,taskchecker,emailnotifier:null"`
 	LogLevel                 string   `env:"APP_SHARED_LOG_LEVEL" envDefault:"warn"`
 	PostgresConnectionString string   `env:"APP_SHARED_POSTGRES_CONNECTION_STRING,notEmpty"`
