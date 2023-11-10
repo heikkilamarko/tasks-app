@@ -20,6 +20,11 @@ func (h *GetUITaskAttachment) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	}
 
 	data, err := h.TaskAttachmentsRepository.GetAttachment(r.Context(), req.ID, req.Name)
+	if err != nil {
+		h.Logger.Error("get task attachment", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", http.DetectContentType(data))
 	w.Write(data)

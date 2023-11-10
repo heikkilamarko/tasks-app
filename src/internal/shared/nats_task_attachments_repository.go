@@ -53,7 +53,7 @@ func (repo *NATSTaskAttachmentsRepository) Close() error {
 }
 
 func (repo *NATSTaskAttachmentsRepository) GetAttachment(ctx context.Context, taskID int, name string) ([]byte, error) {
-	os, err := repo.js.ObjectStore(fmt.Sprintf("attachments_%d", taskID))
+	os, err := repo.js.ObjectStore(repo.getBucketName(taskID))
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (repo *NATSTaskAttachmentsRepository) GetAttachment(ctx context.Context, ta
 
 func (repo *NATSTaskAttachmentsRepository) SaveAttachments(ctx context.Context, taskID int, fileHeaders []*multipart.FileHeader) error {
 	os, err := repo.js.CreateObjectStore(&nats.ObjectStoreConfig{
-		Bucket: fmt.Sprintf("attachments_%d", taskID),
+		Bucket: repo.getBucketName(taskID),
 	})
 	if err != nil {
 		return err
@@ -81,8 +81,7 @@ func (repo *NATSTaskAttachmentsRepository) SaveAttachments(ctx context.Context, 
 		}
 		defer srcFile.Close()
 
-		_, err = os.Put(&nats.ObjectMeta{Name: fileHeader.Filename}, srcFile)
-		if err != nil {
+		if _, err := os.Put(&nats.ObjectMeta{Name: fileHeader.Filename}, srcFile); err != nil {
 			return err
 		}
 	}
@@ -91,7 +90,7 @@ func (repo *NATSTaskAttachmentsRepository) SaveAttachments(ctx context.Context, 
 }
 
 func (repo *NATSTaskAttachmentsRepository) DeleteAttachments(ctx context.Context, taskID int, deleted map[int]string) error {
-	os, err := repo.js.ObjectStore(fmt.Sprintf("attachments_%d", taskID))
+	os, err := repo.js.ObjectStore(repo.getBucketName(taskID))
 	if err != nil {
 		return err
 	}
@@ -106,5 +105,9 @@ func (repo *NATSTaskAttachmentsRepository) DeleteAttachments(ctx context.Context
 }
 
 func (repo *NATSTaskAttachmentsRepository) DeleteTask(ctx context.Context, taskID int) error {
-	return repo.js.DeleteObjectStore(fmt.Sprintf("attachments_%d", taskID))
+	return repo.js.DeleteObjectStore(repo.getBucketName(taskID))
+}
+
+func (repo *NATSTaskAttachmentsRepository) getBucketName(taskID int) string {
+	return fmt.Sprintf("attachments_%d", taskID)
 }

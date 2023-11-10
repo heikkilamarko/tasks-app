@@ -7,7 +7,7 @@
 		<td>
 			{{ $parent := . }}
 			{{ range .Attachments }}
-				<a href="/ui/attachments/{{ $parent.ID }}/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
+				<a href="/ui/tasks/{{ $parent.ID }}/attachments/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
 			{{ end }}
 		</td>
 		<td>{{ with .ExpiresAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>
