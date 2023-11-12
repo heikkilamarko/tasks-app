@@ -72,6 +72,10 @@ func ParseTaskAttachmentRequest(r *http.Request) (*TaskAttachmentRequest, error)
 		errs = append(errs, err)
 	}
 
+	if err := errors.Join(errs...); err != nil {
+		return nil, err
+	}
+
 	return &TaskAttachmentRequest{id, name}, nil
 }
 
