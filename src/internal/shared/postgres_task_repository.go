@@ -131,22 +131,24 @@ func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task,
 	return tasks[0], nil
 }
 
-func (repo *PostgresTaskRepository) GetActive(ctx context.Context) ([]*Task, error) {
+func (repo *PostgresTaskRepository) GetActive(ctx context.Context, offset int, limit int) ([]*Task, error) {
 	query := `
 		WHERE t.completed_at IS NULL
 		ORDER BY t.created_at DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	return repo.getTasks(ctx, query)
+	return repo.getTasks(ctx, query, limit, offset)
 }
 
-func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context) ([]*Task, error) {
+func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context, offset int, limit int) ([]*Task, error) {
 	query := `
 		WHERE t.completed_at IS NOT NULL
 		ORDER BY t.completed_at DESC
+		LIMIT $1 OFFSET $2
 	`
 
-	return repo.getTasks(ctx, query)
+	return repo.getTasks(ctx, query, limit, offset)
 }
 
 func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Duration) ([]*Task, error) {

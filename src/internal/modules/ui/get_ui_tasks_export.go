@@ -21,14 +21,14 @@ func (h *GetUITasksExport) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.FormValue("filter") {
 	case "active":
 		name = "active_tasks"
-		tasks, err = h.TaskRepository.GetActive(r.Context())
+		tasks, err = h.TaskRepository.GetActive(r.Context(), 0, 10_000)
 	case "completed":
 		name = "completed_tasks"
-		tasks, err = h.TaskRepository.GetCompleted(r.Context())
+		tasks, err = h.TaskRepository.GetCompleted(r.Context(), 0, 10_000)
 	default:
 		name = "all_tasks"
-		tasks1, err1 := h.TaskRepository.GetActive(r.Context())
-		tasks2, err2 := h.TaskRepository.GetCompleted(r.Context())
+		tasks1, err1 := h.TaskRepository.GetActive(r.Context(), 0, 10_000)
+		tasks2, err2 := h.TaskRepository.GetCompleted(r.Context(), 0, 10_000)
 		tasks, err = append(tasks1, tasks2...), errors.Join(err1, err2)
 	}
 

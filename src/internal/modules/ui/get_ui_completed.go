@@ -12,7 +12,7 @@ type GetUICompleted struct {
 }
 
 func (h *GetUICompleted) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.TaskRepository.GetCompleted(r.Context())
+	tasks, err := h.TaskRepository.GetCompleted(r.Context(), 0, 50)
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)

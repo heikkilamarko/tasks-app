@@ -46,7 +46,7 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tasks, err := h.TaskRepository.GetActive(r.Context())
+	tasks, err := h.TaskRepository.GetActive(r.Context(), 0, 50)
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
