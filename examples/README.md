@@ -19,7 +19,7 @@ To start the single-process setup, execute the following command:
 ./example.sh up single
 ```
 
-Open the app in your web browser: http://localhost:8000/ui
+Open the app in your web browser: http://tasks-app.com/ui
 
 ### Teardown
 
@@ -47,7 +47,7 @@ or
 ./example.sh up multi_all
 ```
 
-Once the setup is running, open the application in your web browser: http://localhost:8000/ui
+Once the setup is running, open the application in your web browser: http://tasks-app.com/ui
 
 ### Teardown
 
