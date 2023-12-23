@@ -10,9 +10,22 @@ services:
     env_file:
       - ../config/dev/caddy.env
     ports:
-      - 8000:80
+      - 80:80
     networks:
       - tasks-app
+
+  zitadel:
+    build: ../iam/zitadel
+    image: tasks-app/zitadel
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - ../config/dev/zitadel.env
+    networks:
+      - tasks-app
+    depends_on:
+      - postgres
 
   postgres:
     build: ../db/postgres

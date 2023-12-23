@@ -1,0 +1,25 @@
+Log:
+  Level: info
+
+Database:
+  postgres:
+    Host: postgres
+    Port: 5432
+    Database: zitadel
+    MaxOpenConns: 25
+    MaxIdleConns: 10
+    MaxConnLifetime: 1h
+    MaxConnIdleTime: 5m
+    Options:
+    User:
+      SSL:
+        Mode: disable
+        RootCert:
+        Cert:
+        Key:
+    Admin:
+      SSL:
+        Mode: disable
+        RootCert:
+        Cert:
+        Key:

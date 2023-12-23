@@ -28,13 +28,26 @@
 
 	header -Server
 
-	redir / /ui
+	@auth {
+		host auth.{$CADDY_DOMAIN}
+	}
+	handle @auth {
+		reverse_proxy {$CADDY_ZITADEL_ADDRESS}
+	}
 
-	handle_path /hub/v1 {
+	@nats_ws {
+		host {$CADDY_DOMAIN}
+		path /hub/*
+	}
+	handle @nats_ws {
 		reverse_proxy {$CADDY_NATS_WS_ADDRESS}
 	}
 
-	handle {
+	@app {
+		host {$CADDY_DOMAIN}
+		path /ui*
+	}
+	handle @app {
 		reverse_proxy {$CADDY_APP_ADDRESS}
 	}
 }

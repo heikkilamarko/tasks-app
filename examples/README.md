@@ -1,5 +1,12 @@
 # Examples
 
+Before running the examples, add the following entries to your `/etc/hosts` file:
+
+```
+127.0.0.1    tasks-app.com
+127.0.0.1    auth.tasks-app.com
+```
+
 ## Single-Process Setup
 
 In the single-process setup, all modules are enabled within a single process.

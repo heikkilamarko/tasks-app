@@ -1,0 +1,9 @@
+FirstInstance:
+  InstanceName: tasks-app
+  Org:
+    Name: tasks-app
+    Human:
+      UserName: zitadel-admin
+      FirstName: Zitadel
+      LastName: Admin
+      PasswordChangeRequired: false
