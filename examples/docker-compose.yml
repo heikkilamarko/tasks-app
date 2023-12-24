@@ -22,6 +22,8 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/zitadel.env
+    volumes:
+      - ../iam/zitadel-configure/machinekey:/machinekey
     networks:
       - tasks-app
     depends_on:

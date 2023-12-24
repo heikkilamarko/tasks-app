@@ -1,9 +1,11 @@
 FirstInstance:
-  InstanceName: tasks-app
+  InstanceName: zitadel
+  MachineKeyPath: /machinekey/zitadel-admin-sa.json
   Org:
-    Name: tasks-app
-    Human:
-      UserName: zitadel-admin
-      FirstName: Zitadel
-      LastName: Admin
-      PasswordChangeRequired: false
+    Name: zitadel
+    Machine:
+      Machine:
+        Username: zitadel-admin-sa
+        Name: Zitadel Admin SA
+      MachineKey:
+        Type: 1

@@ -19,6 +19,10 @@
 			time_format "rfc3339_nano"
 		}
 	}
+
+	servers {$CADDY_SITE_ADDRESS} {
+		protocols h1 h2c
+	}
 }
 
 {$CADDY_SITE_ADDRESS} {

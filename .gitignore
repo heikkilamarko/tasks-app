@@ -26,3 +26,8 @@ node_modules
 
 .idea
 .vscode
+
+.terraform*
+*.tfstate*
+
+machinekey
