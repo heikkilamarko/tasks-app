@@ -15,6 +15,7 @@ services:
       - tasks-app
 
   zitadel:
+    hostname: auth.tasks-app.com
     build: ../iam/zitadel
     image: tasks-app/zitadel
     deploy:

@@ -19,8 +19,13 @@ type SharedConfig struct {
 }
 
 type UIConfig struct {
-	Addr   string `env:"APP_UI_ADDR,notEmpty" envDefault:":8080"`
-	HubURL string `env:"APP_UI_HUB_URL,notEmpty"`
+	Addr              string `env:"APP_UI_ADDR,notEmpty" envDefault:":8080"`
+	AuthDomain        string `env:"APP_UI_AUTH_DOMAIN"`
+	AuthPath          string `env:"APP_UI_AUTH_PATH"`
+	AuthEncryptionKey string `env:"APP_UI_AUTH_ENCRYPTION_KEY"`
+	AuthClientId      string `env:"APP_UI_AUTH_CLIENT_ID"`
+	AuthRedirectURI   string `env:"APP_UI_AUTH_REDIRECT_URI"`
+	HubURL            string `env:"APP_UI_HUB_URL,notEmpty"`
 }
 
 type TaskCheckerConfig struct {
@@ -55,4 +60,8 @@ func (c *Config) IsServiceEnabled(name string) bool {
 
 func (c *Config) IsModuleEnabled(name string) bool {
 	return slices.Contains(c.Shared.Modules, name)
+}
+
+func (c *UIConfig) IsAuthEnabled() bool {
+	return c.AuthDomain != ""
 }

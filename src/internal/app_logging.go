@@ -23,6 +23,7 @@ func (a *App) createLogger() (err error) {
 	)
 
 	slog.SetDefault(a.Logger)
+	slog.SetLogLoggerLevel(level)
 
 	return err
 }

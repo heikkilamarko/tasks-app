@@ -120,7 +120,7 @@ resource "zitadel_application_oidc" "tasks_app" {
   grant_types                 = ["OIDC_GRANT_TYPE_AUTHORIZATION_CODE"]
   auth_method_type            = "OIDC_AUTH_METHOD_TYPE_NONE"
   access_token_type           = "OIDC_TOKEN_TYPE_JWT"
-  redirect_uris               = ["http://tasks-app.com/ui"]
+  redirect_uris               = ["http://tasks-app.com/ui", "http://tasks-app.com/ui/auth/callback"]
   post_logout_redirect_uris   = ["http://tasks-app.com/ui"]
   access_token_role_assertion = true
   id_token_role_assertion     = true

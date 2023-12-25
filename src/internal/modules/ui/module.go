@@ -9,6 +9,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httphelper "github.com/zitadel/oidc/v3/pkg/http"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
+	"github.com/zitadel/zitadel-go/v3/pkg/authentication"
+	aoidc "github.com/zitadel/zitadel-go/v3/pkg/authentication/oidc"
+	"github.com/zitadel/zitadel-go/v3/pkg/zitadel"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -21,10 +26,49 @@ type Module struct {
 }
 
 func (m *Module) Run(ctx context.Context) error {
+	authN, err := authentication.New(
+		ctx,
+		zitadel.New(
+			m.Config.UI.AuthDomain,
+			zitadel.WithInsecure("80"),
+		),
+		m.Config.UI.AuthEncryptionKey,
+		aoidc.WithCodeFlow[*aoidc.UserInfoContext[*oidc.IDTokenClaims, *oidc.UserInfo], *oidc.IDTokenClaims, *oidc.UserInfo](
+			aoidc.PKCEAuthentication(
+				m.Config.UI.AuthClientId,
+				m.Config.UI.AuthRedirectURI,
+				[]string{
+					oidc.ScopeOpenID,
+					oidc.ScopeProfile,
+					oidc.ScopeEmail,
+				},
+				httphelper.NewCookieHandler(
+					[]byte(m.Config.UI.AuthEncryptionKey),
+					[]byte(m.Config.UI.AuthEncryptionKey),
+					httphelper.WithUnsecure(),
+				),
+			),
+		),
+	)
+	if err != nil {
+		return err
+	}
+
+	// mw := authentication.Middleware(authN)
+
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
-	router.Use(SessionMiddleware)
+
+	router.Handle(m.Config.UI.AuthPath+"/login", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authN.Authenticate(w, r, "/ui")
+	}))
+	router.Handle(m.Config.UI.AuthPath+"/callback", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authN.Callback(w, r)
+	}))
+	router.Handle(m.Config.UI.AuthPath+"/logout", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authN.Logout(w, r)
+	}))
 
 	router.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
 	router.Method(http.MethodGet, "/ui", &GetUI{m.TaskRepository, m.Logger})

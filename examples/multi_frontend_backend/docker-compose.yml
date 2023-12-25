@@ -2,6 +2,7 @@ version: "3.9"
 
 services:
   tasks-app:
+    hostname: tasks-app.com
     build: ../src
     image: tasks-app/tasks-app
     deploy:
