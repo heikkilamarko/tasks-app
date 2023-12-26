@@ -9,8 +9,8 @@ terraform {
 
 provider "zitadel" {
   domain           = "auth.tasks-app.com"
-  insecure         = true
-  port             = 80
+  insecure         = false
+  port             = 443
   jwt_profile_file = "./machinekey/zitadel-admin-sa.json"
 }
 
@@ -120,12 +120,12 @@ resource "zitadel_application_oidc" "tasks_app" {
   grant_types                 = ["OIDC_GRANT_TYPE_AUTHORIZATION_CODE"]
   auth_method_type            = "OIDC_AUTH_METHOD_TYPE_NONE"
   access_token_type           = "OIDC_TOKEN_TYPE_JWT"
-  redirect_uris               = ["http://tasks-app.com/ui", "http://tasks-app.com/ui/auth/callback"]
-  post_logout_redirect_uris   = ["http://tasks-app.com/ui"]
+  redirect_uris               = ["https://www.tasks-app.com/ui", "https://www.tasks-app.com/ui/auth/callback"]
+  post_logout_redirect_uris   = ["https://www.tasks-app.com/", "http://www.tasks-app.com/"]
   access_token_role_assertion = true
   id_token_role_assertion     = true
   id_token_userinfo_assertion = true
-  dev_mode                    = true
+  dev_mode                    = false
 
   depends_on = [
     zitadel_user_grant.editor_editor,

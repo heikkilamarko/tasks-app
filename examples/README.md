@@ -3,7 +3,7 @@
 Before running the examples, add the following entries to your `/etc/hosts` file:
 
 ```
-127.0.0.1    tasks-app.com
+127.0.0.1    www.tasks-app.com
 127.0.0.1    auth.tasks-app.com
 ```
 
@@ -19,7 +19,7 @@ To start the single-process setup, execute the following command:
 ./example.sh up single
 ```
 
-Open the app in your web browser: http://tasks-app.com/ui
+Open the app in your web browser: http://www.tasks-app.com/ui
 
 ### Teardown
 
@@ -47,7 +47,7 @@ or
 ./example.sh up multi_all
 ```
 
-Once the setup is running, open the application in your web browser: http://tasks-app.com/ui
+Once the setup is running, open the application in your web browser: http://www.tasks-app.com/ui
 
 ### Teardown
 

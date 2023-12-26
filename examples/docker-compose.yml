@@ -2,6 +2,7 @@ version: "3.9"
 
 services:
   caddy:
+    hostname: auth.tasks-app.com
     build: ../proxy/caddy
     image: tasks-app/caddy
     deploy:
@@ -10,12 +11,11 @@ services:
     env_file:
       - ../config/dev/caddy.env
     ports:
-      - 80:80
+      - "443:443"
     networks:
       - tasks-app
 
   zitadel:
-    hostname: auth.tasks-app.com
     build: ../iam/zitadel
     image: tasks-app/zitadel
     deploy:
@@ -39,7 +39,7 @@ services:
     env_file:
       - ../config/dev/postgres.env
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
@@ -68,9 +68,9 @@ services:
       - ../config/dev/nats.env
       - ../config/dev/nats-1.env
     ports:
-      - 4222:4222
-      - 8222:8222
-      - 9222:9222
+      - "4222:4222"
+      - "8222:8222"
+      - "9222:9222"
     volumes:
       - nats-1:/nats
     networks:

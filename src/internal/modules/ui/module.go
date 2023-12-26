@@ -2,6 +2,7 @@ package ui
 
 import (
 	"context"
+	"crypto/tls"
 	"log/slog"
 	"net/http"
 	"tasks-app/internal/shared"
@@ -26,12 +27,16 @@ type Module struct {
 }
 
 func (m *Module) Run(ctx context.Context) error {
+
+	httphelper.DefaultHTTPClient.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+
 	authN, err := authentication.New(
 		ctx,
-		zitadel.New(
-			m.Config.UI.AuthDomain,
-			zitadel.WithInsecure("80"),
-		),
+		zitadel.New(m.Config.UI.AuthDomain),
 		m.Config.UI.AuthEncryptionKey,
 		aoidc.WithCodeFlow[*aoidc.UserInfoContext[*oidc.IDTokenClaims, *oidc.UserInfo], *oidc.IDTokenClaims, *oidc.UserInfo](
 			aoidc.PKCEAuthentication(
@@ -45,7 +50,6 @@ func (m *Module) Run(ctx context.Context) error {
 				httphelper.NewCookieHandler(
 					[]byte(m.Config.UI.AuthEncryptionKey),
 					[]byte(m.Config.UI.AuthEncryptionKey),
-					httphelper.WithUnsecure(),
 				),
 			),
 		),
@@ -54,7 +58,14 @@ func (m *Module) Run(ctx context.Context) error {
 		return err
 	}
 
-	// mw := authentication.Middleware(authN)
+	mw := authentication.Middleware(authN)
+
+	getUserName := func(r *http.Request) string {
+		if actx := mw.Context(r.Context()); actx != nil {
+			return actx.UserInfo.Name
+		}
+		return ""
+	}
 
 	router := chi.NewRouter()
 
@@ -71,18 +82,18 @@ func (m *Module) Run(ctx context.Context) error {
 	}))
 
 	router.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
-	router.Method(http.MethodGet, "/ui", &GetUI{m.TaskRepository, m.Logger})
-	router.Method(http.MethodGet, "/ui/tasks", &GetUITasks{m.TaskRepository, m.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/new", &GetUITasksNew{m.TaskRepository, m.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/{id}", &GetUITask{m.TaskRepository, m.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/{id}/edit", &GetUITaskEdit{m.TaskRepository, m.Logger})
-	router.Method(http.MethodGet, "/ui/tasks/{id}/attachments/{name}", &GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger})
-	router.Method(http.MethodPost, "/ui/tasks", &PostUITasks{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
-	router.Method(http.MethodPost, "/ui/tasks/{id}/complete", &PostUITaskComplete{m.TaskRepository, m.Logger})
-	router.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
-	router.Method(http.MethodDelete, "/ui/tasks/{id}", &DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
-	router.Method(http.MethodGet, "/ui/completed", &GetUICompleted{m.TaskRepository, m.Logger})
+	router.Method(http.MethodGet, "/ui", mw.RequireAuthentication()(&GetUI{m.TaskRepository, m.Logger, getUserName}))
+	router.Method(http.MethodGet, "/ui/tasks", mw.RequireAuthentication()(&GetUITasks{m.TaskRepository, m.Logger}))
+	router.Method(http.MethodGet, "/ui/tasks/export", mw.RequireAuthentication()(&GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger}))
+	router.Method(http.MethodGet, "/ui/tasks/new", mw.RequireAuthentication()(&GetUITasksNew{m.TaskRepository, m.Logger}))
+	router.Method(http.MethodGet, "/ui/tasks/{id}", mw.RequireAuthentication()(&GetUITask{m.TaskRepository, m.Logger}))
+	router.Method(http.MethodGet, "/ui/tasks/{id}/edit", mw.RequireAuthentication()(&GetUITaskEdit{m.TaskRepository, m.Logger}))
+	router.Method(http.MethodGet, "/ui/tasks/{id}/attachments/{name}", mw.RequireAuthentication()(&GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger}))
+	router.Method(http.MethodPost, "/ui/tasks", mw.RequireAuthentication()(&PostUITasks{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger}))
+	router.Method(http.MethodPost, "/ui/tasks/{id}/complete", mw.RequireAuthentication()(&PostUITaskComplete{m.TaskRepository, m.Logger}))
+	router.Method(http.MethodPut, "/ui/tasks/{id}", mw.RequireAuthentication()(&PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger}))
+	router.Method(http.MethodDelete, "/ui/tasks/{id}", mw.RequireAuthentication()(&DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger}))
+	router.Method(http.MethodGet, "/ui/completed", mw.RequireAuthentication()(&GetUICompleted{m.TaskRepository, m.Logger}))
 	router.NotFound(NotFound)
 
 	server := &http.Server{

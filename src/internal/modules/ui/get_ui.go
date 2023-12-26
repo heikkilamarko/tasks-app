@@ -9,9 +9,12 @@ import (
 type GetUI struct {
 	TaskRepository shared.TaskRepository
 	Logger         *slog.Logger
+	GetUserNameFn  func(r *http.Request) string
 }
 
 func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.Logger.Info("user", "name", h.GetUserNameFn(r))
+
 	tasks, err := h.TaskRepository.GetActive(r.Context(), 0, 50)
 	if err != nil {
 		h.Logger.Error("get tasks", "error", err)
