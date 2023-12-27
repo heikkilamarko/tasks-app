@@ -31,9 +31,9 @@ To start the infra services (caddy, zitadel, postgres, and nats), execute the fo
 docker compose up --build -d
 ```
 
-### 4. Zitadel Configuration
+### 4. ZITADEL Configuration
 
-To configure Zitadel resources, execute the following commands:
+To configure ZITADEL resources, execute the following commands:
 
 1. Navigate to the `zitadel-configure` directory:
 
@@ -56,7 +56,7 @@ When running the examples, use the following example credentials to log in to th
 | `editor` | `S3c_r3t!`       |
 | `viewer` | `S3c_r3t!`       |
 
-#### Zitadel Console (UI)
+#### ZITADEL Console (UI)
 
 https://auth.tasks-app.com/ui/console
 
