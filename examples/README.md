@@ -35,13 +35,24 @@ docker compose up --build -d
 
 To configure Zitadel resources, execute the following commands:
 
-```bash
-cd zitadel-configure
-```
+1. Navigate to the `zitadel-configure` directory:
 
-```bash
-./configure.sh
-```
+   ```bash
+   cd zitadel-configure
+   ```
+
+2. Run the configuration script:
+
+   ```bash
+   ./configure.sh
+   ```
+
+When running the examples, use the following example credentials to log in to the application:
+
+| Username | Initial Password |
+| -------- | ---------------- |
+| `editor` | `S3c_r3t!`       |
+| `viewer` | `S3c_r3t!`       |
 
 ## Single-Process Setup
 
