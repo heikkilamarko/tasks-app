@@ -1,2 +1,2 @@
 FROM caddy:alpine
-COPY ./Caddyfile /etc/caddy/
+COPY . /etc/caddy/

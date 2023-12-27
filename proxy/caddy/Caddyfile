@@ -6,6 +6,15 @@
 		# 	time_format "rfc3339_nano"
 		# }
 	}
+
+	pki {
+		ca {
+			root {
+				cert /etc/caddy/certs/root.crt
+				key /etc/caddy/certs/root.key
+			}
+		}
+	}
 }
 
 {$CADDY_SITE_ADDRESS} {
