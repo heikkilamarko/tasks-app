@@ -47,12 +47,22 @@ To configure Zitadel resources, execute the following commands:
    ./configure.sh
    ```
 
+#### Users
+
 When running the examples, use the following example credentials to log in to the application:
 
 | Username | Initial Password |
 | -------- | ---------------- |
 | `editor` | `S3c_r3t!`       |
 | `viewer` | `S3c_r3t!`       |
+
+#### Zitadel Console (UI)
+
+https://auth.tasks-app.com/ui/console
+
+| Username        | Initial Password |
+| --------------- | ---------------- |
+| `zitadel-admin` | `S3c_r3t!`       |
 
 ## Single-Process Setup
 
