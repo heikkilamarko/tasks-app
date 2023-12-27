@@ -132,3 +132,10 @@ resource "zitadel_application_oidc" "tasks_app" {
     zitadel_user_grant.viewer_viewer
   ]
 }
+
+# Outputs
+
+output "tasks_app_client_id" {
+  value     = zitadel_application_oidc.tasks_app.client_id
+  sensitive = true
+}
