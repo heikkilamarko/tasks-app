@@ -115,7 +115,7 @@ resource "zitadel_application_oidc" "tasks_app" {
   org_id                      = zitadel_org.tasks_app.id
   project_id                  = zitadel_project.tasks_app.id
   name                        = "tasks-app"
-  app_type                    = "OIDC_APP_TYPE_USER_AGENT"
+  app_type                    = "OIDC_APP_TYPE_WEB"
   response_types              = ["OIDC_RESPONSE_TYPE_CODE"]
   grant_types                 = ["OIDC_GRANT_TYPE_AUTHORIZATION_CODE"]
   auth_method_type            = "OIDC_AUTH_METHOD_TYPE_NONE"
