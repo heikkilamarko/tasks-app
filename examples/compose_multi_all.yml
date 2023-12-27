@@ -1,5 +1,7 @@
 version: "3.9"
 
+name: tasks-app
+
 services:
   tasks-app:
     build: ../src
@@ -15,9 +17,9 @@ services:
     networks:
       - tasks-app
 
-  tasks-app-backend:
+  tasks-app-taskchecker:
     build: ../src
-    image: tasks-app/tasks-app-backend
+    image: tasks-app/tasks-app-taskchecker
     deploy:
       restart_policy:
         condition: on-failure
@@ -25,6 +27,26 @@ services:
       - ../config/dev/tasks-app.env
     environment:
       - APP_SHARED_SERVICES=db:postgres,messaging:nats
-      - APP_SHARED_MODULES=taskchecker,emailnotifier:null
+      - APP_SHARED_MODULES=taskchecker
     networks:
       - tasks-app
+
+  tasks-app-emailnotifier:
+    build: ../src
+    image: tasks-app/tasks-app-emailnotifier
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - ../config/dev/tasks-app.env
+    environment:
+      - APP_SHARED_SERVICES=messaging:nats
+      - APP_SHARED_MODULES=emailnotifier:null
+    networks:
+      - tasks-app
+
+networks:
+  tasks-app:
+    name: tasks-app
+    external: true

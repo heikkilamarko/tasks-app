@@ -1,5 +1,7 @@
 version: "3.9"
 
+name: tasks-app
+
 services:
   tasks-app:
     build: ../src
@@ -11,3 +13,8 @@ services:
       - ../config/dev/tasks-app.env
     networks:
       - tasks-app
+
+networks:
+  tasks-app:
+    name: tasks-app
+    external: true
