@@ -24,7 +24,7 @@ case "$action" in
         ;;
     down)
         echo "Bringing down containers..."
-        docker compose -f docker-compose.yml -f "$example_directory/docker-compose.yml" down
+        docker compose -f docker-compose.yml -f "$example_directory/docker-compose.yml" down -v
         ;;
     *)
         usage
