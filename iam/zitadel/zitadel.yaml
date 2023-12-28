@@ -1,6 +1,11 @@
 Log:
   Level: info
 
+DefaultInstance:
+  LoginPolicy:
+    PasswordlessType: 0
+    MfaInitSkipLifetime: 0
+
 Database:
   postgres:
     Host: postgres
