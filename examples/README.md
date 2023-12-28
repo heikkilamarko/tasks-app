@@ -25,29 +25,27 @@ Ensure that the certificate is added to the trust store on your development mach
 
 ### 3. Infra Services
 
-To start the infra services (caddy, zitadel, postgres, and nats), execute the following command:
+To start and configure the infra services (caddy, zitadel, postgres, and nats), execute the following command:
 
 ```bash
-docker compose up --build -d
+./infra.sh up
 ```
 
-### 4. ZITADEL Configuration
+After running the examples, use the following command to tear down the infra services:
 
-To configure ZITADEL resources, execute the following commands:
+```bash
+./infra.sh down
+```
 
-1. Navigate to the `zitadel-configure` directory:
+## ZITADEL Console (UI)
 
-   ```bash
-   cd zitadel-configure
-   ```
+https://auth.tasks-app.com/ui/console
 
-2. Run the configuration script:
+| Username        | Initial Password |
+| --------------- | ---------------- |
+| `zitadel-admin` | `S3c_r3t!`       |
 
-   ```bash
-   ./configure.sh
-   ```
-
-#### Users
+## Example Users
 
 When running the examples, use the following example credentials to log in to the application:
 
@@ -56,74 +54,58 @@ When running the examples, use the following example credentials to log in to th
 | `editor` | `S3c_r3t!`       |
 | `viewer` | `S3c_r3t!`       |
 
-#### ZITADEL Console (UI)
+## Examples
 
-https://auth.tasks-app.com/ui/console
-
-| Username        | Initial Password |
-| --------------- | ---------------- |
-| `zitadel-admin` | `S3c_r3t!`       |
-
-## Single-Process Setup
+### Single-Process Setup
 
 In the single-process setup, all modules are enabled within a single process.
 
-### Running
-
-To start the single-process setup, execute the following command:
+#### Start
 
 ```bash
-docker compose -f compose_single.yml up --build -d
+./example.sh up example_single.yml
 ```
 
-Open the app in your web browser: http://www.tasks-app.com/ui
+App URL: http://www.tasks-app.com/ui
 
-### Teardown
-
-To stop the single-process setup and tear down the services, use the following command:
+#### Stop
 
 ```bash
-docker compose -f compose_single.yml down -v
+./example.sh down example_single.yml
 ```
 
-## Multi-Process Setup
+### Multi-Process Setup 1
 
-A multi-process setup divides the application into two or more processes.
+A multi-process setup that divides the application into frontend and backend processes.
 
-### Running
-
-To start a multi-process setup, you can choose one of the following commands based on your needs:
+#### Start
 
 ```bash
-docker compose -f compose_multi_frontend_backend.yml up --build -d
+./example.sh up example_multi_frontend_backend.yml
 ```
 
-or
+App URL: http://www.tasks-app.com/ui
+
+#### Stop
 
 ```bash
-docker compose -f compose_multi_all.yml up --build -d
+./example.sh down example_multi_frontend_backend.yml
 ```
 
-Once the setup is running, open the application in your web browser: http://www.tasks-app.com/ui
+### Multi-Process Setup 2
 
-### Teardown
+A multi-process setup where each module operates within its own dedicated process.
 
-To stop the multi-process setup, use one of the following commands, depending on your setup choice:
+#### Start
 
 ```bash
-docker compose -f compose_multi_frontend_backend.yml down -v
+./example.sh up example_multi_all.yml
 ```
 
-or
+App URL: http://www.tasks-app.com/ui
+
+#### Stop
 
 ```bash
-docker compose -f compose_multi_all.yml down -v
-```
-
-## Teardown Infra Services
-
-To tear down the infra services, execute the following command:
-
-```bash
-docker compose down -v
+./example.sh down example_multi_all.yml
 ```
