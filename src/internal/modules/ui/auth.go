@@ -62,7 +62,7 @@ func NewAuth(ctx context.Context, config *shared.Config) (*Auth, error) {
 	return &Auth{authenticator, middleware, config}, nil
 }
 
-func (a *Auth) RegisterRoutes(router *chi.Mux) {
+func (a *Auth) RegisterRoutes(router chi.Router) {
 	router.Handle(a.Config.UI.AuthPath+"/login", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		a.Authenticator.Authenticate(w, r, "/ui")
 	}))

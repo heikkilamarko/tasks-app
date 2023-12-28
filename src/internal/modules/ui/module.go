@@ -2,6 +2,7 @@ package ui
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"tasks-app/internal/shared"
@@ -22,33 +23,35 @@ type Module struct {
 }
 
 func (m *Module) Run(ctx context.Context) error {
-
-	auth, err := NewAuth(ctx, m.Config)
-	if err != nil {
-		return err
+	if err := m.initAuth(ctx); err != nil {
+		return fmt.Errorf("init auth: %w", err)
 	}
-
-	m.Auth = auth
 
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
 
-	m.Auth.RegisterRoutes(router)
+	router.Group(func(r chi.Router) {
+		m.Auth.RegisterRoutes(r)
+		r.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
+	})
 
-	router.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
-	router.Method(http.MethodGet, "/ui", m.Auth.Middleware.RequireAuthentication()(&GetUI{m.TaskRepository, m.Logger, m.Auth}))
-	router.Method(http.MethodGet, "/ui/tasks", m.Auth.Middleware.RequireAuthentication()(&GetUITasks{m.TaskRepository, m.Logger}))
-	router.Method(http.MethodGet, "/ui/tasks/export", m.Auth.Middleware.RequireAuthentication()(&GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger}))
-	router.Method(http.MethodGet, "/ui/tasks/new", m.Auth.Middleware.RequireAuthentication()(&GetUITasksNew{m.TaskRepository, m.Logger}))
-	router.Method(http.MethodGet, "/ui/tasks/{id}", m.Auth.Middleware.RequireAuthentication()(&GetUITask{m.TaskRepository, m.Logger}))
-	router.Method(http.MethodGet, "/ui/tasks/{id}/edit", m.Auth.Middleware.RequireAuthentication()(&GetUITaskEdit{m.TaskRepository, m.Logger}))
-	router.Method(http.MethodGet, "/ui/tasks/{id}/attachments/{name}", m.Auth.Middleware.RequireAuthentication()(&GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger}))
-	router.Method(http.MethodPost, "/ui/tasks", m.Auth.Middleware.RequireAuthentication()(&PostUITasks{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger}))
-	router.Method(http.MethodPost, "/ui/tasks/{id}/complete", m.Auth.Middleware.RequireAuthentication()(&PostUITaskComplete{m.TaskRepository, m.Logger}))
-	router.Method(http.MethodPut, "/ui/tasks/{id}", m.Auth.Middleware.RequireAuthentication()(&PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger}))
-	router.Method(http.MethodDelete, "/ui/tasks/{id}", m.Auth.Middleware.RequireAuthentication()(&DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger}))
-	router.Method(http.MethodGet, "/ui/completed", m.Auth.Middleware.RequireAuthentication()(&GetUICompleted{m.TaskRepository, m.Logger}))
+	router.Group(func(r chi.Router) {
+		r.Use(m.Auth.Middleware.RequireAuthentication())
+		r.Method(http.MethodGet, "/ui", &GetUI{m.TaskRepository, m.Logger, m.Auth})
+		r.Method(http.MethodGet, "/ui/tasks", &GetUITasks{m.TaskRepository, m.Logger})
+		r.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger})
+		r.Method(http.MethodGet, "/ui/tasks/new", &GetUITasksNew{m.TaskRepository, m.Logger})
+		r.Method(http.MethodGet, "/ui/tasks/{id}", &GetUITask{m.TaskRepository, m.Logger})
+		r.Method(http.MethodGet, "/ui/tasks/{id}/edit", &GetUITaskEdit{m.TaskRepository, m.Logger})
+		r.Method(http.MethodGet, "/ui/tasks/{id}/attachments/{name}", &GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger})
+		r.Method(http.MethodPost, "/ui/tasks", &PostUITasks{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
+		r.Method(http.MethodPost, "/ui/tasks/{id}/complete", &PostUITaskComplete{m.TaskRepository, m.Logger})
+		r.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
+		r.Method(http.MethodDelete, "/ui/tasks/{id}", &DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
+		r.Method(http.MethodGet, "/ui/completed", &GetUICompleted{m.TaskRepository, m.Logger})
+	})
+
 	router.NotFound(NotFound)
 
 	server := &http.Server{
@@ -75,4 +78,14 @@ func (m *Module) Run(ctx context.Context) error {
 	}
 
 	return g.Wait()
+}
+
+func (m *Module) initAuth(ctx context.Context) error {
+	auth, err := NewAuth(ctx, m.Config)
+	if err != nil {
+		return err
+	}
+
+	m.Auth = auth
+	return nil
 }
