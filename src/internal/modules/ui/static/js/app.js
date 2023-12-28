@@ -31,16 +31,26 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 
 document.body.addEventListener('htmx:responseError', (e) => {
 	const {
-		xhr: { status, statusText, responseText },
-		error
+		error,
+		xhr: { responseText }
 	} = e.detail;
 
 	showToastMessage({
 		type: 'error',
-		title: `${status} ${statusText}`,
-		text: error,
+		title: 'ERROR',
+		text: error || 'An error occurred.',
 		details: responseText
 	});
+});
+
+document.body.addEventListener('htmx:sendError', (e) => {
+	showToastMessage({
+		type: 'error',
+		title: 'ERROR',
+		text: 'An error occurred. Reloading the page in 5 seconds...'
+	});
+
+	setTimeout(() => window.location.reload(), 5000);
 });
 
 htmx.onLoad((el) => {
