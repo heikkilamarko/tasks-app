@@ -18,7 +18,7 @@ services:
     networks:
       tasks-app:
         aliases:
-          - tasks-app.com
+          - www.tasks-app.com
           - auth.tasks-app.com
 
   zitadel:
