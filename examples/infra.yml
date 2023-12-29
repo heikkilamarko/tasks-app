@@ -13,7 +13,7 @@ services:
     env_file:
       - ../config/dev/caddy.env
     volumes:
-      - ./certs:/etc/caddy/certs
+      - ./certs:/etc/caddy/certs:ro
     ports:
       - "443:443"
     networks:

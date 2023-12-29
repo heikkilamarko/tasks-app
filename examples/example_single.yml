@@ -12,7 +12,7 @@ services:
     env_file:
       - ../config/dev/tasks-app.env
     volumes:
-      - ./certs/root.crt:/etc/tasks-app/certs/root.crt
+      - ./certs/root.crt:/etc/tasks-app/certs/root.crt:ro
     networks:
       - tasks-app
 
