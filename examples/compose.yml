@@ -28,7 +28,7 @@ services:
     env_file:
       - ../config/dev/zitadel.env
     volumes:
-      - ./zitadel-configure/machinekey:/machinekey
+      - ./zitadel/machinekey:/machinekey
     networks:
       - tasks-app
     depends_on:

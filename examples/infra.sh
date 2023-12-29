@@ -12,11 +12,11 @@ usage() {
 case "$1" in
   "up")
     docker compose up --build -d
-    pushd zitadel-configure && ./configure.sh && popd
+    pushd zitadel && ./configure.sh && popd
     ;;
   "down")
     docker compose down -v
-    git clean -dfX zitadel-configure
+    git clean -dfX zitadel
     ;;
   *)
     usage
