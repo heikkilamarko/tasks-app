@@ -18,7 +18,7 @@ Add the following entries to your `/etc/hosts` file:
 We use Caddy's internal CA to generate certificates for the example setup. The root certificate is located at:
 
 ```
-/proxy/caddy/certs/root.crt
+/examples/certs/root.crt
 ```
 
 Ensure that the certificate is added to the trust store on your development machine.

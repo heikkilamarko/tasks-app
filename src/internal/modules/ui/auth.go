@@ -2,7 +2,6 @@ package ui
 
 import (
 	"context"
-	"crypto/tls"
 	"net/http"
 	"tasks-app/internal/shared"
 
@@ -27,12 +26,6 @@ type AuthInfo struct {
 }
 
 func NewAuth(ctx context.Context, config *shared.Config) (*Auth, error) {
-	zhttp.DefaultHTTPClient.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true,
-		},
-	}
-
 	authenticator, err := authentication.New(
 		ctx,
 		zitadel.New(config.UI.AuthDomain),

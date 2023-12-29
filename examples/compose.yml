@@ -12,6 +12,8 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/caddy.env
+    volumes:
+      - ./certs:/etc/caddy/certs
     ports:
       - "443:443"
     networks:
