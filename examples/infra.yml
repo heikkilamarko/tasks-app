@@ -4,7 +4,6 @@ name: tasks-app-infra
 
 services:
   caddy:
-    hostname: auth.tasks-app.com
     build: ../proxy/caddy
     image: tasks-app/caddy
     deploy:
@@ -17,7 +16,10 @@ services:
     ports:
       - "443:443"
     networks:
-      - tasks-app
+      tasks-app:
+        aliases:
+          - tasks-app.com
+          - auth.tasks-app.com
 
   zitadel:
     build: ../iam/zitadel
