@@ -1,5 +1,5 @@
 #!/bin/bash
 
-export $(cat .env.development | xargs)
+export $(cat tasks-app.env | xargs)
 
 go run cmd/tasks-app/main.go

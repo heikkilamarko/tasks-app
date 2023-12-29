@@ -29,6 +29,8 @@ services:
       - ../config/dev/zitadel.env
     volumes:
       - ./zitadel/machinekey:/machinekey
+    ports:
+      - "8080:8080"
     networks:
       - tasks-app
     depends_on:

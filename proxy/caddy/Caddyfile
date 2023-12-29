@@ -10,8 +10,8 @@
 	pki {
 		ca {
 			root {
-				cert /etc/caddy/certs/root.crt
-				key /etc/caddy/certs/root.key
+				cert {$CADDY_PKI_CA_ROOT_CERT}
+				key {$CADDY_PKI_CA_ROOT_KEY}
 			}
 		}
 	}
