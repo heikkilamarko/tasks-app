@@ -4,7 +4,7 @@
   "deliver_policy": "all",
   "durable_name": "tasks",
   "max_ack_pending": 1000,
-  "max_deliver": -1,
+  "max_deliver": 5,
   "max_waiting": 512,
   "replay_policy": "instant",
   "num_replicas": 0

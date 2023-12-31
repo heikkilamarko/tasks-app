@@ -145,8 +145,8 @@ func ParseTaskID(value string) (int, error) {
 
 func ParseTaskAttachmentName(value string) (string, error) {
 	l := len(value)
-	if l < 1 || 256 < l {
-		return "", errors.New("name: required, must be between 1 and 256 characters")
+	if l < 1 || 200 < l {
+		return "", errors.New("name: required, must be between 1 and 200 characters")
 	}
 	return value, nil
 }

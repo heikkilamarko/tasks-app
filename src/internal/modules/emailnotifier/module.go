@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"tasks-app/internal/shared"
+	"time"
 )
 
 type Module struct {
@@ -103,7 +104,7 @@ func (m *Module) AckMessage(msg shared.Message) {
 }
 
 func (m *Module) NakMessage(msg shared.Message) {
-	if err := msg.Nak(); err != nil {
+	if err := msg.NakWithDelay(4 * time.Second); err != nil {
 		m.Logger.Error("message nak failed")
 	}
 }

@@ -16,10 +16,11 @@ type NATSMsg struct {
 	msg *nats.Msg
 }
 
-func (m *NATSMsg) Subject() string { return m.msg.Subject }
-func (m *NATSMsg) Data() []byte    { return m.msg.Data }
-func (m *NATSMsg) Ack() error      { return m.msg.Ack() }
-func (m *NATSMsg) Nak() error      { return m.msg.Nak() }
+func (m *NATSMsg) Subject() string                        { return m.msg.Subject }
+func (m *NATSMsg) Data() []byte                           { return m.msg.Data }
+func (m *NATSMsg) Ack() error                             { return m.msg.Ack() }
+func (m *NATSMsg) Nak() error                             { return m.msg.Nak() }
+func (m *NATSMsg) NakWithDelay(delay time.Duration) error { return m.msg.NakWithDelay(delay) }
 
 type NATSMessagingClient struct {
 	Config *Config

@@ -1,12 +1,16 @@
 package shared
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type Message interface {
 	Subject() string
 	Data() []byte
 	Ack() error
 	Nak() error
+	NakWithDelay(delay time.Duration) error
 }
 
 type MessagingClient interface {
