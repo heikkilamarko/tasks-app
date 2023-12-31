@@ -4,7 +4,7 @@
 	"properties": {
 		"task": {
 			"type": "object",
-			"required": ["id", "name"],
+			"required": ["id", "name", "expires_at"],
 			"properties": {
 				"id": {
 					"type": "integer",
