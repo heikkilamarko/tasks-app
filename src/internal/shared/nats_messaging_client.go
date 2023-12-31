@@ -19,6 +19,7 @@ type NATSMsg struct {
 func (m *NATSMsg) Subject() string { return m.msg.Subject }
 func (m *NATSMsg) Data() []byte    { return m.msg.Data }
 func (m *NATSMsg) Ack() error      { return m.msg.Ack() }
+func (m *NATSMsg) Nak() error      { return m.msg.Nak() }
 
 type NATSMessagingClient struct {
 	Config *Config
@@ -103,10 +104,7 @@ func (c *NATSMessagingClient) Subscribe(ctx context.Context, subject string, han
 
 			if err := handler(ctx, &NATSMsg{msg}); err != nil {
 				c.Logger.Error("handle message", "error", err)
-				continue
 			}
-
-			msg.Ack()
 		}
 	}
 }
@@ -132,10 +130,7 @@ func (c *NATSMessagingClient) SubscribePersistent(ctx context.Context, stream st
 
 			if err := handler(ctx, msg); err != nil {
 				c.Logger.Error("handle persistent message", "error", err)
-				continue
 			}
-
-			msg.Ack()
 		}
 	}
 }

@@ -6,6 +6,7 @@ type Message interface {
 	Subject() string
 	Data() []byte
 	Ack() error
+	Nak() error
 }
 
 type MessagingClient interface {

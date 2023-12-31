@@ -2,6 +2,7 @@ package shared
 
 import (
 	"embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -21,6 +22,15 @@ type SchemaValidator struct {
 
 func NewSchemaValidator(fs embed.FS) *SchemaValidator {
 	return &SchemaValidator{fs, make(map[string]*jsonschema.Schema)}
+}
+
+func (v *SchemaValidator) ValidateBytes(schemaName string, docBytes []byte) error {
+	var doc interface{}
+	if err := json.Unmarshal(docBytes, &doc); err != nil {
+		return err
+	}
+
+	return v.Validate(schemaName, doc)
 }
 
 func (v *SchemaValidator) Validate(schemaName string, doc any) error {
@@ -56,7 +66,7 @@ func (v *SchemaValidator) getSchema(name string) (*jsonschema.Schema, error) {
 	schema, found := v.Schemas[name]
 
 	if !found {
-		s, err := v.FS.ReadFile(fmt.Sprintf("schemas/%s.json", name))
+		s, err := v.FS.ReadFile(name)
 		if err != nil {
 			return nil, ErrSchemaNotFound
 		}
