@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 env_dir="../../config/dev"
 dev_dir="../../src"
