@@ -22,6 +22,7 @@ type Auth struct {
 type AuthInfo struct {
 	UserName    string
 	UserEmail   string
+	IDToken     string
 	AccessToken string
 }
 
@@ -74,6 +75,7 @@ func (a *Auth) GetAuthInfo(r *http.Request) *AuthInfo {
 		return &AuthInfo{
 			ctx.UserInfo.Name,
 			ctx.UserInfo.Email,
+			ctx.Tokens.IDToken,
 			ctx.Tokens.AccessToken,
 		}
 	}

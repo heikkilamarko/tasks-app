@@ -22,7 +22,8 @@ data "zitadel_orgs" "zitadel" {
 }
 
 resource "zitadel_org" "tasks_app" {
-  name = "tasks-app"
+  name       = "tasks-app"
+  is_default = true
 }
 
 # Users
@@ -131,6 +132,32 @@ resource "zitadel_application_oidc" "tasks_app" {
     zitadel_user_grant.editor_editor,
     zitadel_user_grant.viewer_viewer
   ]
+}
+
+# Actions
+
+resource "zitadel_action" "tasks_app" {
+  org_id          = zitadel_org.tasks_app.id
+  name            = "assignDefaultRoles"
+  script          = <<-EOT
+  let logger = require("zitadel/log");
+  function assignDefaultRoles(ctx, api) {
+    api.userGrants.push({
+      projectID: "${zitadel_project.tasks_app.id}",
+      roles: ["${zitadel_project_role.viewer.role_key}"],
+    });
+    logger.log("Assigned default roles to user " + ctx.v1.getUser().username);
+  }
+  EOT
+  timeout         = "10s"
+  allowed_to_fail = true
+}
+
+resource "zitadel_trigger_actions" "tasks_app" {
+  org_id       = zitadel_org.tasks_app.id
+  flow_type    = "FLOW_TYPE_INTERNAL_AUTHENTICATION"
+  trigger_type = "TRIGGER_TYPE_POST_CREATION"
+  action_ids   = [zitadel_action.tasks_app.id]
 }
 
 # Outputs
