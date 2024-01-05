@@ -2,9 +2,14 @@ Log:
   Level: info
 
 DefaultInstance:
+  DefaultLanguage: en
+
   LoginPolicy:
     PasswordlessType: 0
     MfaInitSkipLifetime: 0
+
+  NotificationPolicy:
+    PasswordChange: false
 
 Database:
   postgres:
@@ -19,12 +24,6 @@ Database:
     User:
       SSL:
         Mode: disable
-        RootCert:
-        Cert:
-        Key:
     Admin:
       SSL:
         Mode: disable
-        RootCert:
-        Cert:
-        Key:

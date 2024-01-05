@@ -10,9 +10,9 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/wneessen/go-mail v0.4.0
 	github.com/xuri/excelize/v2 v2.8.0
-	github.com/zitadel/oidc/v3 v3.8.1
+	github.com/zitadel/oidc/v3 v3.9.0
 	github.com/zitadel/zitadel-go/v3 v3.0.0-next.2
-	golang.org/x/sync v0.5.0
+	golang.org/x/sync v0.6.0
 )
 
 require (
