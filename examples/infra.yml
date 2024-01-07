@@ -21,6 +21,24 @@ services:
           - www.tasks-app.com
           - auth.tasks-app.com
 
+  # traefik:
+  #   build: ../proxy/traefik
+  #   image: tasks-app/traefik
+  #   deploy:
+  #     restart_policy:
+  #       condition: on-failure
+  #   env_file:
+  #     - ../config/dev/traefik.env
+  #   volumes:
+  #     - ./certs:/etc/traefik/certs:ro
+  #   ports:
+  #     - "443:443"
+  #   networks:
+  #     tasks-app:
+  #       aliases:
+  #         - www.tasks-app.com
+  #         - auth.tasks-app.com
+
   zitadel:
     build: ../iam/zitadel
     image: tasks-app/zitadel

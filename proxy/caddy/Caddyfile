@@ -24,8 +24,6 @@
 
 	header -Server
 
-	redir / /ui
-
 	@auth {
 		host auth.{$CADDY_DOMAIN}
 	}
@@ -43,9 +41,9 @@
 
 	@app {
 		host www.{$CADDY_DOMAIN}
-		path /ui*
 	}
 	handle @app {
+		redir / /ui
 		reverse_proxy {$CADDY_APP_ADDRESS}
 	}
 }

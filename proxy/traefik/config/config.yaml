@@ -1,0 +1,52 @@
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/wildcard_.tasks-app.com.crt
+      keyFile: /etc/traefik/certs/wildcard_.tasks-app.com.key
+
+http:
+  routers:
+    tasks-app-root:
+      rule: Host(`www.tasks-app.com`) && Path(`/`)
+      service: tasks-app
+      middlewares:
+        - "tasks-app-ui-redir"
+      tls: {}
+
+    tasks-app:
+      rule: Host(`www.tasks-app.com`) && PathPrefix(`/ui`)
+      service: tasks-app
+      tls: {}
+
+    nats:
+      rule: Host(`www.tasks-app.com`) && PathPrefix(`/hub`)
+      service: nats
+      tls: {}
+
+    zitadel:
+      rule: Host(`auth.tasks-app.com`)
+      service: zitadel
+      tls: {}
+
+  services:
+    tasks-app:
+      loadBalancer:
+        servers:
+          - url: http://tasks-app
+
+    nats:
+      loadBalancer:
+        servers:
+          - url: http://nats-1:9222
+          - url: http://nats-2:9222
+          - url: http://nats-3:9222
+
+    zitadel:
+      loadBalancer:
+        servers:
+          - url: h2c://zitadel:8080
+
+  middlewares:
+    tasks-app-ui-redir:
+      redirectRegex:
+        regex: "https://www.tasks-app.com/?(.*)"
+        replacement: "https://www.tasks-app.com/ui${1}"
