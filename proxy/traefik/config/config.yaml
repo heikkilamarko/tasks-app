@@ -48,5 +48,5 @@ http:
   middlewares:
     tasks-app-ui-redir:
       redirectRegex:
-        regex: "https://www.tasks-app.com/?(.*)"
-        replacement: "https://www.tasks-app.com/ui${1}"
+        regex: "https://www.tasks-app.com/?"
+        replacement: "https://www.tasks-app.com/ui"
