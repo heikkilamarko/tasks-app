@@ -8,13 +8,14 @@ import (
 	"os"
 
 	"github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go/jetstream"
 )
 
 type NATSTaskAttachmentsRepository struct {
 	Config *Config
 	Logger *slog.Logger
 	conn   *nats.Conn
-	js     nats.JetStreamContext
+	js     jetstream.JetStream
 }
 
 func NewNATSTaskAttachmentsRepository(config *Config, logger *slog.Logger) (*NATSTaskAttachmentsRepository, error) {
@@ -40,7 +41,7 @@ func NewNATSTaskAttachmentsRepository(config *Config, logger *slog.Logger) (*NAT
 		return nil, err
 	}
 
-	js, err := conn.JetStream()
+	js, err := jetstream.New(conn)
 	if err != nil {
 		return nil, err
 	}
@@ -53,12 +54,12 @@ func (repo *NATSTaskAttachmentsRepository) Close() error {
 }
 
 func (repo *NATSTaskAttachmentsRepository) GetAttachment(ctx context.Context, taskID int, name string) ([]byte, error) {
-	os, err := repo.js.ObjectStore(repo.getBucketName(taskID))
+	obs, err := repo.js.ObjectStore(ctx, repo.getBucketName(taskID))
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := os.GetBytes(name)
+	data, err := obs.GetBytes(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -67,9 +68,7 @@ func (repo *NATSTaskAttachmentsRepository) GetAttachment(ctx context.Context, ta
 }
 
 func (repo *NATSTaskAttachmentsRepository) SaveAttachments(ctx context.Context, taskID int, fileHeaders []*multipart.FileHeader) error {
-	os, err := repo.js.CreateObjectStore(&nats.ObjectStoreConfig{
-		Bucket: repo.getBucketName(taskID),
-	})
+	obs, err := repo.js.CreateObjectStore(ctx, jetstream.ObjectStoreConfig{Bucket: repo.getBucketName(taskID)})
 	if err != nil {
 		return err
 	}
@@ -81,7 +80,7 @@ func (repo *NATSTaskAttachmentsRepository) SaveAttachments(ctx context.Context, 
 		}
 		defer srcFile.Close()
 
-		if _, err := os.Put(&nats.ObjectMeta{Name: fileHeader.Filename}, srcFile); err != nil {
+		if _, err := obs.Put(ctx, jetstream.ObjectMeta{Name: fileHeader.Filename}, srcFile); err != nil {
 			return err
 		}
 	}
@@ -90,13 +89,13 @@ func (repo *NATSTaskAttachmentsRepository) SaveAttachments(ctx context.Context, 
 }
 
 func (repo *NATSTaskAttachmentsRepository) DeleteAttachments(ctx context.Context, taskID int, deleted map[int]string) error {
-	os, err := repo.js.ObjectStore(repo.getBucketName(taskID))
+	obs, err := repo.js.ObjectStore(ctx, repo.getBucketName(taskID))
 	if err != nil {
 		return err
 	}
 
 	for _, name := range deleted {
-		if err := os.Delete(name); err != nil {
+		if err := obs.Delete(ctx, name); err != nil {
 			return err
 		}
 	}
@@ -105,7 +104,7 @@ func (repo *NATSTaskAttachmentsRepository) DeleteAttachments(ctx context.Context
 }
 
 func (repo *NATSTaskAttachmentsRepository) DeleteTask(ctx context.Context, taskID int) error {
-	return repo.js.DeleteObjectStore(repo.getBucketName(taskID))
+	return repo.js.DeleteObjectStore(ctx, repo.getBucketName(taskID))
 }
 
 func (repo *NATSTaskAttachmentsRepository) getBucketName(taskID int) string {
