@@ -16,8 +16,8 @@ var (
 )
 
 type SchemaValidator struct {
-	FS      embed.FS
-	Schemas map[string]*jsonschema.Schema
+	fs      embed.FS
+	schemas map[string]*jsonschema.Schema
 }
 
 func NewSchemaValidator(fs embed.FS) *SchemaValidator {
@@ -25,7 +25,7 @@ func NewSchemaValidator(fs embed.FS) *SchemaValidator {
 }
 
 func (v *SchemaValidator) ValidateBytes(schemaName string, docBytes []byte) error {
-	var doc interface{}
+	var doc any
 	if err := json.Unmarshal(docBytes, &doc); err != nil {
 		return err
 	}
@@ -63,10 +63,10 @@ func (v *SchemaValidator) Validate(schemaName string, doc any) error {
 }
 
 func (v *SchemaValidator) getSchema(name string) (*jsonschema.Schema, error) {
-	schema, found := v.Schemas[name]
+	schema, found := v.schemas[name]
 
 	if !found {
-		s, err := v.FS.ReadFile(name)
+		s, err := v.fs.ReadFile(name)
 		if err != nil {
 			return nil, ErrSchemaNotFound
 		}
@@ -83,7 +83,7 @@ func (v *SchemaValidator) getSchema(name string) (*jsonschema.Schema, error) {
 			return nil, ErrInvalidSchema
 		}
 
-		v.Schemas[name] = schema
+		v.schemas[name] = schema
 	}
 
 	return schema, nil

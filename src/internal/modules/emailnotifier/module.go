@@ -15,11 +15,11 @@ type Module struct {
 	Logger          *slog.Logger
 	MessagingClient shared.MessagingClient
 	EmailClient     EmailClient
-	validator       shared.SchemaValidator
+	validator       *shared.SchemaValidator
 }
 
 func (m *Module) Run(ctx context.Context) error {
-	m.validator = *shared.NewSchemaValidator(SchemasFS)
+	m.validator = shared.NewSchemaValidator(SchemasFS)
 
 	return m.MessagingClient.SubscribePersistent(ctx, "tasks", "tasks", m.handleMessage)
 }
