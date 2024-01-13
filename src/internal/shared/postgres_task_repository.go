@@ -216,6 +216,7 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 	var tasks []*Task
 
 	query := fmt.Sprintf(`
+		WITH tasks AS (SELECT * FROM task t %s)
 		SELECT
 			t.id,
 			t.name,
@@ -231,7 +232,7 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 			a.created_at,
 			a.updated_at
 		FROM
-			(select * from task t %s) as t
+			tasks t
 		LEFT JOIN
 			attachment a ON t.id = a.task_id
 		%s
