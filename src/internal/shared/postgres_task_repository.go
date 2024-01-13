@@ -3,6 +3,7 @@ package shared
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -53,7 +54,7 @@ func (repo *PostgresTaskRepository) Create(ctx context.Context, task *Task) erro
 func (repo *PostgresTaskRepository) Update(ctx context.Context, task *Task) error {
 	query := `
 		UPDATE task
-		SET 
+		SET
 			name = $2,
 			expires_at = $3,
 			expiring_info_at = $4,
@@ -115,11 +116,11 @@ func (repo *PostgresTaskRepository) Delete(ctx context.Context, id int) error {
 }
 
 func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task, error) {
-	query := `
+	where := `
 		WHERE t.id = $1
 	`
 
-	tasks, err := repo.getTasks(ctx, query, id)
+	tasks, err := repo.getTasks(ctx, where, "", id)
 	if err != nil {
 		return nil, err
 	}
@@ -132,27 +133,31 @@ func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task,
 }
 
 func (repo *PostgresTaskRepository) GetActive(ctx context.Context, offset int, limit int) ([]*Task, error) {
-	query := `
+	where := `
 		WHERE t.completed_at IS NULL
 		ORDER BY t.created_at DESC
-		--LIMIT $1 OFFSET $2
+		LIMIT $1 OFFSET $2
 	`
 
-	return repo.getTasks(ctx, query /*, limit, offset*/)
+	orderBy := "ORDER BY t.created_at DESC"
+
+	return repo.getTasks(ctx, where, orderBy, limit, offset)
 }
 
 func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context, offset int, limit int) ([]*Task, error) {
-	query := `
+	where := `
 		WHERE t.completed_at IS NOT NULL
 		ORDER BY t.completed_at DESC
-		--LIMIT $1 OFFSET $2
+		LIMIT $1 OFFSET $2
 	`
 
-	return repo.getTasks(ctx, query /*, limit, offset*/)
+	orderBy := "ORDER BY t.completed_at DESC"
+
+	return repo.getTasks(ctx, where, orderBy, limit, offset)
 }
 
 func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Duration) ([]*Task, error) {
-	query := `
+	where := `
 		WHERE t.completed_at IS NULL
 		AND t.expiring_info_at IS NULL
 		AND t.expires_at IS NOT NULL
@@ -161,14 +166,16 @@ func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Dura
 		ORDER BY t.created_at ASC
 	`
 
+	orderBy := "ORDER BY t.created_at ASC"
+
 	t1 := time.Now().UTC()
 	t2 := t1.Add(d)
 
-	return repo.getTasks(ctx, query, t1, t2)
+	return repo.getTasks(ctx, where, orderBy, t1, t2)
 }
 
 func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, error) {
-	query := `
+	where := `
 		WHERE t.completed_at IS NULL
 		AND t.expired_info_at IS NULL
 		AND t.expires_at IS NOT NULL
@@ -176,9 +183,11 @@ func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, er
 		ORDER BY t.created_at ASC
 	`
 
+	orderBy := "ORDER BY t.created_at ASC"
+
 	now := time.Now().UTC()
 
-	return repo.getTasks(ctx, query, now)
+	return repo.getTasks(ctx, where, orderBy, now)
 }
 
 func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.Duration) (int64, error) {
@@ -203,10 +212,10 @@ func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.
 	return count, nil
 }
 
-func (repo *PostgresTaskRepository) getTasks(ctx context.Context, query string, args ...any) ([]*Task, error) {
+func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, orderBy string, args ...any) ([]*Task, error) {
 	var tasks []*Task
 
-	query = `
+	query := fmt.Sprintf(`
 		SELECT
 			t.id,
 			t.name,
@@ -222,10 +231,11 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, query string, 
 			a.created_at,
 			a.updated_at
 		FROM
-			task t
+			(select * from task t %s) as t
 		LEFT JOIN
 			attachment a ON t.id = a.task_id
-	` + query
+		%s
+	`, where, orderBy)
 
 	rows, err := repo.db.QueryContext(ctx, query, args...)
 	if err != nil {
