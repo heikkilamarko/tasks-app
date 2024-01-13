@@ -135,20 +135,20 @@ func (repo *PostgresTaskRepository) GetActive(ctx context.Context, offset int, l
 	query := `
 		WHERE t.completed_at IS NULL
 		ORDER BY t.created_at DESC
-		LIMIT $1 OFFSET $2
+		--LIMIT $1 OFFSET $2
 	`
 
-	return repo.getTasks(ctx, query, limit, offset)
+	return repo.getTasks(ctx, query /*, limit, offset*/)
 }
 
 func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context, offset int, limit int) ([]*Task, error) {
 	query := `
 		WHERE t.completed_at IS NOT NULL
 		ORDER BY t.completed_at DESC
-		LIMIT $1 OFFSET $2
+		--LIMIT $1 OFFSET $2
 	`
 
-	return repo.getTasks(ctx, query, limit, offset)
+	return repo.getTasks(ctx, query /*, limit, offset*/)
 }
 
 func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Duration) ([]*Task, error) {
