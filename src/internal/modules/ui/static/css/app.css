@@ -11,7 +11,7 @@ td {
 input,
 textarea,
 select {
-	&:invalid {
+	&:user-invalid {
 		border-color: var(--bs-form-invalid-border-color);
 
 		&:focus {
