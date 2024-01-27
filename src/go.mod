@@ -10,7 +10,7 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/wneessen/go-mail v0.4.0
 	github.com/xuri/excelize/v2 v2.8.0
-	github.com/zitadel/oidc/v3 v3.10.3
+	github.com/zitadel/oidc/v3 v3.11.0
 	github.com/zitadel/zitadel-go/v3 v3.0.0-next.2
 	golang.org/x/sync v0.6.0
 )
@@ -18,7 +18,7 @@ require (
 require (
 	github.com/go-jose/go-jose/v3 v3.0.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/uuid v1.5.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
