@@ -39,7 +39,7 @@ document.body.addEventListener('htmx:responseError', (e) => {
 		type: 'error',
 		title: 'ERROR',
 		text: error || 'An error occurred.',
-		details: responseText
+		details: responseText?.trim()
 	});
 });
 
@@ -132,18 +132,18 @@ function showToastMessage(config) {
 	const toasterEl = document.getElementById('toaster');
 	if (!toasterEl) return;
 
-	let classes = 'border-primary text-primary';
+	let classes = 'text-bg-primary';
 	switch (config.type) {
 		case 'warning':
-			classes = 'border-warning text-warning';
+			classes = 'text-bg-warning';
 			break;
 		case 'error':
-			classes = 'border-danger text-danger';
+			classes = 'text-bg-danger';
 			break;
 	}
 
 	const toastEl = document.createElement('div');
-	toastEl.className = `toast fade border ${classes}`;
+	toastEl.className = `toast fade border-0 ${classes}`;
 	toastEl.innerHTML = `
 		<div class="toast-body d-flex flex-column">
 			<div class="fw-bold">${config.title}</div>
