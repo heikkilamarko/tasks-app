@@ -48,7 +48,7 @@ type AttachmentsRequest struct {
 type TasksResponse struct {
 	Tasks         []*shared.Task
 	IsCreatingNew bool
-	ColorMode     string
+	Theme         string
 }
 
 func NewTasksResponse(tasks []*shared.Task) *TasksResponse {
@@ -56,7 +56,7 @@ func NewTasksResponse(tasks []*shared.Task) *TasksResponse {
 }
 
 func (response *TasksResponse) WithTheme(r *http.Request) *TasksResponse {
-	response.ColorMode = GetTheme(r)
+	response.Theme = GetTheme(r)
 	return response
 }
 
