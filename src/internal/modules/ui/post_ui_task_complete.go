@@ -47,7 +47,7 @@ func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := TasksResponse{tasks, false}
+	vm := NewTasksResponse(tasks)
 
 	if err := Templates.ExecuteTemplate(w, "active_tasks_table", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)

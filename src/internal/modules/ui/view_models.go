@@ -42,6 +42,14 @@ type AttachmentsRequest struct {
 type TasksResponse struct {
 	Tasks         []*shared.Task
 	IsCreatingNew bool
+	ColorMode     string
+}
+
+func NewTasksResponse(tasks []*shared.Task) *TasksResponse {
+	return &TasksResponse{
+		Tasks:     tasks,
+		ColorMode: "dark",
+	}
 }
 
 func ParseTaskRequest(r *http.Request) (*TaskRequest, error) {

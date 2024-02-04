@@ -3,7 +3,7 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"prettier": "3.2.4",
+		"prettier": "3.2.5",
 		"prettier-plugin-go-template": "0.0.15"
 	}
 }

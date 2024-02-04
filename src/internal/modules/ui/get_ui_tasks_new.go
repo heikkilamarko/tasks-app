@@ -19,7 +19,8 @@ func (h *GetUITasksNew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := TasksResponse{tasks, true}
+	vm := NewTasksResponse(tasks)
+	vm.IsCreatingNew = true
 
 	if err := Templates.ExecuteTemplate(w, "active_tasks_table", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)
