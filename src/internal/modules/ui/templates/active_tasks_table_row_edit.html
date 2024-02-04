@@ -30,7 +30,9 @@
 			/>
 			<div>
 				{{ range .Attachments }}
-					<div class="badge border text-secondary-emphasis d-flex align-items-center justify-content-between gap-3 mt-2">
+					<div
+						class="badge border text-secondary-emphasis d-flex align-items-center justify-content-between gap-3 mt-2"
+					>
 						<input type="hidden" name="attachments" form="task-edit-form" value="{{ .FileName }}" />
 						{{ .FileName }}
 						<button class="btn-close" _="on click remove closest parent <div/>"></button>
