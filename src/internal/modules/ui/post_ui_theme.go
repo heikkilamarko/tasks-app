@@ -19,5 +19,5 @@ func (h *PostUITheme) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	SetThemeCookie(w, req.Theme)
 
-	w.Header().Add("HX-Redirect", "/ui")
+	w.Header().Add("HX-Redirect", GetRedirectURL(r))
 }
