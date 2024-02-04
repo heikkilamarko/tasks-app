@@ -39,6 +39,7 @@ func (m *Module) Run(ctx context.Context) error {
 	router.Group(func(r chi.Router) {
 		r.Use(m.Auth.Middleware.RequireAuthentication())
 		r.Method(http.MethodGet, "/ui", &GetUI{m.TaskRepository, m.Logger, m.Auth})
+		r.Method(http.MethodPost, "/ui/theme", &PostUITheme{m.Logger})
 		r.Method(http.MethodGet, "/ui/tasks", &GetUITasks{m.TaskRepository, m.Logger})
 		r.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger})
 		r.Method(http.MethodGet, "/ui/tasks/new", &GetUITasksNew{m.TaskRepository, m.Logger})

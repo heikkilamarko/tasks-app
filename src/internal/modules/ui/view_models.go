@@ -2,15 +2,21 @@ package ui
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"slices"
 	"strconv"
+	"strings"
 	"tasks-app/internal/shared"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 )
+
+type ThemeRequest struct {
+	Theme string
+}
 
 type TaskRequest struct {
 	ID int
@@ -46,10 +52,27 @@ type TasksResponse struct {
 }
 
 func NewTasksResponse(tasks []*shared.Task) *TasksResponse {
-	return &TasksResponse{
-		Tasks:     tasks,
-		ColorMode: "dark",
+	return &TasksResponse{Tasks: tasks}
+}
+
+func (response *TasksResponse) WithTheme(r *http.Request) *TasksResponse {
+	response.ColorMode = GetTheme(r)
+	return response
+}
+
+func ParseSetThemeRequest(r *http.Request) (*ThemeRequest, error) {
+	var errs []error
+
+	theme, err := ParseTheme(r.FormValue("theme"))
+	if err != nil {
+		errs = append(errs, err)
 	}
+
+	if err := errors.Join(errs...); err != nil {
+		return nil, err
+	}
+
+	return &ThemeRequest{theme}, nil
 }
 
 func ParseTaskRequest(r *http.Request) (*TaskRequest, error) {
@@ -142,6 +165,14 @@ func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
 	return &UpdateTaskRequest{id, name, expiresAt, attachments}, nil
 }
 
+func ParseTheme(value string) (string, error) {
+	if !IsValidTheme(value) {
+		return "", fmt.Errorf("theme: required, supported values: %s", strings.Join(SupportedThemes(), ", "))
+	}
+
+	return value, nil
+}
+
 func ParseTaskID(value string) (int, error) {
 	v, err := strconv.Atoi(value)
 	if err != nil || v < 1 {
@@ -156,6 +187,7 @@ func ParseTaskAttachmentName(value string) (string, error) {
 	if l < 1 || 200 < l {
 		return "", errors.New("name: required, must be between 1 and 200 characters")
 	}
+
 	return value, nil
 }
 
@@ -164,6 +196,7 @@ func ParseTaskName(value string) (string, error) {
 	if l < 1 || 200 < l {
 		return "", errors.New("name: required, must be between 1 and 200 characters")
 	}
+
 	return value, nil
 }
 

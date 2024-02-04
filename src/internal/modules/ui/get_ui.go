@@ -24,7 +24,7 @@ func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := NewTasksResponse(tasks)
+	vm := NewTasksResponse(tasks).WithTheme(r)
 
 	if err := Templates.ExecuteTemplate(w, "active_tasks", vm); err != nil {
 		h.Logger.Error("execute template", "error", err)
