@@ -1,4 +1,4 @@
-FROM golang:1.22-rc AS build
+FROM golang:1.22 AS build
 COPY . .
 ENV GOPATH=""
 ENV CGO_ENABLED=0
