@@ -8,7 +8,6 @@ import (
 	"tasks-app/internal/shared"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"golang.org/x/sync/errgroup"
 )
@@ -27,40 +26,35 @@ func (m *Module) Run(ctx context.Context) error {
 		return fmt.Errorf("init auth: %w", err)
 	}
 
-	router := chi.NewRouter()
+	errorMW := middleware.Recoverer
+	authnMW := m.Auth.Middleware.RequireAuthentication()
 
-	router.Use(middleware.Recoverer)
+	mux := http.NewServeMux()
 
-	router.Group(func(r chi.Router) {
-		m.Auth.RegisterRoutes(r)
-		r.Handle("/ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
-	})
-
-	router.Group(func(r chi.Router) {
-		r.Use(m.Auth.Middleware.RequireAuthentication())
-		r.Method(http.MethodGet, "/ui", &GetUI{m.TaskRepository, m.Logger, m.Auth})
-		r.Method(http.MethodPost, "/ui/theme", &PostUITheme{m.Logger})
-		r.Method(http.MethodGet, "/ui/tasks", &GetUITasks{m.TaskRepository, m.Logger})
-		r.Method(http.MethodGet, "/ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger})
-		r.Method(http.MethodGet, "/ui/tasks/new", &GetUITasksNew{m.TaskRepository, m.Logger})
-		r.Method(http.MethodGet, "/ui/tasks/{id}", &GetUITask{m.TaskRepository, m.Logger})
-		r.Method(http.MethodGet, "/ui/tasks/{id}/edit", &GetUITaskEdit{m.TaskRepository, m.Logger})
-		r.Method(http.MethodGet, "/ui/tasks/{id}/attachments/{name}", &GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger})
-		r.Method(http.MethodPost, "/ui/tasks", &PostUITasks{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
-		r.Method(http.MethodPost, "/ui/tasks/{id}/complete", &PostUITaskComplete{m.TaskRepository, m.Logger})
-		r.Method(http.MethodPut, "/ui/tasks/{id}", &PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
-		r.Method(http.MethodDelete, "/ui/tasks/{id}", &DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})
-		r.Method(http.MethodGet, "/ui/completed", &GetUICompleted{m.TaskRepository, m.Logger})
-	})
-
-	router.NotFound(NotFound)
+	mux.Handle("GET /ui/auth/login", errorMW(m.Auth.LoginHandler("/ui")))
+	mux.Handle("GET /ui/auth/callback", errorMW(m.Auth.CallbackHandler()))
+	mux.Handle("GET /ui/auth/logout", errorMW(m.Auth.LogoutHandler()))
+	mux.Handle("GET /ui/static/*", errorMW(http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS)))))
+	mux.Handle("GET /ui", errorMW(authnMW(&GetUI{m.TaskRepository, m.Logger, m.Auth})))
+	mux.Handle("POST /ui/theme", errorMW(authnMW(&PostUITheme{m.Logger})))
+	mux.Handle("GET /ui/tasks", errorMW(authnMW(&GetUITasks{m.TaskRepository, m.Logger})))
+	mux.Handle("GET /ui/tasks/export", errorMW(authnMW(&GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger})))
+	mux.Handle("GET /ui/tasks/new", errorMW(authnMW(&GetUITasksNew{m.TaskRepository, m.Logger})))
+	mux.Handle("GET /ui/tasks/{id}", errorMW(authnMW(&GetUITask{m.TaskRepository, m.Logger})))
+	mux.Handle("GET /ui/tasks/{id}/edit", errorMW(authnMW(&GetUITaskEdit{m.TaskRepository, m.Logger})))
+	mux.Handle("GET /ui/tasks/{id}/attachments/{name}", errorMW(authnMW(&GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger})))
+	mux.Handle("POST /ui/tasks", errorMW(authnMW(&PostUITasks{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})))
+	mux.Handle("POST /ui/tasks/{id}/complete", errorMW(authnMW(&PostUITaskComplete{m.TaskRepository, m.Logger})))
+	mux.Handle("PUT /ui/tasks/{id}", errorMW(authnMW(&PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})))
+	mux.Handle("DELETE /ui/tasks/{id}", errorMW(authnMW(&DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger})))
+	mux.Handle("GET /ui/completed", errorMW(authnMW(&GetUICompleted{m.TaskRepository, m.Logger})))
 
 	server := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
 		Addr:         m.Config.UI.Addr,
-		Handler:      router,
+		Handler:      mux,
 	}
 
 	g := &errgroup.Group{}

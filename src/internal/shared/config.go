@@ -21,7 +21,6 @@ type SharedConfig struct {
 type UIConfig struct {
 	Addr              string `env:"APP_UI_ADDR,notEmpty" envDefault:":8080"`
 	AuthDomain        string `env:"APP_UI_AUTH_DOMAIN"`
-	AuthPath          string `env:"APP_UI_AUTH_PATH"`
 	AuthEncryptionKey string `env:"APP_UI_AUTH_ENCRYPTION_KEY"`
 	AuthClientId      string `env:"APP_UI_AUTH_CLIENT_ID"`
 	AuthRedirectURI   string `env:"APP_UI_AUTH_REDIRECT_URI"`

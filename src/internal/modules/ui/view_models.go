@@ -10,8 +10,6 @@ import (
 	"strings"
 	"tasks-app/internal/shared"
 	"time"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type ThemeRequest struct {
@@ -78,7 +76,7 @@ func ParseSetThemeRequest(r *http.Request) (*ThemeRequest, error) {
 func ParseTaskRequest(r *http.Request) (*TaskRequest, error) {
 	var errs []error
 
-	id, err := ParseTaskID(chi.URLParam(r, "id"))
+	id, err := ParseTaskID(r.PathValue("id"))
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -93,12 +91,12 @@ func ParseTaskRequest(r *http.Request) (*TaskRequest, error) {
 func ParseTaskAttachmentRequest(r *http.Request) (*TaskAttachmentRequest, error) {
 	var errs []error
 
-	id, err := ParseTaskID(chi.URLParam(r, "id"))
+	id, err := ParseTaskID(r.PathValue("id"))
 	if err != nil {
 		errs = append(errs, err)
 	}
 
-	name, err := ParseTaskAttachmentName(chi.URLParam(r, "name"))
+	name, err := ParseTaskAttachmentName(r.PathValue("name"))
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -138,7 +136,7 @@ func ParseNewTaskRequest(r *http.Request) (*NewTaskRequest, error) {
 func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
 	var errs []error
 
-	id, err := ParseTaskID(chi.URLParam(r, "id"))
+	id, err := ParseTaskID(r.PathValue("id"))
 	if err != nil {
 		errs = append(errs, err)
 	}

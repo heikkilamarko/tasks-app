@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"tasks-app/internal/shared"
 
-	"github.com/go-chi/chi/v5"
 	zhttp "github.com/zitadel/oidc/v3/pkg/http"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"github.com/zitadel/zitadel-go/v3/pkg/authentication"
@@ -56,20 +55,6 @@ func NewAuth(ctx context.Context, config *shared.Config) (*Auth, error) {
 	return &Auth{authenticator, middleware, config}, nil
 }
 
-func (a *Auth) RegisterRoutes(router chi.Router) {
-	router.Handle(a.Config.UI.AuthPath+"/login", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.Authenticator.Authenticate(w, r, "/ui")
-	}))
-
-	router.Handle(a.Config.UI.AuthPath+"/callback", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.Authenticator.Callback(w, r)
-	}))
-
-	router.Handle(a.Config.UI.AuthPath+"/logout", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.Authenticator.Logout(w, r)
-	}))
-}
-
 func (a *Auth) GetAuthInfo(r *http.Request) *AuthInfo {
 	if ctx := a.Middleware.Context(r.Context()); ctx != nil {
 		return &AuthInfo{
@@ -80,4 +65,22 @@ func (a *Auth) GetAuthInfo(r *http.Request) *AuthInfo {
 		}
 	}
 	return nil
+}
+
+func (a *Auth) LoginHandler(requestedURI string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a.Authenticator.Authenticate(w, r, requestedURI)
+	})
+}
+
+func (a *Auth) CallbackHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a.Authenticator.Callback(w, r)
+	})
+}
+
+func (a *Auth) LogoutHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a.Authenticator.Logout(w, r)
+	})
 }
