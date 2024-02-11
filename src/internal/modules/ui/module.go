@@ -8,7 +8,6 @@ import (
 	"tasks-app/internal/shared"
 	"time"
 
-	"github.com/go-chi/chi/v5/middleware"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -26,7 +25,7 @@ func (m *Module) Run(ctx context.Context) error {
 		return fmt.Errorf("init auth: %w", err)
 	}
 
-	errorMW := middleware.Recoverer
+	errorMW := ErrorRecoveryMiddleware(m.Logger)
 	authnMW := m.Auth.Middleware.RequireAuthentication()
 
 	mux := http.NewServeMux()

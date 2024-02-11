@@ -4,7 +4,6 @@ go 1.22.0
 
 require (
 	github.com/caarlos0/env/v9 v9.0.0
-	github.com/go-chi/chi/v5 v5.0.11
 	github.com/jackc/pgx/v5 v5.5.3
 	github.com/nats-io/nats.go v1.32.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
