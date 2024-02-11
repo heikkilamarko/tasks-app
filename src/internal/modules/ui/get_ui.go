@@ -8,8 +8,9 @@ import (
 
 type GetUI struct {
 	TaskRepository shared.TaskRepository
-	Logger         *slog.Logger
+	Renderer       Renderer
 	Auth           *Auth
+	Logger         *slog.Logger
 }
 
 func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -26,8 +27,5 @@ func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	vm := NewTasksResponse(tasks).WithTheme(r)
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks", vm); err != nil {
-		h.Logger.Error("execute template", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-	}
+	h.Renderer.Render(w, "active_tasks", vm)
 }

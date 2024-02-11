@@ -9,6 +9,7 @@ import (
 type DeleteUITask struct {
 	TaskRepository            shared.TaskRepository
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
+	Renderer                  Renderer
 	Logger                    *slog.Logger
 }
 
@@ -55,8 +56,5 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	vm := NewTasksResponse(tasks)
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks_table", vm); err != nil {
-		h.Logger.Error("execute template", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-	}
+	h.Renderer.Render(w, "active_tasks_table", vm)
 }

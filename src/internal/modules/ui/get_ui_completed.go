@@ -8,6 +8,7 @@ import (
 
 type GetUICompleted struct {
 	TaskRepository shared.TaskRepository
+	Renderer       Renderer
 	Logger         *slog.Logger
 }
 
@@ -21,8 +22,5 @@ func (h *GetUICompleted) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	vm := NewTasksResponse(tasks).WithTheme(r)
 
-	if err := Templates.ExecuteTemplate(w, "completed_tasks", vm); err != nil {
-		h.Logger.Error("execute template", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-	}
+	h.Renderer.Render(w, "completed_tasks", vm)
 }

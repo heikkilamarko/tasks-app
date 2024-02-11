@@ -9,6 +9,7 @@ import (
 type PutUITask struct {
 	TaskRepository            shared.TaskRepository
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
+	Renderer                  Renderer
 	Logger                    *slog.Logger
 }
 
@@ -70,8 +71,5 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks_table_row", task); err != nil {
-		h.Logger.Error("execute template", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-	}
+	h.Renderer.Render(w, "active_tasks_table_row", task)
 }

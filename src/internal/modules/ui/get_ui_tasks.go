@@ -8,6 +8,7 @@ import (
 
 type GetUITasks struct {
 	TaskRepository shared.TaskRepository
+	Renderer       Renderer
 	Logger         *slog.Logger
 }
 
@@ -21,8 +22,5 @@ func (h *GetUITasks) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	vm := NewTasksResponse(tasks)
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks_table", vm); err != nil {
-		h.Logger.Error("execute template", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-	}
+	h.Renderer.Render(w, "active_tasks_table", vm)
 }

@@ -8,6 +8,7 @@ import (
 
 type GetUITaskEdit struct {
 	TaskRepository shared.TaskRepository
+	Renderer       Renderer
 	Logger         *slog.Logger
 }
 
@@ -31,8 +32,5 @@ func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := Templates.ExecuteTemplate(w, "active_tasks_table_row_edit", task); err != nil {
-		h.Logger.Error("execute template", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-	}
+	h.Renderer.Render(w, "active_tasks_table_row_edit", task)
 }
