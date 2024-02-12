@@ -59,7 +59,6 @@ func (a *App) run(ctx context.Context) error {
 	g, ctx := errgroup.WithContext(ctx)
 
 	for k, m := range a.Modules {
-		k, m := k, m
 		g.Go(func() error {
 			a.Logger.Info("run app module", slog.String("module", k))
 			defer a.Logger.Info("exit app module", slog.String("module", k))
