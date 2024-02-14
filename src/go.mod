@@ -5,9 +5,9 @@ go 1.22.0
 require (
 	github.com/caarlos0/env/v9 v9.0.0
 	github.com/jackc/pgx/v5 v5.5.3
-	github.com/nats-io/nats.go v1.32.0
+	github.com/nats-io/nats.go v1.33.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
-	github.com/wneessen/go-mail v0.4.0
+	github.com/wneessen/go-mail v0.4.1
 	github.com/xuri/excelize/v2 v2.8.0
 	github.com/zitadel/oidc/v3 v3.11.1
 	github.com/zitadel/zitadel-go/v3 v3.0.0-next.2

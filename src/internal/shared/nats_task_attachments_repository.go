@@ -68,7 +68,7 @@ func (repo *NATSTaskAttachmentsRepository) GetAttachment(ctx context.Context, ta
 }
 
 func (repo *NATSTaskAttachmentsRepository) SaveAttachments(ctx context.Context, taskID int, fileHeaders []*multipart.FileHeader) error {
-	obs, err := repo.js.CreateObjectStore(ctx, jetstream.ObjectStoreConfig{
+	obs, err := repo.js.CreateOrUpdateObjectStore(ctx, jetstream.ObjectStoreConfig{
 		Bucket:   repo.getBucketName(taskID),
 		Replicas: 3,
 	})
