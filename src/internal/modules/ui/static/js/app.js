@@ -132,23 +132,33 @@ function showToastMessage(config) {
 	const toasterEl = document.getElementById('toaster');
 	if (!toasterEl) return;
 
-	let classes = 'text-bg-primary';
+	let classes = {
+		root: 'text-bg-primary',
+		details: 'bg-primary-subtle text-primary-emphasis'
+	};
+
 	switch (config.type) {
 		case 'warning':
-			classes = 'text-bg-warning';
+			classes = {
+				root: 'text-bg-warning',
+				details: 'bg-warning-subtle text-warning-emphasis'
+			};
 			break;
 		case 'error':
-			classes = 'text-bg-danger';
+			classes = {
+				root: 'text-bg-danger',
+				details: 'bg-danger-subtle text-danger-emphasis'
+			};
 			break;
 	}
 
 	const toastEl = document.createElement('div');
-	toastEl.className = `toast fade border-0 ${classes}`;
+	toastEl.className = `toast fade border-0 ${classes.root}`;
 	toastEl.innerHTML = `
 		<div class="toast-body d-flex flex-column">
 			<div class="fw-bold">${config.title}</div>
 			<div class="app-text-multiline">${config.text}</div>
-			${config.details ? `<div class="app-text-multiline"><code>${config.details}</code></div>` : ''}
+			${config.details ? `<div class="app-text-multiline font-monospace mt-2 py-2 px-3 ${classes.details}">${config.details}</div>` : ''}
 		</div>
 	`;
 
