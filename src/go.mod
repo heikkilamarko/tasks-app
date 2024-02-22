@@ -5,11 +5,11 @@ go 1.22.0
 require (
 	github.com/caarlos0/env/v9 v9.0.0
 	github.com/jackc/pgx/v5 v5.5.3
-	github.com/nats-io/nats.go v1.33.0
+	github.com/nats-io/nats.go v1.33.1
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/wneessen/go-mail v0.4.1
 	github.com/xuri/excelize/v2 v2.8.0
-	github.com/zitadel/oidc/v3 v3.11.1
+	github.com/zitadel/oidc/v3 v3.11.2
 	github.com/zitadel/zitadel-go/v3 v3.0.0-next.2
 	golang.org/x/sync v0.6.0
 )
@@ -34,11 +34,11 @@ require (
 	github.com/xuri/nfp v0.0.0-20230819163627-dc951e3ffe1a // indirect
 	github.com/zitadel/logging v0.5.0 // indirect
 	github.com/zitadel/schema v1.3.0 // indirect
-	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848 // indirect
-	golang.org/x/net v0.20.0 // indirect
-	golang.org/x/oauth2 v0.16.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/oauth2 v0.17.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
