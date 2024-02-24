@@ -4,11 +4,16 @@
 	"properties": {
 		"task": {
 			"type": "object",
-			"required": ["id", "name", "expires_at"],
+			"required": ["id", "user_id", "name", "expires_at"],
 			"properties": {
 				"id": {
 					"type": "integer",
 					"minimum": 1
+				},
+				"user_id": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 200
 				},
 				"name": {
 					"type": "string",

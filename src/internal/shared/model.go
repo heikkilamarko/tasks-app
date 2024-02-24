@@ -9,6 +9,7 @@ const (
 
 type Task struct {
 	ID             int           `json:"id"`
+	UserID         string        `json:"user_id"`
 	Name           string        `json:"name"`
 	ExpiresAt      *time.Time    `json:"expires_at"`
 	ExpiringInfoAt *time.Time    `json:"expiring_info_at"`

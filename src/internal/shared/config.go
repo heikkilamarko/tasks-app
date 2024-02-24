@@ -34,7 +34,8 @@ type TaskCheckerConfig struct {
 }
 
 type EmailNotifierConfig struct {
-	ToAddress       string `env:"APP_EMAIL_NOTIFIER_TO_ADDRESS"`
+	ZitadelURL      string `env:"APP_EMAIL_NOTIFIER_ZITADEL_URL"`
+	ZitadelPAT      string `env:"APP_EMAIL_NOTIFIER_ZITADEL_PAT"`
 	SMTPHost        string `env:"APP_EMAIL_NOTIFIER_SMTP_HOST"`
 	SMTPPort        int    `env:"APP_EMAIL_NOTIFIER_SMTP_PORT" envDefault:"587"`
 	SMTPFromName    string `env:"APP_EMAIL_NOTIFIER_SMTP_FROM_NAME"`

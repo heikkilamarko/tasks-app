@@ -14,6 +14,7 @@ type Module struct {
 	Config          *shared.Config
 	Logger          *slog.Logger
 	MessagingClient shared.MessagingClient
+	EmailResolver   EmailResolver
 	EmailClient     EmailClient
 	validator       *shared.SchemaValidator
 }
@@ -54,7 +55,13 @@ func (m *Module) handleTaskExpiringMessage(ctx context.Context, msg shared.Messa
 		return err
 	}
 
-	if err := m.EmailClient.SendEmail(ctx, m.Config.EmailNotifier.ToAddress, "Task Expiring", "task_expiring", data.Task); err != nil {
+	to, err := m.EmailResolver.ResolveEmail(data.Task.UserID)
+	if err != nil {
+		m.NakMessage(msg)
+		return err
+	}
+
+	if err := m.EmailClient.SendEmail(ctx, to, "Task Expiring", "task_expiring", data.Task); err != nil {
 		m.NakMessage(msg)
 		return err
 	}
@@ -75,7 +82,13 @@ func (m *Module) handleTaskExpiredMessage(ctx context.Context, msg shared.Messag
 		return err
 	}
 
-	if err := m.EmailClient.SendEmail(ctx, m.Config.EmailNotifier.ToAddress, "Task Expired", "task_expired", data.Task); err != nil {
+	to, err := m.EmailResolver.ResolveEmail(data.Task.UserID)
+	if err != nil {
+		m.NakMessage(msg)
+		return err
+	}
+
+	if err := m.EmailClient.SendEmail(ctx, to, "Task Expired", "task_expired", data.Task); err != nil {
 		m.NakMessage(msg)
 		return err
 	}

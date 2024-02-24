@@ -302,6 +302,7 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 		WITH tasks AS (SELECT * FROM task t %s)
 		SELECT
 			t.id,
+			t.user_id,
 			t.name,
 			t.expires_at,
 			t.expiring_info_at,
@@ -341,6 +342,7 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 
 		if err := rows.Scan(
 			&t.ID,
+			&t.UserID,
 			&t.Name,
 			&t.ExpiresAt,
 			&t.ExpiringInfoAt,

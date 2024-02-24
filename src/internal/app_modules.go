@@ -50,6 +50,9 @@ func (a *App) createModules() error {
 			Config:          a.Config,
 			Logger:          logger,
 			MessagingClient: a.MessagingClient,
+			EmailResolver: &emailnotifier.ZitadelEmailResolver{
+				Config: a.Config,
+			},
 			EmailClient: &emailnotifier.NullEmailClient{
 				Logger: logger,
 			},
@@ -63,6 +66,9 @@ func (a *App) createModules() error {
 			Config:          a.Config,
 			Logger:          logger,
 			MessagingClient: a.MessagingClient,
+			EmailResolver: &emailnotifier.ZitadelEmailResolver{
+				Config: a.Config,
+			},
 			EmailClient: &emailnotifier.SMTPEmailClient{
 				Config: a.Config,
 			},

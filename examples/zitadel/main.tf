@@ -26,7 +26,27 @@ resource "zitadel_org" "tasks_app" {
   is_default = true
 }
 
-# Users
+# Machine Users
+
+resource "zitadel_machine_user" "email_notifier" {
+  org_id            = zitadel_org.tasks_app.id
+  user_name         = "email_notifier"
+  name              = "email_notifier"
+  access_token_type = "ACCESS_TOKEN_TYPE_BEARER"
+}
+
+resource "zitadel_personal_access_token" "email_notifier" {
+  org_id  = zitadel_org.tasks_app.id
+  user_id = zitadel_machine_user.email_notifier.id
+}
+
+resource "zitadel_org_member" "email_notifier" {
+  org_id  = zitadel_org.tasks_app.id
+  user_id = zitadel_machine_user.email_notifier.id
+  roles   = ["ORG_USER_MANAGER"]
+}
+
+# Human Users
 
 resource "zitadel_human_user" "zitadel_admin" {
   org_id             = data.zitadel_orgs.zitadel.ids[0]
@@ -164,5 +184,10 @@ resource "zitadel_trigger_actions" "tasks_app" {
 
 output "tasks_app_client_id" {
   value     = zitadel_application_oidc.tasks_app.client_id
+  sensitive = true
+}
+
+output "email_notifier_token" {
+  value     = zitadel_personal_access_token.email_notifier.token
   sensitive = true
 }

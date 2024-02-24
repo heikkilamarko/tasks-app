@@ -35,7 +35,7 @@ func (c *SMTPEmailClient) SendEmail(ctx context.Context, to string, subject stri
 
 	client, err := mail.NewClient(c.Config.EmailNotifier.SMTPHost,
 		mail.WithPort(c.Config.EmailNotifier.SMTPPort),
-		mail.WithTLSPolicy(mail.TLSMandatory),
+		mail.WithTLSPortPolicy(mail.TLSMandatory),
 		mail.WithSMTPAuth(mail.SMTPAuthLogin),
 		mail.WithUsername(c.Config.EmailNotifier.SMTPFromAddress),
 		mail.WithPassword(c.Config.EmailNotifier.SMTPPassword),
