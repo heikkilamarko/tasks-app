@@ -60,24 +60,24 @@ resource "zitadel_human_user" "zitadel_admin" {
   initial_password   = "S3c_r3t!"
 }
 
-resource "zitadel_human_user" "editor" {
+resource "zitadel_human_user" "johndoe" {
   org_id             = zitadel_org.tasks_app.id
-  user_name          = "editor"
-  first_name         = "Editor"
-  last_name          = "User"
+  user_name          = "johndoe"
+  first_name         = "John"
+  last_name          = "Doe"
   preferred_language = "en"
-  email              = "editor@tasks-app.com"
+  email              = "john.doe@tasks-app.com"
   is_email_verified  = true
   initial_password   = "S3c_r3t!"
 }
 
-resource "zitadel_human_user" "viewer" {
+resource "zitadel_human_user" "janedoe" {
   org_id             = zitadel_org.tasks_app.id
-  user_name          = "viewer"
-  first_name         = "Viewer"
-  last_name          = "User"
+  user_name          = "janedoe"
+  first_name         = "Jane"
+  last_name          = "Doe"
   preferred_language = "en"
-  email              = "viewer@tasks-app.com"
+  email              = "jane.doe@tasks-app.com"
   is_email_verified  = true
   initial_password   = "S3c_r3t!"
 }
@@ -101,34 +101,27 @@ resource "zitadel_project" "tasks_app" {
 
 # Roles
 
-resource "zitadel_project_role" "editor" {
+resource "zitadel_project_role" "user" {
   org_id       = zitadel_org.tasks_app.id
   project_id   = zitadel_project.tasks_app.id
-  role_key     = "editor"
-  display_name = "Editor"
-}
-
-resource "zitadel_project_role" "viewer" {
-  org_id       = zitadel_org.tasks_app.id
-  project_id   = zitadel_project.tasks_app.id
-  role_key     = "viewer"
-  display_name = "Viewer"
+  role_key     = "user"
+  display_name = "User"
 }
 
 # User Grants
 
-resource "zitadel_user_grant" "editor_editor" {
+resource "zitadel_user_grant" "user_johndoe" {
   org_id     = zitadel_org.tasks_app.id
   project_id = zitadel_project.tasks_app.id
-  user_id    = zitadel_human_user.editor.id
-  role_keys  = ["editor"]
+  user_id    = zitadel_human_user.johndoe.id
+  role_keys  = ["user"]
 }
 
-resource "zitadel_user_grant" "viewer_viewer" {
+resource "zitadel_user_grant" "user_janedoe" {
   org_id     = zitadel_org.tasks_app.id
   project_id = zitadel_project.tasks_app.id
-  user_id    = zitadel_human_user.viewer.id
-  role_keys  = ["viewer"]
+  user_id    = zitadel_human_user.janedoe.id
+  role_keys  = ["user"]
 }
 
 # Applications
@@ -150,8 +143,8 @@ resource "zitadel_application_oidc" "tasks_app" {
   dev_mode                    = false
 
   depends_on = [
-    zitadel_user_grant.editor_editor,
-    zitadel_user_grant.viewer_viewer
+    zitadel_user_grant.user_johndoe,
+    zitadel_user_grant.user_janedoe,
   ]
 }
 
@@ -165,7 +158,7 @@ resource "zitadel_action" "tasks_app" {
   function assignDefaultRoles(ctx, api) {
     api.userGrants.push({
       projectID: "${zitadel_project.tasks_app.id}",
-      roles: ["${zitadel_project_role.viewer.role_key}"],
+      roles: ["${zitadel_project_role.user.role_key}"],
     });
     logger.log("Assigned default roles to user " + ctx.v1.getUser().username);
   }

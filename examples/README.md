@@ -49,10 +49,10 @@ https://auth.tasks-app.com/ui/console
 
 When running the examples, use the following example credentials to log in to the application:
 
-| Username | Initial Password |
-| -------- | ---------------- |
-| `editor` | `S3c_r3t!`       |
-| `viewer` | `S3c_r3t!`       |
+| Username  | Initial Password |
+| --------- | ---------------- |
+| `johndoe` | `S3c_r3t!`       |
+| `janedoe` | `S3c_r3t!`       |
 
 ## Examples
 
