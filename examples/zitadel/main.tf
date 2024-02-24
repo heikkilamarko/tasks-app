@@ -36,8 +36,9 @@ resource "zitadel_machine_user" "email_notifier" {
 }
 
 resource "zitadel_personal_access_token" "email_notifier" {
-  org_id  = zitadel_org.tasks_app.id
-  user_id = zitadel_machine_user.email_notifier.id
+  org_id          = zitadel_org.tasks_app.id
+  user_id         = zitadel_machine_user.email_notifier.id
+  expiration_date = "9999-12-31T23:59:59Z"
 }
 
 resource "zitadel_org_member" "email_notifier" {

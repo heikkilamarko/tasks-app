@@ -27,6 +27,8 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/tasks-app.env
+    volumes:
+      - ./certs/root.crt:/etc/tasks-app/certs/root.crt:ro
     environment:
       - APP_SHARED_SERVICES=db:postgres,messaging:nats
       - APP_SHARED_MODULES=taskchecker
@@ -42,6 +44,8 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/tasks-app.env
+    volumes:
+      - ./certs/root.crt:/etc/tasks-app/certs/root.crt:ro
     environment:
       - APP_SHARED_SERVICES=messaging:nats
       - APP_SHARED_MODULES=emailnotifier:null

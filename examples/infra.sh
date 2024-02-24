@@ -12,7 +12,7 @@ usage() {
 case "$1" in
   "up")
     docker compose -f infra.yml up --build -d
-    sleep 5
+    sleep 10
     pushd zitadel && ./configure.sh && popd
     ;;
   "down")
