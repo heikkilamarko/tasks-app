@@ -18,13 +18,6 @@ type Auth struct {
 	Config        *shared.Config
 }
 
-type AuthInfo struct {
-	UserName    string
-	UserEmail   string
-	IDToken     string
-	AccessToken string
-}
-
 func NewAuth(ctx context.Context, config *shared.Config) (*Auth, error) {
 	authenticator, err := authentication.New(
 		ctx,
@@ -55,13 +48,14 @@ func NewAuth(ctx context.Context, config *shared.Config) (*Auth, error) {
 	return &Auth{authenticator, middleware, config}, nil
 }
 
-func (a *Auth) GetAuthInfo(r *http.Request) *AuthInfo {
+func (a *Auth) GetUserContext(r *http.Request) *shared.UserContext {
 	if ctx := a.Middleware.Context(r.Context()); ctx != nil {
-		return &AuthInfo{
-			ctx.UserInfo.Name,
-			ctx.UserInfo.Email,
-			ctx.Tokens.IDToken,
-			ctx.Tokens.AccessToken,
+		return &shared.UserContext{
+			ID:          ctx.UserInfo.Subject,
+			Name:        ctx.UserInfo.Name,
+			Email:       ctx.UserInfo.Email,
+			IDToken:     ctx.Tokens.IDToken,
+			AccessToken: ctx.Tokens.AccessToken,
 		}
 	}
 	return nil

@@ -36,36 +36,49 @@ func (repo *PostgresTaskRepository) Close() error {
 }
 
 func (repo *PostgresTaskRepository) Create(ctx context.Context, task *Task) error {
+	user, err := GetUserContext(ctx)
+	if err != nil {
+		return err
+	}
+
 	query := `
 		INSERT INTO task
-			(name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at)
+			(user_id, name, expires_at, expiring_info_at, expired_info_at, created_at, updated_at, completed_at)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7)
+			($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id
 	`
 
 	return repo.db.QueryRowContext(
 		ctx,
 		query,
-		task.Name, task.ExpiresAt, task.ExpiringInfoAt, task.ExpiredInfoAt, task.CreatedAt, task.UpdatedAt, task.CompletedAt,
+		user.ID, task.Name, task.ExpiresAt, task.ExpiringInfoAt, task.ExpiredInfoAt, task.CreatedAt, task.UpdatedAt, task.CompletedAt,
 	).Scan(&task.ID)
 }
 
 func (repo *PostgresTaskRepository) Update(ctx context.Context, task *Task) error {
+	user, _ := GetUserContext(ctx)
+
 	query := `
 		UPDATE task
 		SET
-			name = $2,
-			expires_at = $3,
-			expiring_info_at = $4,
-			expired_info_at = $5,
-			updated_at = $6,
-			completed_at = $7
+			name = $1,
+			expires_at = $2,
+			expiring_info_at = $3,
+			expired_info_at = $4,
+			updated_at = $5,
+			completed_at = $6
 		WHERE
-			id = $1
-	`
+			id = $7
+    `
+	args := []any{task.Name, task.ExpiresAt, task.ExpiringInfoAt, task.ExpiredInfoAt, task.UpdatedAt, task.CompletedAt, task.ID}
 
-	_, err := repo.db.ExecContext(ctx, query, task.ID, task.Name, task.ExpiresAt, task.ExpiringInfoAt, task.ExpiredInfoAt, task.UpdatedAt, task.CompletedAt)
+	if user != nil {
+		query += "AND user_id = $8"
+		args = append(args, user.ID)
+	}
+
+	_, err := repo.db.ExecContext(ctx, query, args...)
 	return err
 }
 
@@ -106,21 +119,37 @@ func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskI
 }
 
 func (repo *PostgresTaskRepository) Delete(ctx context.Context, id int) error {
+	user, _ := GetUserContext(ctx)
+
 	query := `
 		DELETE FROM task
 		WHERE id = $1
 	`
+	args := []any{id}
 
-	_, err := repo.db.ExecContext(ctx, query, id)
+	if user != nil {
+		query += "AND user_id = $2"
+		args = append(args, user.ID)
+	}
+
+	_, err := repo.db.ExecContext(ctx, query, args...)
 	return err
 }
 
 func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task, error) {
-	where := `
-		WHERE t.id = $1
-	`
+	user, _ := GetUserContext(ctx)
 
-	tasks, err := repo.getTasks(ctx, where, "", id)
+	where := `
+		WHERE id = $1
+	`
+	args := []any{id}
+
+	if user != nil {
+		where += "AND user_id = $2"
+		args = append(args, user.ID)
+	}
+
+	tasks, err := repo.getTasks(ctx, where, "", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -133,73 +162,127 @@ func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task,
 }
 
 func (repo *PostgresTaskRepository) GetActive(ctx context.Context, offset int, limit int) ([]*Task, error) {
+	user, _ := GetUserContext(ctx)
+
 	where := `
 		WHERE t.completed_at IS NULL
-		ORDER BY t.created_at DESC
-		LIMIT $1 OFFSET $2
 	`
+	args := []any{}
+
+	if user != nil {
+		where += "AND user_id = $1"
+		args = append(args, user.ID)
+	}
+
+	where += `
+		ORDER BY t.created_at DESC
+		LIMIT $2 OFFSET $3
+	`
+	args = append(args, limit, offset)
 
 	orderBy := "ORDER BY t.created_at DESC"
 
-	return repo.getTasks(ctx, where, orderBy, limit, offset)
+	return repo.getTasks(ctx, where, orderBy, args...)
 }
 
 func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context, offset int, limit int) ([]*Task, error) {
+	user, _ := GetUserContext(ctx)
+
 	where := `
 		WHERE t.completed_at IS NOT NULL
-		ORDER BY t.completed_at DESC
-		LIMIT $1 OFFSET $2
 	`
+	args := []any{}
+
+	if user != nil {
+		where += "AND user_id = $1"
+		args = append(args, user.ID)
+	}
+
+	where += `
+		ORDER BY t.completed_at DESC
+		LIMIT $2 OFFSET $3
+	`
+	args = append(args, limit, offset)
 
 	orderBy := "ORDER BY t.completed_at DESC"
 
-	return repo.getTasks(ctx, where, orderBy, limit, offset)
+	return repo.getTasks(ctx, where, orderBy, args...)
 }
 
 func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Duration) ([]*Task, error) {
+	user, _ := GetUserContext(ctx)
+
+	t1 := time.Now().UTC()
+	t2 := t1.Add(d)
+
 	where := `
 		WHERE t.completed_at IS NULL
 		AND t.expiring_info_at IS NULL
 		AND t.expires_at IS NOT NULL
 		AND t.expires_at >= $1
 		AND t.expires_at <= $2
+	`
+	args := []any{t1, t2}
+
+	if user != nil {
+		where += "AND user_id = $3"
+		args = append(args, user.ID)
+	}
+
+	where += `
 		ORDER BY t.created_at ASC
 	`
 
 	orderBy := "ORDER BY t.created_at ASC"
 
-	t1 := time.Now().UTC()
-	t2 := t1.Add(d)
-
-	return repo.getTasks(ctx, where, orderBy, t1, t2)
+	return repo.getTasks(ctx, where, orderBy, args...)
 }
 
 func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, error) {
+	user, _ := GetUserContext(ctx)
+
+	now := time.Now().UTC()
+
 	where := `
 		WHERE t.completed_at IS NULL
 		AND t.expired_info_at IS NULL
 		AND t.expires_at IS NOT NULL
 		AND t.expires_at < $1
+	`
+	args := []any{now}
+
+	if user != nil {
+		where += "AND user_id = $2"
+		args = append(args, user.ID)
+	}
+
+	where += `
 		ORDER BY t.created_at ASC
 	`
 
 	orderBy := "ORDER BY t.created_at ASC"
 
-	now := time.Now().UTC()
-
-	return repo.getTasks(ctx, where, orderBy, now)
+	return repo.getTasks(ctx, where, orderBy, args...)
 }
 
 func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.Duration) (int64, error) {
+	user, _ := GetUserContext(ctx)
+
+	t := time.Now().UTC().Add(-d)
+
 	query := `
 		DELETE FROM task
 		WHERE completed_at IS NOT NULL
 		AND completed_at < $1
 	`
+	args := []any{t}
 
-	t := time.Now().UTC().Add(-d)
+	if user != nil {
+		query += "AND user_id = $2"
+		args = append(args, user.ID)
+	}
 
-	result, err := repo.db.ExecContext(ctx, query, t)
+	result, err := repo.db.ExecContext(ctx, query, args...)
 	if err != nil {
 		return 0, err
 	}
