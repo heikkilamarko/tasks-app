@@ -33,3 +33,6 @@ node_modules
 *.drawio.bkp
 
 machinekey
+
+examples/nats/nsc
+messaging/nats/auth.conf

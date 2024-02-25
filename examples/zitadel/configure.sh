@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+cd "$(dirname "$0")"
+
 env_dir="../../config/dev"
 dev_dir="../../src"
 

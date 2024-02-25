@@ -11,9 +11,10 @@ usage() {
 
 case "$1" in
   "up")
+    nats/configure.sh
     docker compose -f infra.yml up --build -d
     sleep 10
-    pushd zitadel && ./configure.sh && popd
+    zitadel/configure.sh
     ;;
   "down")
     docker compose -f infra.yml down -v

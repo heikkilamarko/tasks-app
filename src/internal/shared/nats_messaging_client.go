@@ -32,7 +32,7 @@ type NATSMessagingClient struct {
 func NewNATSMessagingClient(config *Config, logger *slog.Logger) (*NATSMessagingClient, error) {
 	conn, err := nats.Connect(
 		config.Shared.NATSURL,
-		nats.UserInfo(config.Shared.NATSUser, config.Shared.NATSPassword),
+		nats.UserCredentials(config.Shared.NATSCreds),
 		nats.MaxReconnects(-1),
 		nats.DisconnectErrHandler(
 			func(_ *nats.Conn, err error) {

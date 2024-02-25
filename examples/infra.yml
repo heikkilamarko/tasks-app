@@ -138,6 +138,8 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/nats-configure.env
+    volumes:
+      - ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/admin_user.creds:/admin_user.creds
     networks:
       - tasks-app
     depends_on:

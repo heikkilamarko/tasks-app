@@ -1,3 +1,3 @@
 FROM nats
-COPY ./server.conf /server.conf
+COPY *.conf /
 CMD ["-c", "/server.conf"]

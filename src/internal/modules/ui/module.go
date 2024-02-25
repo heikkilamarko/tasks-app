@@ -33,6 +33,7 @@ func (m *Module) Run(ctx context.Context) error {
 	errorMW := ErrorRecoveryMiddleware(m.Logger)
 	authnMW := m.Auth.Middleware.RequireAuthentication()
 	userMW := UserContextMiddleware(m.Auth)
+	natsMW := NATSMiddleware()
 
 	mux := http.NewServeMux()
 
@@ -40,7 +41,7 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "GET /ui/auth/callback", m.Auth.CallbackHandler(), errorMW)
 	HandleWithMiddleware(mux, "GET /ui/auth/logout", m.Auth.LogoutHandler(), errorMW)
 	HandleWithMiddleware(mux, "GET /ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))), errorMW)
-	HandleWithMiddleware(mux, "GET /ui", &GetUI{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui", &GetUI{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW, natsMW)
 	HandleWithMiddleware(mux, "POST /ui/theme", &PostUITheme{m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks", &GetUITasks{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger}, errorMW, authnMW, userMW)
@@ -52,7 +53,7 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "POST /ui/tasks/{id}/complete", &PostUITaskComplete{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "PUT /ui/tasks/{id}", &PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "DELETE /ui/tasks/{id}", &DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/completed", &GetUICompleted{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/completed", &GetUICompleted{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW, natsMW)
 
 	server := &http.Server{
 		ReadTimeout:  5 * time.Second,
