@@ -26,6 +26,13 @@ nsc edit account -n $account_name \
 
 nsc add user -a $account_name -n $admin_user_name
 nsc add user -a $account_name -n $app_user_name
-nsc add user -a $account_name -n $ui_user_name --bearer
+
+nsc add user -a $account_name -n $ui_user_name \
+    --bearer \
+    --allow-sub "tasks.ui.>" \
+    --deny-pub ">"
+nsc edit user -a $account_name -n $ui_user_name \
+    --subs 1000 \
+    --payload 1MB
 
 nsc generate config --mem-resolver > $nats_auth_file
