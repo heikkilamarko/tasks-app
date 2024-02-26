@@ -48,6 +48,11 @@ func UserContextMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 func NATSMiddleware(config *shared.Config) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if _, err := r.Cookie(config.UI.HubJWTCookieName); err == nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			user, err := shared.GetUserContext(r.Context())
 			if err != nil {
 				next.ServeHTTP(w, r)
@@ -66,15 +71,14 @@ func NATSMiddleware(config *shared.Config) func(next http.Handler) http.Handler 
 				return
 			}
 
-			cookie := &http.Cookie{
+			http.SetCookie(w, &http.Cookie{
 				Name:     config.UI.HubJWTCookieName,
 				Value:    string(jwt),
 				Path:     "/",
 				Secure:   true,
 				HttpOnly: true,
 				SameSite: http.SameSiteStrictMode,
-			}
-			http.SetCookie(w, cookie)
+			})
 
 			next.ServeHTTP(w, r)
 		})
