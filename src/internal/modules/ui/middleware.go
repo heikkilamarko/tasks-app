@@ -1,9 +1,12 @@
 package ui
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"tasks-app/internal/shared"
+
+	"github.com/nats-io/jwt/v2"
 )
 
 type Middleware func(http.Handler) http.Handler
@@ -51,14 +54,20 @@ func NATSMiddleware(config *shared.Config) func(next http.Handler) http.Handler 
 				return
 			}
 
-			jwt, err := GenerateUserJWT(user.ID, config)
+			natsJWT := &shared.NATSJWT{
+				Config: config,
+				UserClaimsFunc: func(c *jwt.UserClaims) {
+					c.Sub.Allow.Add(fmt.Sprintf("tasks.ui.%s.>", user.ID))
+				}}
+
+			jwt, err := natsJWT.CreateUserJWT()
 			if err != nil {
 				next.ServeHTTP(w, r)
 				return
 			}
 
 			cookie := &http.Cookie{
-				Name:     "nats_jwt",
+				Name:     config.UI.HubJWTCookieName,
 				Value:    string(jwt),
 				Path:     "/",
 				Secure:   true,
