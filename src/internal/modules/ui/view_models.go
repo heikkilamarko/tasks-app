@@ -44,6 +44,7 @@ type AttachmentsRequest struct {
 }
 
 type TasksResponse struct {
+	UserID        string
 	Tasks         []*shared.Task
 	IsCreatingNew bool
 	Theme         string
@@ -55,6 +56,12 @@ func NewTasksResponse(tasks []*shared.Task) *TasksResponse {
 
 func (response *TasksResponse) WithTheme(r *http.Request) *TasksResponse {
 	response.Theme = GetTheme(r)
+	return response
+}
+
+func (response *TasksResponse) WithUserID(r *http.Request) *TasksResponse {
+	user, _ := shared.GetUserContext(r.Context())
+	response.UserID = user.ID
 	return response
 }
 

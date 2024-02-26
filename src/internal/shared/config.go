@@ -14,6 +14,8 @@ type SharedConfig struct {
 	PostgresConnectionString string   `env:"APP_SHARED_POSTGRES_CONNECTION_STRING,notEmpty"`
 	NATSURL                  string   `env:"APP_SHARED_NATS_URL,notEmpty"`
 	NATSCreds                string   `env:"APP_SHARED_NATS_CREDS,notEmpty"`
+	NATSAccountPublicKey     string   `env:"APP_SHARED_NATS_ACCOUNT_PUBLIC_KEY,notEmpty"`
+	NATSAccountSeed          string   `env:"APP_SHARED_NATS_ACCOUNT_SEED,notEmpty"`
 	AttachmentsPath          string   `env:"APP_SHARED_ATTACHMENTS_PATH" envDefault:"attachments"`
 }
 

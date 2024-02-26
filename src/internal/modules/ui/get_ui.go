@@ -20,7 +20,9 @@ func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := NewTasksResponse(tasks).WithTheme(r)
+	vm := NewTasksResponse(tasks).
+		WithUserID(r).
+		WithTheme(r)
 
 	h.Renderer.Render(w, "active_tasks", vm)
 }

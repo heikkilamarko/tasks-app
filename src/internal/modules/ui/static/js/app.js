@@ -10,6 +10,8 @@ const codec = JSONCodec();
 document.addEventListener('DOMContentLoaded', async (_event) => {
 	initBootstrap();
 
+	if (!window.app.USER_ID) return;
+
 	const nc = await connect({
 		servers: getWsUrl(window.app.HUB_URL),
 		name: 'ui',
@@ -18,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 		waitOnFirstConnect: true
 	});
 
-	const sub = nc.subscribe('tasks.ui.>');
+	const sub = nc.subscribe(`tasks.ui.${window.app.USER_ID}.>`);
 
 	(async () => {
 		for await (const msg of sub) {
@@ -68,15 +70,12 @@ function initBootstrap(root) {
 
 function handleMsg(msg) {
 	try {
-		switch (msg.subject) {
-			case 'tasks.ui.expiring':
-				handleTaskExpiringMsg(msg);
-				break;
-			case 'tasks.ui.expired':
-				handleTaskExpiredMsg(msg);
-				break;
-			default:
-				handleUnknownMsg(msg);
+		if (msg.subject.endsWith('.expiring')) {
+			handleTaskExpiringMsg(msg);
+		} else if (msg.subject.endsWith('.expired')) {
+			handleTaskExpiredMsg(msg);
+		} else {
+			handleUnknownMsg(msg);
 		}
 	} catch (err) {
 		console.error('message handling failed', err);

@@ -33,7 +33,7 @@ func (m *Module) Run(ctx context.Context) error {
 	errorMW := ErrorRecoveryMiddleware(m.Logger)
 	authnMW := m.Auth.Middleware.RequireAuthentication()
 	userMW := UserContextMiddleware(m.Auth)
-	natsMW := NATSMiddleware()
+	natsMW := NATSMiddleware(m.Config)
 
 	mux := http.NewServeMux()
 

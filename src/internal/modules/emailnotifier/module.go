@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"tasks-app/internal/shared"
 	"time"
 )
@@ -33,18 +34,19 @@ func (m *Module) handleMessage(ctx context.Context, msg shared.Message) (err err
 		}
 	}()
 
-	switch msg.Subject() {
-	case shared.SubjectTasksExpiring:
+	sub := msg.Subject()
+
+	if strings.HasPrefix(sub, "tasks.") && strings.HasSuffix(sub, ".expiring") {
 		return m.handleTaskExpiringMessage(ctx, msg)
-	case shared.SubjectTasksExpired:
+	} else if strings.HasPrefix(sub, "tasks.") && strings.HasSuffix(sub, ".expired") {
 		return m.handleTaskExpiredMessage(ctx, msg)
-	default:
+	} else {
 		return m.handleUnknownMessage(ctx, msg)
 	}
 }
 
 func (m *Module) handleTaskExpiringMessage(ctx context.Context, msg shared.Message) error {
-	if err := m.validator.ValidateBytes(fmt.Sprintf("schemas/%s.json", msg.Subject()), msg.Data()); err != nil {
+	if err := m.validator.ValidateBytes("schemas/tasks.expiring.json", msg.Data()); err != nil {
 		m.NakMessage(msg)
 		return err
 	}
@@ -71,7 +73,7 @@ func (m *Module) handleTaskExpiringMessage(ctx context.Context, msg shared.Messa
 }
 
 func (m *Module) handleTaskExpiredMessage(ctx context.Context, msg shared.Message) error {
-	if err := m.validator.ValidateBytes(fmt.Sprintf("schemas/%s.json", msg.Subject()), msg.Data()); err != nil {
+	if err := m.validator.ValidateBytes("schemas/tasks.expired.json", msg.Data()); err != nil {
 		m.NakMessage(msg)
 		return err
 	}

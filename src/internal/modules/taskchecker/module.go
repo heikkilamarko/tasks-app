@@ -73,7 +73,7 @@ func (m *Module) checkExpiringTasks(ctx context.Context) error {
 
 	var errs []error
 	for _, task := range tasks {
-		if err := m.MessagingClient.SendPersistent(ctx, shared.SubjectTasksExpiring, shared.TaskExpiringMsg{Task: task}); err != nil {
+		if err := m.MessagingClient.SendPersistent(ctx, fmt.Sprintf(shared.SubjectTasksExpiring, task.UserID), shared.TaskExpiringMsg{Task: task}); err != nil {
 			errs = append(errs, err)
 			continue
 		}
@@ -101,7 +101,7 @@ func (m *Module) checkExpiredTasks(ctx context.Context) error {
 
 	var errs []error
 	for _, task := range tasks {
-		if err := m.MessagingClient.SendPersistent(ctx, shared.SubjectTasksExpired, shared.TaskExpiredMsg{Task: task}); err != nil {
+		if err := m.MessagingClient.SendPersistent(ctx, fmt.Sprintf(shared.SubjectTasksExpired, task.UserID), shared.TaskExpiredMsg{Task: task}); err != nil {
 			errs = append(errs, err)
 			continue
 		}

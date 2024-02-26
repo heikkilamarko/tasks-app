@@ -14,7 +14,6 @@ services:
     volumes:
       - ./certs/root.crt:/etc/tasks-app/certs/root.crt:ro
       - ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/app_user.creds:/app_user.creds
-      - ./nats/nsc/stores/tasks_app_operator/accounts/tasks_app_account/users/ui_user.jwt:/ui_user.jwt
     environment:
       - APP_SHARED_SERVICES=db:postgres,attachments:nats
       - APP_SHARED_MODULES=ui

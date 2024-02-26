@@ -3,7 +3,6 @@ package ui
 import (
 	"log/slog"
 	"net/http"
-	"os"
 	"tasks-app/internal/shared"
 )
 
@@ -43,21 +42,31 @@ func UserContextMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 	}
 }
 
-func NATSMiddleware() func(next http.Handler) http.Handler {
+func NATSMiddleware(config *shared.Config) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			jwt, err := os.ReadFile("/ui_user.jwt")
-			if err == nil {
-				cookie := &http.Cookie{
-					Name:     "nats_jwt",
-					Value:    string(jwt),
-					Path:     "/",
-					Secure:   true,
-					HttpOnly: true,
-					SameSite: http.SameSiteStrictMode,
-				}
-				http.SetCookie(w, cookie)
+			user, err := shared.GetUserContext(r.Context())
+			if err != nil {
+				next.ServeHTTP(w, r)
+				return
 			}
+
+			jwt, err := GenerateUserJWT(user.ID, config)
+			if err != nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			cookie := &http.Cookie{
+				Name:     "nats_jwt",
+				Value:    string(jwt),
+				Path:     "/",
+				Secure:   true,
+				HttpOnly: true,
+				SameSite: http.SameSiteStrictMode,
+			}
+			http.SetCookie(w, cookie)
+
 			next.ServeHTTP(w, r)
 		})
 	}

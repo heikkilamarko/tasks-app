@@ -35,4 +35,5 @@ node_modules
 machinekey
 
 examples/nats/nsc
+examples/nats/keys
 messaging/nats/auth.conf
