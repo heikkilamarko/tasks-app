@@ -15,68 +15,42 @@ type NATSJWT struct {
 }
 
 func (g *NATSJWT) CreateUserJWT() (string, error) {
-	accountPublicKey := g.Config.Shared.NATSAccountPublicKey
-
-	accountSigningKey, err := g.createAccountSigningKey(g.Config.Shared.NATSAccountSeed)
+	accountKP, err := nkeys.FromSeed([]byte(g.Config.Shared.NATSAccountSeed))
 	if err != nil {
-		return "", fmt.Errorf("create account signing key: %w", err)
+		return "", fmt.Errorf("get account key pair: %w", err)
 	}
 
-	userPublicKey, err := g.createUserPublicKey()
+	accountPub := g.Config.Shared.NATSAccountPublicKey
+
+	userKP, err := nkeys.CreateUser()
 	if err != nil {
-		return "", fmt.Errorf("create user public key: %w", err)
+		return "", fmt.Errorf("create user key pair: %w", err)
 	}
 
-	userJWT, err := g.createUserJWT(userPublicKey, accountPublicKey, accountSigningKey)
+	userPub, err := userKP.PublicKey()
 	if err != nil {
-		return "", fmt.Errorf("create user jwt: %w", err)
+		return "", fmt.Errorf("get user public key: %w", err)
 	}
 
-	return userJWT, nil
-}
-
-func (g *NATSJWT) createAccountSigningKey(seed string) (nkeys.KeyPair, error) {
-	kp, err := nkeys.ParseDecoratedNKey([]byte(seed))
-	if err != nil {
-		return nil, err
-	}
-	return kp, nil
-}
-
-func (g *NATSJWT) createUserPublicKey() (string, error) {
-	kp, err := nkeys.CreateUser()
-	if err != nil {
-		return "", err
-	}
-	publicKey, err := kp.PublicKey()
-	if err != nil {
-		return "", err
-	}
-	return publicKey, nil
-}
-
-func (g *NATSJWT) createUserJWT(userPublicKey, accountPublicKey string, accountSigningKey nkeys.KeyPair) (string, error) {
-	uc := jwt.NewUserClaims(userPublicKey)
-
-	uc.IssuerAccount = accountPublicKey
-	uc.Expires = time.Now().Add(time.Hour).Unix()
-	uc.BearerToken = true
-	uc.NatsLimits.Subs = 1000
-	uc.NatsLimits.Payload = 1_000_000
-
+	userClaims := jwt.NewUserClaims(userPub)
+	userClaims.IssuerAccount = accountPub
+	userClaims.Expires = time.Now().Add(time.Hour).Unix()
+	userClaims.BearerToken = true
+	userClaims.NatsLimits.Subs = 1000
+	userClaims.NatsLimits.Payload = 1_000_000
 	if g.UserClaimsFunc != nil {
-		g.UserClaimsFunc(uc)
+		g.UserClaimsFunc(userClaims)
 	}
 
 	vr := jwt.ValidationResults{}
-	uc.Validate(&vr)
+	userClaims.Validate(&vr)
 	if vr.IsBlocking(true) {
-		return "", errors.New("user claims are invalid")
+		return "", errors.New("validate user claims")
 	}
 
-	userJWT, err := uc.Encode(accountSigningKey)
+	userJWT, err := userClaims.Encode(accountKP)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("encode user claims: %w", err)
 	}
 
 	return userJWT, nil
