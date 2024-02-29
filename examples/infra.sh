@@ -13,6 +13,7 @@ case "$1" in
   "up")
     nats/configure.sh
     docker compose -f infra.yml up --build -d
+    echo "Waiting for services to start..."
     sleep 10
     zitadel/configure.sh
     ;;
