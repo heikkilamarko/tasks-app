@@ -1,6 +1,6 @@
 {
   "name": "tasks",
-  "subjects": ["tasks.*.*"],
+  "subjects": ["task.>"],
   "retention": "workqueue",
   "max_consumers": -1,
   "max_msgs_per_subject": -1,
@@ -12,10 +12,6 @@
   "discard": "new",
   "num_replicas": 3,
   "duplicate_window": 120000000000,
-  "republish": {
-    "src": "tasks.*.*",
-    "dest": "tasks.ui.{{wildcard(1)}}.{{wildcard(2)}}"
-  },
   "sealed": false,
   "deny_delete": false,
   "deny_purge": false,

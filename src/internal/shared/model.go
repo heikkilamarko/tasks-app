@@ -2,11 +2,6 @@ package shared
 
 import "time"
 
-const (
-	SubjectTasksExpiring = "tasks.%s.expiring"
-	SubjectTasksExpired  = "tasks.%s.expired"
-)
-
 type Task struct {
 	ID             int           `json:"id"`
 	UserID         string        `json:"user_id"`

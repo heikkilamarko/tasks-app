@@ -111,5 +111,5 @@ func (repo *NATSTaskAttachmentsRepository) DeleteTask(ctx context.Context, taskI
 }
 
 func (repo *NATSTaskAttachmentsRepository) getBucketName(taskID int) string {
-	return fmt.Sprintf("attachments_%d", taskID)
+	return fmt.Sprintf("task_attachments_%d", taskID)
 }

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 		waitOnFirstConnect: true
 	});
 
-	const sub = nc.subscribe(`tasks.ui.${window.app.USER_ID}.>`);
+	const sub = nc.subscribe(`task.${window.app.USER_ID}.>`);
 
 	(async () => {
 		for await (const msg of sub) {

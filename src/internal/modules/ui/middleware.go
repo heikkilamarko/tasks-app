@@ -62,7 +62,7 @@ func NATSMiddleware(config *shared.Config) func(next http.Handler) http.Handler 
 			natsJWT := &shared.NATSJWT{
 				Config: config,
 				UserClaimsFunc: func(c *jwt.UserClaims) {
-					c.Sub.Allow.Add(fmt.Sprintf("tasks.ui.%s.>", user.ID))
+					c.Sub.Allow.Add(fmt.Sprintf("task.%s.>", user.ID))
 				}}
 
 			jwt, err := natsJWT.CreateUserJWT()
