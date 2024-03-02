@@ -22,7 +22,10 @@
 	encode gzip
 	tls {$CADDY_TLS}
 
-	header -Server
+	header {
+		-Server
+		>Location http:// https://
+	}
 
 	@auth {
 		host auth.{$CADDY_DOMAIN}
