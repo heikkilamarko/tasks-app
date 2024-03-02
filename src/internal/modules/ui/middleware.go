@@ -72,7 +72,7 @@ func LoginMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 				return
 			}
 
-			auth.SetHubJWTCookie(w, string(jwt))
+			auth.SetHubJWTCookie(w, jwt)
 
 			next.ServeHTTP(w, r)
 		})
