@@ -69,12 +69,37 @@ func (a *Auth) LoginHandler(requestedURI string) http.Handler {
 
 func (a *Auth) CallbackHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a.DeleteHubJWTCookie(w)
 		a.Authenticator.Callback(w, r)
 	})
 }
 
 func (a *Auth) LogoutHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a.DeleteHubJWTCookie(w)
 		a.Authenticator.Logout(w, r)
+	})
+}
+
+func (a *Auth) SetHubJWTCookie(w http.ResponseWriter, jwt string) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     a.Config.UI.HubJWTCookieName,
+		Value:    jwt,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	})
+}
+
+func (a *Auth) DeleteHubJWTCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     a.Config.UI.HubJWTCookieName,
+		Value:    "",
+		MaxAge:   -1,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
 	})
 }

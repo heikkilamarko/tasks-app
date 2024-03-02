@@ -45,7 +45,7 @@ func UserContextMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 	}
 }
 
-func LoginMiddleware(config *shared.Config) func(next http.Handler) http.Handler {
+func LoginMiddleware(auth *Auth, config *shared.Config) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if _, err := r.Cookie(config.UI.HubJWTCookieName); err == nil {
@@ -71,32 +71,7 @@ func LoginMiddleware(config *shared.Config) func(next http.Handler) http.Handler
 				return
 			}
 
-			http.SetCookie(w, &http.Cookie{
-				Name:     config.UI.HubJWTCookieName,
-				Value:    string(jwt),
-				Path:     "/",
-				Secure:   true,
-				HttpOnly: true,
-				SameSite: http.SameSiteStrictMode,
-			})
-
-			next.ServeHTTP(w, r)
-		})
-	}
-}
-
-func LogoutMiddleware(config *shared.Config) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			http.SetCookie(w, &http.Cookie{
-				Name:     config.UI.HubJWTCookieName,
-				Value:    "",
-				MaxAge:   -1,
-				Path:     "/",
-				Secure:   true,
-				HttpOnly: true,
-				SameSite: http.SameSiteStrictMode,
-			})
+			auth.SetHubJWTCookie(w, string(jwt))
 
 			next.ServeHTTP(w, r)
 		})
