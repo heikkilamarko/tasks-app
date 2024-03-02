@@ -45,10 +45,12 @@ func UserContextMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 	}
 }
 
-func LoginMiddleware(auth *Auth, config *shared.Config) func(next http.Handler) http.Handler {
+func LoginMiddleware(auth *Auth) func(next http.Handler) http.Handler {
+	natsJWT := &shared.NATSJWT{Config: auth.Config}
+
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if _, err := r.Cookie(config.UI.HubJWTCookieName); err == nil {
+			if auth.IsHubJWTCookieSet(r) {
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -59,13 +61,12 @@ func LoginMiddleware(auth *Auth, config *shared.Config) func(next http.Handler) 
 				return
 			}
 
-			natsJWT := &shared.NATSJWT{
-				Config: config,
-				UserClaimsFunc: func(c *jwt.UserClaims) {
-					c.Sub.Allow.Add(fmt.Sprintf("task.%s.>", user.ID))
-				}}
+			allowSub := fmt.Sprintf("task.%s.>", user.ID)
 
-			jwt, err := natsJWT.CreateUserJWT()
+			jwt, err := natsJWT.CreateUserJWT(func(c *jwt.UserClaims) {
+				c.BearerToken = true
+				c.Sub.Allow.Add(allowSub)
+			})
 			if err != nil {
 				next.ServeHTTP(w, r)
 				return

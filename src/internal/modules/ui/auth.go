@@ -81,6 +81,11 @@ func (a *Auth) LogoutHandler() http.Handler {
 	})
 }
 
+func (a *Auth) IsHubJWTCookieSet(r *http.Request) bool {
+	_, err := r.Cookie(a.Config.UI.HubJWTCookieName)
+	return err == nil
+}
+
 func (a *Auth) SetHubJWTCookie(w http.ResponseWriter, jwt string) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     a.Config.UI.HubJWTCookieName,

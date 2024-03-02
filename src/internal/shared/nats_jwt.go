@@ -3,18 +3,16 @@ package shared
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/nats-io/jwt/v2"
 	"github.com/nats-io/nkeys"
 )
 
 type NATSJWT struct {
-	Config         *Config
-	UserClaimsFunc func(c *jwt.UserClaims)
+	Config *Config
 }
 
-func (g *NATSJWT) CreateUserJWT() (string, error) {
+func (g *NATSJWT) CreateUserJWT(userClaimsFunc func(c *jwt.UserClaims)) (string, error) {
 	accountKP, err := nkeys.FromSeed([]byte(g.Config.Shared.NATSAccountSeed))
 	if err != nil {
 		return "", fmt.Errorf("get account key pair: %w", err)
@@ -34,12 +32,8 @@ func (g *NATSJWT) CreateUserJWT() (string, error) {
 
 	userClaims := jwt.NewUserClaims(userPub)
 	userClaims.IssuerAccount = accountPub
-	userClaims.Expires = time.Now().Add(time.Hour).Unix()
-	userClaims.BearerToken = true
-	userClaims.NatsLimits.Subs = 1000
-	userClaims.NatsLimits.Payload = 1_000_000
-	if g.UserClaimsFunc != nil {
-		g.UserClaimsFunc(userClaims)
+	if userClaimsFunc != nil {
+		userClaimsFunc(userClaims)
 	}
 
 	vr := jwt.ValidationResults{}
