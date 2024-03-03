@@ -49,43 +49,38 @@ resource "zitadel_org_member" "email_notifier" {
 
 # Human Users
 
-resource "zitadel_human_user" "zitadel_admin" {
+resource "zitadel_human_user" "iam_admin_user" {
+  for_each = tomap({ for user in var.iam_admin_users : user.user_name => user })
+
   org_id             = data.zitadel_orgs.zitadel.ids[0]
-  user_name          = "zitadel-admin"
-  first_name         = "Zitadel"
-  last_name          = "Admin"
-  preferred_language = "en"
-  email              = "zitadel-admin@tasks-app.com"
-  is_email_verified  = true
+  user_name          = each.value.user_name
+  first_name         = each.value.first_name
+  last_name          = each.value.last_name
+  email              = each.value.email
   initial_password   = var.initial_password
+  is_email_verified  = true
+  preferred_language = "en"
 }
 
-resource "zitadel_human_user" "johndoe" {
-  org_id             = zitadel_org.tasks_app.id
-  user_name          = "johndoe"
-  first_name         = "John"
-  last_name          = "Doe"
-  preferred_language = "en"
-  email              = "john.doe@tasks-app.com"
-  is_email_verified  = true
-  initial_password   = var.initial_password
-}
+resource "zitadel_human_user" "app_user" {
+  for_each = tomap({ for user in var.app_users : user.user_name => user })
 
-resource "zitadel_human_user" "janedoe" {
   org_id             = zitadel_org.tasks_app.id
-  user_name          = "janedoe"
-  first_name         = "Jane"
-  last_name          = "Doe"
-  preferred_language = "en"
-  email              = "jane.doe@tasks-app.com"
-  is_email_verified  = true
+  user_name          = each.value.user_name
+  first_name         = each.value.first_name
+  last_name          = each.value.last_name
+  email              = each.value.email
   initial_password   = var.initial_password
+  is_email_verified  = true
+  preferred_language = "en"
 }
 
 # Instance Members
 
 resource "zitadel_instance_member" "default" {
-  user_id = zitadel_human_user.zitadel_admin.id
+  for_each = zitadel_human_user.iam_admin_user
+
+  user_id = each.value.id
   roles   = ["IAM_OWNER"]
 }
 
@@ -110,17 +105,12 @@ resource "zitadel_project_role" "user" {
 
 # User Grants
 
-resource "zitadel_user_grant" "user_johndoe" {
-  org_id     = zitadel_org.tasks_app.id
-  project_id = zitadel_project.tasks_app.id
-  user_id    = zitadel_human_user.johndoe.id
-  role_keys  = ["user"]
-}
+resource "zitadel_user_grant" "app_user" {
+  for_each = zitadel_human_user.app_user
 
-resource "zitadel_user_grant" "user_janedoe" {
   org_id     = zitadel_org.tasks_app.id
   project_id = zitadel_project.tasks_app.id
-  user_id    = zitadel_human_user.janedoe.id
+  user_id    = each.value.id
   role_keys  = ["user"]
 }
 
@@ -143,8 +133,7 @@ resource "zitadel_application_oidc" "tasks_app" {
   dev_mode                    = false
 
   depends_on = [
-    zitadel_user_grant.user_johndoe,
-    zitadel_user_grant.user_janedoe,
+    zitadel_user_grant.app_user
   ]
 }
 
