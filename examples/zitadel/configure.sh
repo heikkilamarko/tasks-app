@@ -3,6 +3,8 @@ set -e
 
 cd "$(dirname "$0")"
 
+export TF_VAR_initial_password="S3c_r3t!"
+
 env_dir="../../config/dev"
 dev_dir="../../src"
 

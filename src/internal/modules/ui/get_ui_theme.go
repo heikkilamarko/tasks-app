@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-type PostUITheme struct {
+type GetUITheme struct {
 	Logger *slog.Logger
 }
 
-func (h *PostUITheme) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetUITheme) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req, err := ParseSetThemeRequest(r)
 	if err != nil {
 		h.Logger.Error("parse request", "error", err)

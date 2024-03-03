@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+cd "$(dirname "$0")"
+
 usage() {
   echo "Usage: $0 <action>"
   echo "  <action>  'up' to start, 'down' to stop."
@@ -19,6 +21,8 @@ case "$1" in
     ;;
   "down")
     docker compose -f infra.yml down -v
+    git clean -dfX nats
+    git clean -dfX ../messaging/nats
     git clean -dfX zitadel
     ;;
   *)

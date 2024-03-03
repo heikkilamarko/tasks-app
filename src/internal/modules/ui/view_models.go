@@ -70,7 +70,7 @@ func (response *TasksResponse) WithUser(r *http.Request) *TasksResponse {
 func ParseSetThemeRequest(r *http.Request) (*ThemeRequest, error) {
 	var errs []error
 
-	theme, err := ParseTheme(r.FormValue("theme"))
+	theme, err := ParseTheme(r.PathValue("theme"))
 	if err != nil {
 		errs = append(errs, err)
 	}

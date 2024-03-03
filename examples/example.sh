@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+cd "$(dirname "$0")"
+
 usage() {
   echo "Usage: $0 <action> <compose_file>"
   echo "  <action>        'up' to start, 'down' to stop."

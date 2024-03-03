@@ -42,7 +42,7 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "GET /ui/auth/logout", m.Auth.LogoutHandler(), errorMW)
 	HandleWithMiddleware(mux, "GET /ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))), errorMW)
 	HandleWithMiddleware(mux, "GET /ui", &GetUI{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW, loginMW)
-	HandleWithMiddleware(mux, "POST /ui/theme", &PostUITheme{m.Logger}, errorMW, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/theme/{theme}", &GetUITheme{m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks", &GetUITasks{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks/new", &GetUITasksNew{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)

@@ -57,7 +57,7 @@ resource "zitadel_human_user" "zitadel_admin" {
   preferred_language = "en"
   email              = "zitadel-admin@tasks-app.com"
   is_email_verified  = true
-  initial_password   = "S3c_r3t!"
+  initial_password   = var.initial_password
 }
 
 resource "zitadel_human_user" "johndoe" {
@@ -68,7 +68,7 @@ resource "zitadel_human_user" "johndoe" {
   preferred_language = "en"
   email              = "john.doe@tasks-app.com"
   is_email_verified  = true
-  initial_password   = "S3c_r3t!"
+  initial_password   = var.initial_password
 }
 
 resource "zitadel_human_user" "janedoe" {
@@ -79,7 +79,7 @@ resource "zitadel_human_user" "janedoe" {
   preferred_language = "en"
   email              = "jane.doe@tasks-app.com"
   is_email_verified  = true
-  initial_password   = "S3c_r3t!"
+  initial_password   = var.initial_password
 }
 
 # Instance Members
@@ -172,16 +172,4 @@ resource "zitadel_trigger_actions" "tasks_app" {
   flow_type    = "FLOW_TYPE_INTERNAL_AUTHENTICATION"
   trigger_type = "TRIGGER_TYPE_POST_CREATION"
   action_ids   = [zitadel_action.tasks_app.id]
-}
-
-# Outputs
-
-output "tasks_app_client_id" {
-  value     = zitadel_application_oidc.tasks_app.client_id
-  sensitive = true
-}
-
-output "email_notifier_token" {
-  value     = zitadel_personal_access_token.email_notifier.token
-  sensitive = true
 }

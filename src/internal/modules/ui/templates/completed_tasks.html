@@ -3,9 +3,9 @@
 	<html>
 		{{ template "html_head" . }}
 		<body class="p-3" data-bs-theme="{{ .Theme }}">
+			{{ template "app_menu" . }}
 			<main class="container slide-transition">
-				<h1>Completed Tasks <span class="text-muted">• {{ .UserName }}</span></h1>
-				{{ template "theme_picker" . }}
+				<h1>Completed Tasks</h1>
 				<div class="row g-2 mt-3">
 					<div class="col-6 col-md-auto">
 						<a
@@ -21,10 +21,6 @@
 						<a href="/ui/tasks/export?filter=completed" download class="btn btn-outline-primary rounded-pill px-4 w-100"
 							>Export Tasks</a
 						>
-					</div>
-
-					<div class="col-6 col-md-auto">
-						<a href="/ui/auth/logout" class="btn btn-outline-primary rounded-pill px-4 w-100">Sign Out</a>
 					</div>
 				</div>
 
