@@ -18,7 +18,6 @@ type TemplateRenderer struct {
 func NewTemplateRenderer(logger *slog.Logger) (*TemplateRenderer, error) {
 	templates, err := template.New("").
 		Funcs(template.FuncMap{
-			"RenderEnv":     RenderEnv,
 			"RenderTime":    RenderTime,
 			"RenderISOTime": RenderISOTime,
 		}).

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -44,11 +45,12 @@ type AttachmentsRequest struct {
 }
 
 type TasksResponse struct {
+	Theme         string
 	UserID        string
 	UserName      string
+	HubURL        string
 	Tasks         []*shared.Task
 	IsCreatingNew bool
-	Theme         string
 }
 
 func NewTasksResponse(tasks []*shared.Task) *TasksResponse {
@@ -64,6 +66,11 @@ func (response *TasksResponse) WithUser(r *http.Request) *TasksResponse {
 	user, _ := shared.GetUserContext(r.Context())
 	response.UserID = user.ID
 	response.UserName = user.Name
+	return response
+}
+
+func (response *TasksResponse) WithHubURL() *TasksResponse {
+	response.HubURL = os.Getenv("APP_UI_HUB_URL")
 	return response
 }
 

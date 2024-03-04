@@ -21,8 +21,9 @@ func (h *GetUICompleted) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vm := NewTasksResponse(tasks).
+		WithTheme(r).
 		WithUser(r).
-		WithTheme(r)
+		WithHubURL()
 
 	h.Renderer.Render(w, "completed_tasks", vm)
 }

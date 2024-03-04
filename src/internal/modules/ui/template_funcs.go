@@ -1,13 +1,6 @@
 package ui
 
-import (
-	"os"
-	"time"
-)
-
-func RenderEnv(key string) string {
-	return os.Getenv(key)
-}
+import "time"
 
 func RenderTime(from time.Time) string {
 	l, err := time.LoadLocation(timezone)

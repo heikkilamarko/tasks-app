@@ -25,7 +25,7 @@
 		<script>
 			window.app = {
 				USER_ID: '{{ .UserID }}',
-				HUB_URL: '{{ RenderEnv "APP_UI_HUB_URL" }}'
+				HUB_URL: '{{ .HubURL }}'
 			}
 		</script>
 		<script src="/ui/static/js/app.js" type="module"></script>
