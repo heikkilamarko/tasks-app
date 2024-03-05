@@ -13,12 +13,13 @@ const (
 
 const CookieNameTheme = "theme"
 
-func SupportedThemes() []string {
-	return []string{ThemeDark, ThemeLight}
+var SupportedThemes = []string{
+	ThemeDark,
+	ThemeLight,
 }
 
 func IsValidTheme(theme string) bool {
-	return slices.Contains(SupportedThemes(), theme)
+	return slices.Contains(SupportedThemes, theme)
 }
 
 func SetThemeCookie(w http.ResponseWriter, theme string) {

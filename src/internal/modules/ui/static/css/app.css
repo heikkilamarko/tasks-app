@@ -26,10 +26,6 @@ svg.bi {
 	vertical-align: -0.125em;
 }
 
-/* .dropdown-toggle::after {
-	content: none;
-} */
-
 .toast {
 	--bs-toast-spacing: 1rem;
 	--bs-toast-max-width: 500px;

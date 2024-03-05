@@ -18,9 +18,10 @@ type TemplateRenderer struct {
 func NewTemplateRenderer(logger *slog.Logger) (*TemplateRenderer, error) {
 	templates, err := template.New("").
 		Funcs(template.FuncMap{
-			"dict":          Dict,
-			"formattime":    FormatTime,
-			"formatisotime": FormatISOTime,
+			"dict":           Dict,
+			"formattime":     FormatTime,
+			"formatisotime":  FormatISOTime,
+			"formattimezone": FormatTimezone,
 		}).
 		ParseFS(templatesFS, "templates/*.html")
 

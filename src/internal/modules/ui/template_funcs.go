@@ -2,16 +2,9 @@ package ui
 
 import (
 	"errors"
+	"strings"
 	"time"
 )
-
-func FormatTime(l *time.Location, t time.Time) string {
-	return t.In(l).Format(TimeFormat)
-}
-
-func FormatISOTime(l *time.Location, t time.Time) string {
-	return t.In(l).Format(TimeFormatISO)
-}
 
 func Dict(values ...any) (map[string]any, error) {
 	if len(values)%2 != 0 {
@@ -47,4 +40,20 @@ func Dict(values ...any) (map[string]any, error) {
 	}
 
 	return root, nil
+}
+
+func FormatTime(l *time.Location, t time.Time) string {
+	return t.In(l).Format(TimeFormat)
+}
+
+func FormatISOTime(l *time.Location, t time.Time) string {
+	return t.In(l).Format(TimeFormatISO)
+}
+
+func FormatTimezone(tz string) string {
+	parts := strings.Split(tz, "/")
+	if len(parts) != 2 {
+		return tz
+	}
+	return strings.ReplaceAll(parts[1], "_", " ")
 }

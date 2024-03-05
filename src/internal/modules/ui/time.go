@@ -14,29 +14,14 @@ const (
 
 const CookieNameTimezone = "timezone"
 
-type Timezone struct {
-	Name     string
-	Timezone string
-}
-
-var Timezones = []Timezone{
-	{Name: "Helsinki", Timezone: "Europe/Helsinki"},
-	{Name: "London", Timezone: "Europe/London"},
-	{Name: "New York", Timezone: "America/New_York"},
-}
-
-func SupportedTimezones() []string {
-	var timezones []string
-	for _, tz := range Timezones {
-		timezones = append(timezones, tz.Timezone)
-	}
-	return timezones
+var SupportedTimezones = []string{
+	"Europe/Helsinki",
+	"Europe/London",
+	"America/New_York",
 }
 
 func IsValidTimezone(timezone string) bool {
-	return slices.ContainsFunc(Timezones, func(tz Timezone) bool {
-		return tz.Timezone == timezone
-	})
+	return slices.Contains(SupportedTimezones, timezone)
 }
 
 func SetTimezoneCookie(w http.ResponseWriter, timezone string) {
@@ -52,11 +37,6 @@ func SetTimezoneCookie(w http.ResponseWriter, timezone string) {
 	http.SetCookie(w, cookie)
 }
 
-func GetLocation(r *http.Request) *time.Location {
-	l, _ := time.LoadLocation(GetTimezone(r))
-	return l
-}
-
 func GetTimezone(r *http.Request) string {
 	cookie, err := r.Cookie(CookieNameTimezone)
 	if err != nil {
@@ -68,4 +48,9 @@ func GetTimezone(r *http.Request) string {
 	}
 
 	return TimezoneDefault
+}
+
+func GetLocation(r *http.Request) *time.Location {
+	l, _ := time.LoadLocation(GetTimezone(r))
+	return l
 }

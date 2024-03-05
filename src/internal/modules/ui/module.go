@@ -55,6 +55,7 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "PUT /ui/tasks/{id}", &PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "DELETE /ui/tasks/{id}", &DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/completed", &GetUICompleted{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/completed/tasks", &GetUICompletedTasks{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
 
 	server := &http.Server{
 		ReadTimeout:  5 * time.Second,

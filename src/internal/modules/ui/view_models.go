@@ -51,7 +51,7 @@ type AttachmentsRequest struct {
 type TasksResponse struct {
 	Title         string
 	Theme         string
-	Timezones     []Timezone
+	Timezones     []string
 	UserID        string
 	UserName      string
 	HubURL        string
@@ -67,7 +67,7 @@ type TaskResponse struct {
 
 func NewTasksResponse(r *http.Request, tasks []*shared.Task) *TasksResponse {
 	return &TasksResponse{
-		Timezones: Timezones,
+		Timezones: SupportedTimezones,
 		Location:  GetLocation(r),
 		Tasks:     tasks,
 	}
@@ -219,7 +219,7 @@ func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
 
 func ParseTheme(value string) (string, error) {
 	if !IsValidTheme(value) {
-		return "", fmt.Errorf("theme: required, supported values: %s", strings.Join(SupportedThemes(), ", "))
+		return "", fmt.Errorf("theme: required, supported values: %s", strings.Join(SupportedThemes, ", "))
 	}
 
 	return value, nil
@@ -227,7 +227,7 @@ func ParseTheme(value string) (string, error) {
 
 func ParseTimezone(value string) (string, error) {
 	if !IsValidTimezone(value) {
-		return "", fmt.Errorf("timezone: required, supported values: %s", strings.Join(SupportedTimezones(), ", "))
+		return "", fmt.Errorf("timezone: required, supported values: %s", strings.Join(SupportedTimezones, ", "))
 	}
 
 	return value, nil
