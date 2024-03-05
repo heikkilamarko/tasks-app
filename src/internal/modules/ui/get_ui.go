@@ -24,6 +24,7 @@ func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		WithTheme(r).
 		WithUser(r).
 		WithHubURL()
+	vm.Title = "Active"
 
 	h.Renderer.Render(w, "active_tasks", vm)
 }

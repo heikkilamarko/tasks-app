@@ -17,6 +17,10 @@ type ThemeRequest struct {
 	Theme string
 }
 
+type TimezoneRequest struct {
+	Timezone string
+}
+
 type TaskRequest struct {
 	ID int
 }
@@ -45,7 +49,9 @@ type AttachmentsRequest struct {
 }
 
 type TasksResponse struct {
+	Title         string
 	Theme         string
+	Timezones     []Timezone
 	UserID        string
 	UserName      string
 	HubURL        string
@@ -61,8 +67,9 @@ type TaskResponse struct {
 
 func NewTasksResponse(r *http.Request, tasks []*shared.Task) *TasksResponse {
 	return &TasksResponse{
-		Location: GetLocation(r),
-		Tasks:    tasks,
+		Timezones: Timezones,
+		Location:  GetLocation(r),
+		Tasks:     tasks,
 	}
 }
 
@@ -103,6 +110,21 @@ func ParseSetThemeRequest(r *http.Request) (*ThemeRequest, error) {
 	}
 
 	return &ThemeRequest{theme}, nil
+}
+
+func ParseSetTimezoneRequest(r *http.Request) (*TimezoneRequest, error) {
+	var errs []error
+
+	tz, err := ParseTimezone(r.FormValue("tz"))
+	if err != nil {
+		errs = append(errs, err)
+	}
+
+	if err := errors.Join(errs...); err != nil {
+		return nil, err
+	}
+
+	return &TimezoneRequest{tz}, nil
 }
 
 func ParseTaskRequest(r *http.Request) (*TaskRequest, error) {
@@ -198,6 +220,14 @@ func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
 func ParseTheme(value string) (string, error) {
 	if !IsValidTheme(value) {
 		return "", fmt.Errorf("theme: required, supported values: %s", strings.Join(SupportedThemes(), ", "))
+	}
+
+	return value, nil
+}
+
+func ParseTimezone(value string) (string, error) {
+	if !IsValidTimezone(value) {
+		return "", fmt.Errorf("timezone: required, supported values: %s", strings.Join(SupportedTimezones(), ", "))
 	}
 
 	return value, nil

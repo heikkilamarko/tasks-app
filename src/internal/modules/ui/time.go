@@ -19,14 +19,22 @@ type Timezone struct {
 	Timezone string
 }
 
-var SupportedTimezones = []Timezone{
+var Timezones = []Timezone{
 	{Name: "Helsinki", Timezone: "Europe/Helsinki"},
 	{Name: "London", Timezone: "Europe/London"},
 	{Name: "New York", Timezone: "America/New_York"},
 }
 
+func SupportedTimezones() []string {
+	var timezones []string
+	for _, tz := range Timezones {
+		timezones = append(timezones, tz.Timezone)
+	}
+	return timezones
+}
+
 func IsValidTimezone(timezone string) bool {
-	return slices.ContainsFunc(SupportedTimezones, func(tz Timezone) bool {
+	return slices.ContainsFunc(Timezones, func(tz Timezone) bool {
 		return tz.Timezone == timezone
 	})
 }
