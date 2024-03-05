@@ -14,10 +14,10 @@
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbar-content">
-				<ul class="navbar-nav me-auto">
+				<ul class="navbar-nav mx-auto">
 					<li class="nav-item">
 						<a
-							class="nav-link {{ if eq .Title "Active" }}active{{ end }}"
+							class="nav-link {{ if eq .Title "Active" }}fw-bold active{{ end }}"
 							href="/ui"
 							hx-boost="true"
 							hx-swap="innerHTML transition:true"
@@ -40,7 +40,7 @@
 					</li>
 					<li class="nav-item">
 						<a
-							class="nav-link {{ if eq .Title "Completed" }}active{{ end }}"
+							class="nav-link {{ if eq .Title "Completed" }}fw-bold active{{ end }}"
 							href="/ui/completed"
 							hx-boost="true"
 							hx-swap="innerHTML transition:true"
@@ -65,7 +65,7 @@
 						</a>
 					</li>
 				</ul>
-				<ul class="navbar-nav ms-auto">
+				<ul class="navbar-nav">
 					<div class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 							<svg
@@ -99,7 +99,6 @@
 							{{ end }}
 						</ul>
 					</div>
-
 					<div class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 							<svg
