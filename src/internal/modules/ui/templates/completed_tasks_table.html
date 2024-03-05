@@ -14,7 +14,7 @@
 				</thead>
 				<tbody>
 					{{ range .Tasks }}
-						{{ template "completed_tasks_table_row" . }}
+						{{ template "completed_tasks_table_row" (dict "Task" . "Location" $.Location) }}
 					{{ end }}
 				</tbody>
 			</table>

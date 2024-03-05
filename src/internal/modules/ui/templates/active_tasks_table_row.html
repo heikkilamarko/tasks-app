@@ -1,21 +1,20 @@
 {{ define "active_tasks_table_row" }}
 	<tr>
-		<td>{{ .ID }}</td>
-		<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
-			<span class="app-text-multiline">{{ .Name }}</span>
+		<td>{{ .Task.ID }}</td>
+		<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Task.Name }}">
+			<span class="app-text-multiline">{{ .Task.Name }}</span>
 		</td>
 		<td>
-			{{ $parent := . }}
-			{{ range .Attachments }}
-				<a href="/ui/tasks/{{ $parent.ID }}/attachments/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
+			{{ range .Task.Attachments }}
+				<a href="/ui/tasks/{{ $.Task.ID }}/attachments/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
 			{{ end }}
 		</td>
-		<td>{{ with .ExpiresAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>
-		<td>{{ RenderTime .CreatedAt }}</td>
+		<td>{{ with .Task.ExpiresAt }}{{ . | formattime $.Location }}{{ end }}</td>
+		<td>{{ .Task.CreatedAt | formattime .Location }}</td>
 		<td>
 			<button
 				class="btn btn-sm btn-outline-primary rounded-pill px-3"
-				hx-get="/ui/tasks/{{ .ID }}/edit"
+				hx-get="/ui/tasks/{{ .Task.ID }}/edit"
 				hx-target="closest tr"
 				hx-swap="outerHTML"
 				hx-trigger="editTask"
@@ -27,7 +26,7 @@
 			</button>
 			<button
 				class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2"
-				hx-post="/ui/tasks/{{ .ID }}/complete"
+				hx-post="/ui/tasks/{{ .Task.ID }}/complete"
 				hx-target="#tasks-table"
 				hx-swap="innerHTML"
 				hx-trigger="completeTask"
@@ -39,7 +38,7 @@
 			</button>
 			<button
 				class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-2"
-				hx-delete="/ui/tasks/{{ .ID }}"
+				hx-delete="/ui/tasks/{{ .Task.ID }}"
 				hx-target="#tasks-table"
 				hx-swap="innerHTML"
 				hx-trigger="deleteTask"

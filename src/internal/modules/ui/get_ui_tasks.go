@@ -20,7 +20,7 @@ func (h *GetUITasks) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := NewTasksResponse(tasks)
+	vm := NewTasksResponse(r, tasks)
 
 	h.Renderer.Render(w, "active_tasks_table", vm)
 }

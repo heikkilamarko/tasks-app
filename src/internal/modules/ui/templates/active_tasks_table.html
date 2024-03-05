@@ -28,7 +28,7 @@
 						{{ template "active_tasks_table_row_new" }}
 					{{ end }}
 					{{ range .Tasks }}
-						{{ template "active_tasks_table_row" . }}
+						{{ template "active_tasks_table_row" (dict "Task" . "Location" $.Location) }}
 					{{ end }}
 				</tbody>
 			</table>

@@ -20,7 +20,7 @@ func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := NewTasksResponse(tasks).
+	vm := NewTasksResponse(r, tasks).
 		WithTheme(r).
 		WithUser(r).
 		WithHubURL()

@@ -32,5 +32,7 @@ func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Renderer.Render(w, "active_tasks_table_row_edit", task)
+	vm := NewTaskResponse(r, task)
+
+	h.Renderer.Render(w, "active_tasks_table_row_edit", vm)
 }

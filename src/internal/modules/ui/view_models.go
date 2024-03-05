@@ -49,12 +49,28 @@ type TasksResponse struct {
 	UserID        string
 	UserName      string
 	HubURL        string
+	Location      *time.Location
 	Tasks         []*shared.Task
 	IsCreatingNew bool
 }
 
-func NewTasksResponse(tasks []*shared.Task) *TasksResponse {
-	return &TasksResponse{Tasks: tasks}
+type TaskResponse struct {
+	Location *time.Location
+	Task     *shared.Task
+}
+
+func NewTasksResponse(r *http.Request, tasks []*shared.Task) *TasksResponse {
+	return &TasksResponse{
+		Location: GetLocation(r),
+		Tasks:    tasks,
+	}
+}
+
+func NewTaskResponse(r *http.Request, task *shared.Task) *TaskResponse {
+	return &TaskResponse{
+		Location: GetLocation(r),
+		Task:     task,
+	}
 }
 
 func (response *TasksResponse) WithTheme(r *http.Request) *TasksResponse {
@@ -132,7 +148,7 @@ func ParseNewTaskRequest(r *http.Request) (*NewTaskRequest, error) {
 		errs = append(errs, err)
 	}
 
-	expiresAt, err := ParseTaskExpiresAt(r.FormValue("expires_at"))
+	expiresAt, err := ParseTaskExpiresAt(r.FormValue("expires_at"), GetLocation(r))
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -162,7 +178,7 @@ func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
 		errs = append(errs, err)
 	}
 
-	expiresAt, err := ParseTaskExpiresAt(r.FormValue("expires_at"))
+	expiresAt, err := ParseTaskExpiresAt(r.FormValue("expires_at"), GetLocation(r))
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -214,12 +230,12 @@ func ParseTaskName(value string) (string, error) {
 	return value, nil
 }
 
-func ParseTaskExpiresAt(value string) (*time.Time, error) {
-	if value == "" {
+func ParseTaskExpiresAt(value string, l *time.Location) (*time.Time, error) {
+	if value == "" || l == nil {
 		return nil, nil
 	}
 
-	v, err := ParseTime(value)
+	v, err := ParseTime(value, l)
 	if err != nil {
 		return nil, errors.New("expires_at: must be in ISO 8601 format")
 	}
@@ -245,13 +261,8 @@ func ParseTaskAttachments(r *http.Request) (*AttachmentsRequest, error) {
 	return &AttachmentsRequest{names, files}, nil
 }
 
-func ParseTime(t string) (*time.Time, error) {
-	l, err := time.LoadLocation(timezone)
-	if err != nil {
-		return nil, err
-	}
-
-	v, err := time.ParseInLocation(timeFormatISO, t, l)
+func ParseTime(t string, l *time.Location) (*time.Time, error) {
+	v, err := time.ParseInLocation(TimeFormatISO, t, l)
 	if err != nil {
 		return nil, err
 	}

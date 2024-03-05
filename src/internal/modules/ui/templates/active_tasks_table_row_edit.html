@@ -1,6 +1,6 @@
 {{ define "active_tasks_table_row_edit" }}
-	<tr class="editing" hx-trigger="cancelEdit" hx-get="/ui/tasks/{{ .ID }}" hx-swap="outerHTML">
-		<td>{{ .ID }}</td>
+	<tr class="editing" hx-trigger="cancelEdit" hx-get="/ui/tasks/{{ .Task.ID }}" hx-swap="outerHTML">
+		<td>{{ .Task.ID }}</td>
 		<td class="task-name">
 			<textarea
 				name="name"
@@ -16,7 +16,7 @@
 					else
 						me.setCustomValidity('')"
 			>
-{{ .Name }}</textarea
+{{ .Task.Name }}</textarea
 			>
 		</td>
 		<td>
@@ -29,7 +29,7 @@
 				value=""
 			/>
 			<div>
-				{{ range .Attachments }}
+				{{ range .Task.Attachments }}
 					<div
 						class="badge border text-secondary-emphasis d-flex align-items-center justify-content-between gap-3 mt-2"
 					>
@@ -46,15 +46,15 @@
 				name="expires_at"
 				form="task-edit-form"
 				class="form-control form-control-sm"
-				value="{{ with .ExpiresAt }}{{ RenderISOTime . }}{{ end }}"
+				value="{{ with .Task.ExpiresAt }}{{ . | formatisotime $.Location }}{{ end }}"
 			/>
 		</td>
-		<td>{{ RenderTime .CreatedAt }}</td>
+		<td>{{ .Task.CreatedAt | formattime .Location }}</td>
 		<td>
 			<button
 				type="button"
 				class="btn btn-sm btn-outline-danger rounded-pill px-3"
-				hx-get="/ui/tasks/{{ .ID }}"
+				hx-get="/ui/tasks/{{ .Task.ID }}"
 				hx-target="closest tr"
 				hx-swap="outerHTML"
 			>
@@ -70,7 +70,7 @@
 		enctype="multipart/form-data"
 		autocomplete="off"
 		hx-swap-oob="true"
-		hx-put="/ui/tasks/{{ .ID }}"
+		hx-put="/ui/tasks/{{ .Task.ID }}"
 		hx-target=".editing"
 		hx-swap="outerHTML"
 	></form>

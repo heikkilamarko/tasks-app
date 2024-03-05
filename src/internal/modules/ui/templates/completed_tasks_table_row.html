@@ -1,17 +1,16 @@
 {{ define "completed_tasks_table_row" }}
 	<tr>
-		<td>{{ .ID }}</td>
-		<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Name }}">
-			<span class="app-text-multiline">{{ .Name }}</span>
+		<td>{{ .Task.ID }}</td>
+		<td class="text-break task-name" data-bs-toggle="tooltip" data-bs-title="{{ .Task.Name }}">
+			<span class="app-text-multiline">{{ .Task.Name }}</span>
 		</td>
 		<td>
-			{{ $parent := . }}
-			{{ range .Attachments }}
-				<a href="/ui/tasks/{{ $parent.ID }}/attachments/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
+			{{ range .Task.Attachments }}
+				<a href="/ui/tasks/{{ $.Task.ID }}/attachments/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
 			{{ end }}
 		</td>
-		<td>{{ with .ExpiresAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>
-		<td>{{ RenderTime .CreatedAt }}</td>
-		<td>{{ with .CompletedAt }}{{ RenderTime . }}{{ else }}{{ end }}</td>
+		<td>{{ with .Task.ExpiresAt }}{{ . | formattime $.Location }}{{ end }}</td>
+		<td>{{ .Task.CreatedAt | formattime .Location }}</td>
+		<td>{{ with .Task.CompletedAt }}{{ . | formattime $.Location }}{{ end }}</td>
 	</tr>
 {{ end }}

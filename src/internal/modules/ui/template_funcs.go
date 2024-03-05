@@ -1,21 +1,50 @@
 package ui
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
-func RenderTime(from time.Time) string {
-	l, err := time.LoadLocation(timezone)
-	if err != nil {
-		return ""
-	}
-
-	return from.In(l).Format(timeFormat)
+func FormatTime(l *time.Location, t time.Time) string {
+	return t.In(l).Format(TimeFormat)
 }
 
-func RenderISOTime(from time.Time) string {
-	l, err := time.LoadLocation(timezone)
-	if err != nil {
-		return ""
+func FormatISOTime(l *time.Location, t time.Time) string {
+	return t.In(l).Format(TimeFormatISO)
+}
+
+func Dict(values ...any) (map[string]any, error) {
+	if len(values)%2 != 0 {
+		return nil, errors.New("invalid dictionary call")
 	}
 
-	return from.In(l).Format(timeFormatISO)
+	root := make(map[string]any)
+
+	for i := 0; i < len(values); i += 2 {
+		dict := root
+		var key string
+		switch v := values[i].(type) {
+		case string:
+			key = v
+		case []string:
+			for i := 0; i < len(v)-1; i++ {
+				key = v[i]
+				var m map[string]any
+				v, found := dict[key]
+				if found {
+					m = v.(map[string]any)
+				} else {
+					m = make(map[string]any)
+					dict[key] = m
+				}
+				dict = m
+			}
+			key = v[len(v)-1]
+		default:
+			return nil, errors.New("invalid dictionary key")
+		}
+		dict[key] = values[i+1]
+	}
+
+	return root, nil
 }
