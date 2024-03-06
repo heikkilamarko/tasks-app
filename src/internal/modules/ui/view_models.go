@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+type LanguageRequest struct {
+	Language string
+}
+
 type ThemeRequest struct {
 	Theme string
 }
@@ -50,24 +54,31 @@ type AttachmentsRequest struct {
 
 type TasksResponse struct {
 	Title         string
+	Language      string
+	Languages     []string
 	Theme         string
+	Location      *time.Location
 	Timezones     []string
 	UserID        string
 	UserName      string
 	HubURL        string
-	Location      *time.Location
 	Tasks         []*shared.Task
 	IsCreatingNew bool
 }
 
 type TaskResponse struct {
+	Language string
+	Theme    string
 	Location *time.Location
 	Task     *shared.Task
 }
 
 func NewTasksResponse(r *http.Request, tasks []*shared.Task) *TasksResponse {
 	return &TasksResponse{
+		Languages: SupportedLanguages,
 		Timezones: SupportedTimezones,
+		Language:  GetLanguage(r),
+		Theme:     GetTheme(r),
 		Location:  GetLocation(r),
 		Tasks:     tasks,
 	}
@@ -75,14 +86,11 @@ func NewTasksResponse(r *http.Request, tasks []*shared.Task) *TasksResponse {
 
 func NewTaskResponse(r *http.Request, task *shared.Task) *TaskResponse {
 	return &TaskResponse{
+		Language: GetLanguage(r),
+		Theme:    GetTheme(r),
 		Location: GetLocation(r),
 		Task:     task,
 	}
-}
-
-func (response *TasksResponse) WithTheme(r *http.Request) *TasksResponse {
-	response.Theme = GetTheme(r)
-	return response
 }
 
 func (response *TasksResponse) WithUser(r *http.Request) *TasksResponse {
@@ -95,6 +103,21 @@ func (response *TasksResponse) WithUser(r *http.Request) *TasksResponse {
 func (response *TasksResponse) WithHubURL() *TasksResponse {
 	response.HubURL = os.Getenv("APP_UI_HUB_URL")
 	return response
+}
+
+func ParseSetLanguageRequest(r *http.Request) (*LanguageRequest, error) {
+	var errs []error
+
+	lang, err := ParseLanguage(r.PathValue("language"))
+	if err != nil {
+		errs = append(errs, err)
+	}
+
+	if err := errors.Join(errs...); err != nil {
+		return nil, err
+	}
+
+	return &LanguageRequest{lang}, nil
 }
 
 func ParseSetThemeRequest(r *http.Request) (*ThemeRequest, error) {
@@ -215,6 +238,14 @@ func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
 	}
 
 	return &UpdateTaskRequest{id, name, expiresAt, attachments}, nil
+}
+
+func ParseLanguage(value string) (string, error) {
+	if !IsValidLanguage(value) {
+		return "", fmt.Errorf("language: required, supported values: %s", strings.Join(SupportedLanguages, ", "))
+	}
+
+	return value, nil
 }
 
 func ParseTheme(value string) (string, error) {

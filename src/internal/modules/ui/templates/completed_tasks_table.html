@@ -13,7 +13,7 @@
 				</thead>
 				<tbody>
 					{{ range .Tasks }}
-						{{ template "completed_tasks_table_row" (dict "Task" . "Location" $.Location) }}
+						{{ template "completed_tasks_table_row" (dict "Task" . "Language" $.Language "Location" $.Location) }}
 					{{ end }}
 				</tbody>
 			</table>

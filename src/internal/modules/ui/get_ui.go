@@ -21,7 +21,6 @@ func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vm := NewTasksResponse(r, tasks).
-		WithTheme(r).
 		WithUser(r).
 		WithHubURL()
 	vm.Title = "Active"
