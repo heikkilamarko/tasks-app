@@ -8,8 +8,8 @@
 				<a href="/ui/tasks/{{ $.Task.ID }}/attachments/{{ .FileName }}" download class="d-block">{{ .FileName }}</a>
 			{{ end }}
 		</td>
-		<td>{{ with .Task.ExpiresAt }}{{ . | formattime $.Location }}{{ end }}</td>
-		<td>{{ .Task.CreatedAt | formattime .Location }}</td>
+		<td>{{ with .Task.ExpiresAt }}{{ . | formattime $.UI.Location }}{{ end }}</td>
+		<td>{{ .Task.CreatedAt | formattime .UI.Location }}</td>
 		<td>
 			<button
 				class="btn btn-sm btn-outline-primary rounded-pill px-3"

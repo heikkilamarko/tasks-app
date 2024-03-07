@@ -26,7 +26,7 @@
 				<ul class="navbar-nav mx-auto">
 					<li class="nav-item">
 						<a
-							class="nav-link {{ if eq .Title "Active" }}fw-bold active{{ end }}"
+							class="nav-link {{ if eq .UI.Title "Active" }}fw-bold active{{ end }}"
 							href="/ui"
 							hx-boost="true"
 							hx-swap="innerHTML transition:true"
@@ -49,7 +49,7 @@
 					</li>
 					<li class="nav-item">
 						<a
-							class="nav-link {{ if eq .Title "Completed" }}fw-bold active{{ end }}"
+							class="nav-link {{ if eq .UI.Title "Completed" }}fw-bold active{{ end }}"
 							href="/ui/completed"
 							hx-boost="true"
 							hx-swap="innerHTML transition:true"
@@ -89,13 +89,13 @@
 									d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484q-.121.12-.242.234c-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"
 								/>
 							</svg>
-							{{ .Location.String | formattimezone }}
+							{{ .UI.Location.String | formattimezone }}
 						</a>
 						<ul class="dropdown-menu">
-							{{ range .Timezones }}
+							{{ range .UI.Timezones }}
 								<li>
 									<a
-										class="dropdown-item {{ if eq . $.Location.String }}active{{ end }}"
+										class="dropdown-item {{ if eq . $.UI.Location.String }}active{{ end }}"
 										href="/ui/timezone?tz={{ . }}"
 										hx-boost="true"
 									>
@@ -122,13 +122,13 @@
 									d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm7.138 9.995q.289.451.63.846c-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6 6 0 0 1-.415-.492 2 2 0 0 1-.94.31"
 								/>
 							</svg>
-							{{ .Language }}
+							{{ .UI.Language }}
 						</a>
 						<ul class="dropdown-menu">
-							{{ range .Languages }}
+							{{ range .UI.Languages }}
 								<li>
 									<a
-										class="dropdown-item {{ if eq . $.Language }}active{{ end }}"
+										class="dropdown-item {{ if eq . $.UI.Language }}active{{ end }}"
 										href="/ui/language/{{ . }}"
 										hx-boost="true"
 									>
@@ -150,11 +150,11 @@
 							>
 								<path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
 							</svg>
-							{{ .UserName }}
+							{{ .UI.UserName }}
 						</a>
 						<ul class="dropdown-menu">
 							<li>
-								{{ if eq .Theme "light" }}
+								{{ if eq .UI.Theme "light" }}
 									<a class="dropdown-item" href="/ui/theme/dark" hx-boost="true">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"

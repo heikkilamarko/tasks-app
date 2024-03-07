@@ -45,10 +45,10 @@
 				name="expires_at"
 				form="task-edit-form"
 				class="form-control form-control-sm"
-				value="{{ with .Task.ExpiresAt }}{{ . | formatisotime $.Location }}{{ end }}"
+				value="{{ with .Task.ExpiresAt }}{{ . | formatisotime $.UI.Location }}{{ end }}"
 			/>
 		</td>
-		<td>{{ .Task.CreatedAt | formattime .Location }}</td>
+		<td>{{ .Task.CreatedAt | formattime .UI.Location }}</td>
 		<td>
 			<button
 				type="button"

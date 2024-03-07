@@ -20,10 +20,8 @@ func (h *GetUICompleted) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := NewTasksResponse(r, tasks).
-		WithUser(r).
-		WithHubURL()
-	vm.Title = "Completed"
+	vm := NewTasksResponse(r, tasks)
+	vm.UI.Title = "Completed"
 
 	h.Renderer.Render(w, "completed_tasks", vm)
 }

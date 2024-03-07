@@ -53,56 +53,61 @@ type AttachmentsRequest struct {
 }
 
 type TasksResponse struct {
-	Title         string
-	Language      string
-	Languages     []string
-	Theme         string
-	Location      *time.Location
-	Timezones     []string
-	UserID        string
-	UserName      string
-	HubURL        string
+	UI            *UIModel
 	Tasks         []*shared.Task
 	IsCreatingNew bool
 }
 
 type TaskResponse struct {
-	Language string
-	Theme    string
-	Location *time.Location
-	Task     *shared.Task
+	UI   *UIModel
+	Task *shared.Task
+}
+
+type UIModel struct {
+	Title     string
+	Theme     string
+	Language  string
+	Languages []string
+	Location  *time.Location
+	Timezones []string
+	UserID    string
+	UserName  string
+	HubURL    string
+}
+
+func NewUIModel(r *http.Request) *UIModel {
+	var userID, userName string
+	user, _ := shared.GetUserContext(r.Context())
+	if user != nil {
+		userID = user.ID
+		userName = user.Name
+	}
+
+	return &UIModel{
+		Title:     "",
+		Theme:     GetTheme(r),
+		Language:  GetLanguage(r),
+		Languages: SupportedLanguages,
+		Location:  GetLocation(r),
+		Timezones: SupportedTimezones,
+		UserID:    userID,
+		UserName:  userName,
+		HubURL:    os.Getenv("APP_UI_HUB_URL"),
+	}
 }
 
 func NewTasksResponse(r *http.Request, tasks []*shared.Task) *TasksResponse {
 	return &TasksResponse{
-		Languages: SupportedLanguages,
-		Timezones: SupportedTimezones,
-		Language:  GetLanguage(r),
-		Theme:     GetTheme(r),
-		Location:  GetLocation(r),
-		Tasks:     tasks,
+		UI:    NewUIModel(r),
+		Tasks: tasks,
 	}
 }
 
 func NewTaskResponse(r *http.Request, task *shared.Task) *TaskResponse {
 	return &TaskResponse{
-		Language: GetLanguage(r),
-		Theme:    GetTheme(r),
-		Location: GetLocation(r),
-		Task:     task,
+		UI:   NewUIModel(r),
+		Task: task,
 	}
-}
-
-func (response *TasksResponse) WithUser(r *http.Request) *TasksResponse {
-	user, _ := shared.GetUserContext(r.Context())
-	response.UserID = user.ID
-	response.UserName = user.Name
-	return response
-}
-
-func (response *TasksResponse) WithHubURL() *TasksResponse {
-	response.HubURL = os.Getenv("APP_UI_HUB_URL")
-	return response
 }
 
 func ParseSetLanguageRequest(r *http.Request) (*LanguageRequest, error) {

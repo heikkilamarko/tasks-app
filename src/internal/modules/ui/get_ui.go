@@ -20,10 +20,8 @@ func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := NewTasksResponse(r, tasks).
-		WithUser(r).
-		WithHubURL()
-	vm.Title = "Active"
+	vm := NewTasksResponse(r, tasks)
+	vm.UI.Title = "Active"
 
 	h.Renderer.Render(w, "active_tasks", vm)
 }

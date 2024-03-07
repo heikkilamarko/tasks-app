@@ -2,7 +2,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>{{ .Title }}</title>
+		<title>{{ .UI.Title }}</title>
 		<link rel="icon" href="/ui/static/favicon.ico" />
 		<link rel="icon" type="image/png" sizes="32x32" href="/ui/static/favicon-32x32.png" />
 		<link rel="icon" type="image/png" sizes="16x16" href="/ui/static/favicon-16x16.png" />
@@ -24,8 +24,8 @@
 		></script>
 		<script>
 			window.app = {
-				USER_ID: '{{ .UserID }}',
-				HUB_URL: '{{ .HubURL }}'
+				USER_ID: '{{ .UI.UserID }}',
+				HUB_URL: '{{ .UI.HubURL }}'
 			}
 		</script>
 		<script src="/ui/static/js/app.js" type="module"></script>
