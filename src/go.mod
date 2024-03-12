@@ -4,7 +4,7 @@ go 1.22.1
 
 require (
 	github.com/caarlos0/env/v9 v9.0.0
-	github.com/jackc/pgx/v5 v5.5.4
+	github.com/jackc/pgx/v5 v5.5.5
 	github.com/nats-io/jwt/v2 v2.5.5
 	github.com/nats-io/nats.go v1.33.1
 	github.com/nats-io/nkeys v0.4.7

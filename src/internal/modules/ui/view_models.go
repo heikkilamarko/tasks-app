@@ -191,6 +191,10 @@ func ParseTaskAttachmentRequest(r *http.Request) (*TaskAttachmentRequest, error)
 }
 
 func ParseNewTaskRequest(r *http.Request) (*NewTaskRequest, error) {
+	if err := r.ParseMultipartForm(1 << 27); err != nil {
+		return nil, errors.New("attachments: payload size exceeds limit")
+	}
+
 	var errs []error
 
 	name, err := ParseTaskName(r.FormValue("name"))
@@ -216,6 +220,10 @@ func ParseNewTaskRequest(r *http.Request) (*NewTaskRequest, error) {
 }
 
 func ParseUpdateTaskRequest(r *http.Request) (*UpdateTaskRequest, error) {
+	if err := r.ParseMultipartForm(1 << 27); err != nil {
+		return nil, errors.New("attachments: payload size exceeds limit")
+	}
+
 	var errs []error
 
 	id, err := ParseTaskID(r.PathValue("id"))
@@ -310,10 +318,6 @@ func ParseTaskExpiresAt(value string, l *time.Location) (*time.Time, error) {
 }
 
 func ParseTaskAttachments(r *http.Request) (*AttachmentsRequest, error) {
-	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		return nil, errors.New("attachments: max size is 10MB")
-	}
-
 	files := r.MultipartForm.File["attachments"]
 
 	names := r.Form["attachments"]

@@ -59,8 +59,8 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "GET /ui/completed/tasks", &GetUICompletedTasks{m.TaskRepository, m.Renderer, m.Logger}, errorMW, authnMW, userMW)
 
 	server := &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  60 * time.Second,
+		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  120 * time.Second,
 		Addr:         m.Config.UI.Addr,
 		Handler:      mux,
