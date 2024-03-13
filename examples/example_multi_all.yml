@@ -1,19 +1,22 @@
 version: "3.9"
 
-name: tasks-app
-
 services:
   tasks-app:
-    build: ../src
+    build:
+      context: ../src
+      args:
+        GOARCH: ${GOARCH}
     image: tasks-app/tasks-app
     deploy:
       restart_policy:
         condition: on-failure
     env_file:
       - ../config/dev/tasks-app.env
-    volumes:
-      - ./certs/root.crt:/etc/tasks-app/certs/root.crt:ro
-      - ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/app_user.creds:/app_user.creds
+    secrets:
+      - source: root.crt
+        target: /etc/tasks-app/certs/root.crt
+      - source: app_user.creds
+        target: /app_user.creds
     environment:
       - APP_SHARED_SERVICES=db:postgres,attachments:nats
       - APP_SHARED_MODULES=ui
@@ -21,16 +24,21 @@ services:
       - tasks-app
 
   tasks-app-taskchecker:
-    build: ../src
+    build:
+      context: ../src
+      args:
+        GOARCH: ${GOARCH}
     image: tasks-app/tasks-app-taskchecker
     deploy:
       restart_policy:
         condition: on-failure
     env_file:
       - ../config/dev/tasks-app.env
-    volumes:
-      - ./certs/root.crt:/etc/tasks-app/certs/root.crt:ro
-      - ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/app_user.creds:/app_user.creds
+    secrets:
+      - source: root.crt
+        target: /etc/tasks-app/certs/root.crt
+      - source: app_user.creds
+        target: /app_user.creds
     environment:
       - APP_SHARED_SERVICES=db:postgres,messaging:nats
       - APP_SHARED_MODULES=taskchecker
@@ -38,7 +46,10 @@ services:
       - tasks-app
 
   tasks-app-emailnotifier:
-    build: ../src
+    build:
+      context: ../src
+      args:
+        GOARCH: ${GOARCH}
     image: tasks-app/tasks-app-emailnotifier
     deploy:
       replicas: 2
@@ -46,14 +57,22 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/tasks-app.env
-    volumes:
-      - ./certs/root.crt:/etc/tasks-app/certs/root.crt:ro
-      - ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/app_user.creds:/app_user.creds
+    secrets:
+      - source: root.crt
+        target: /etc/tasks-app/certs/root.crt
+      - source: app_user.creds
+        target: /app_user.creds
     environment:
       - APP_SHARED_SERVICES=messaging:nats
       - APP_SHARED_MODULES=emailnotifier:null
     networks:
       - tasks-app
+
+secrets:
+  root.crt:
+    file: ./certs/root.crt
+  app_user.creds:
+    file: ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/app_user.creds
 
 networks:
   tasks-app:

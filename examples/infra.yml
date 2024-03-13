@@ -1,7 +1,5 @@
 version: "3.9"
 
-name: tasks-app-infra
-
 services:
   caddy:
     build: ../proxy/caddy
@@ -11,8 +9,11 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/caddy.env
-    volumes:
-      - ./certs:/etc/caddy/certs:ro
+    secrets:
+      - source: root.key
+        target: /etc/caddy/certs/root.key
+      - source: root.crt
+        target: /etc/caddy/certs/root.crt
     ports:
       - "443:443"
     networks:
@@ -29,8 +30,11 @@ services:
   #       condition: on-failure
   #   env_file:
   #     - ../config/dev/traefik.env
-  #   volumes:
-  #     - ./certs:/etc/traefik/certs:ro
+  #   secrets:
+  #     - source: root.key
+  #       target: /etc/traefik/certs/root.key
+  #     - source: root.crt
+  #       target: /etc/traefik/certs/root.crt
   #   ports:
   #     - "443:443"
   #   networks:
@@ -49,8 +53,6 @@ services:
       - ../config/dev/zitadel.env
     volumes:
       - ./zitadel/machinekey:/machinekey
-    ports:
-      - "8080:8080"
     networks:
       - tasks-app
     depends_on:
@@ -138,14 +140,23 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/nats-configure.env
-    volumes:
-      - ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/admin_user.creds:/admin_user.creds
+    secrets:
+      - source: admin_user.creds
+        target: /admin_user.creds
     networks:
       - tasks-app
     depends_on:
       - nats-1
       - nats-2
       - nats-3
+
+secrets:
+  root.key:
+    file: ./certs/root.key
+  root.crt:
+    file: ./certs/root.crt
+  admin_user.creds:
+    file: ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/admin_user.creds
 
 networks:
   tasks-app:

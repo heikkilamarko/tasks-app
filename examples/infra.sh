@@ -14,13 +14,18 @@ usage() {
 case "$1" in
   "up")
     nats/configure.sh
-    docker compose -f infra.yml up --build -d
+    mkdir -p zitadel/machinekey
+    docker compose -f infra.yml build
+    docker stack deploy -c infra.yml tasks-app-infra
     echo "Waiting for services to start..."
     sleep 10
+    # scp -r raspi:/home/raspi/zitadel/machinekey ./zitadel/
     zitadel/configure.sh
     ;;
   "down")
-    docker compose -f infra.yml down -v
+    docker stack rm tasks-app-infra
+    sleep 10
+    docker volume prune -a -f
     git clean -dfX nats
     git clean -dfX ../messaging/nats
     git clean -dfX zitadel

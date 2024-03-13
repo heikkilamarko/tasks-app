@@ -11,13 +11,13 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/wneessen/go-mail v0.4.1
 	github.com/xuri/excelize/v2 v2.8.1
-	github.com/zitadel/oidc/v3 v3.14.0
+	github.com/zitadel/oidc/v3 v3.15.0
 	github.com/zitadel/zitadel-go/v3 v3.0.0-next.2
 	golang.org/x/sync v0.6.0
 )
 
 require (
-	github.com/go-jose/go-jose/v3 v3.0.2 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect

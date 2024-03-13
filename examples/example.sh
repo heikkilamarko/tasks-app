@@ -26,10 +26,11 @@ check_compose_file "$compose_file"
 
 case "$action" in
   "up")
-    docker compose -f "$compose_file" up --build -d
+    docker compose -f "$compose_file" build
+    docker stack deploy -c "$compose_file" tasks-app
     ;;
   "down")
-    docker compose -f "$compose_file" down -v
+    docker stack rm tasks-app
     ;;
   *)
     usage
