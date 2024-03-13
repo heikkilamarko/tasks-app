@@ -53,6 +53,7 @@ services:
       - ../config/dev/zitadel.env
     volumes:
       - ./zitadel/machinekey:/machinekey
+      # - /home/raspi/zitadel/machinekey:/machinekey
     networks:
       - tasks-app
     depends_on:
