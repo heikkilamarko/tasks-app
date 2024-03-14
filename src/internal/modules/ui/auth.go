@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"tasks-app/internal/shared"
 
-	zhttp "github.com/zitadel/oidc/v3/pkg/http"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"github.com/zitadel/zitadel-go/v3/pkg/authentication"
 	zoidc "github.com/zitadel/zitadel-go/v3/pkg/authentication/oidc"
@@ -23,21 +22,7 @@ func NewAuth(ctx context.Context, config *shared.Config) (*Auth, error) {
 		ctx,
 		zitadel.New(config.UI.AuthDomain),
 		config.UI.AuthEncryptionKey,
-		zoidc.WithCodeFlow[*zoidc.UserInfoContext[*oidc.IDTokenClaims, *oidc.UserInfo], *oidc.IDTokenClaims, *oidc.UserInfo](
-			zoidc.PKCEAuthentication(
-				config.UI.AuthClientId,
-				config.UI.AuthRedirectURI,
-				[]string{
-					oidc.ScopeOpenID,
-					oidc.ScopeProfile,
-					oidc.ScopeEmail,
-				},
-				zhttp.NewCookieHandler(
-					[]byte(config.UI.AuthEncryptionKey),
-					[]byte(config.UI.AuthEncryptionKey),
-				),
-			),
-		),
+		zoidc.DefaultAuthentication(config.UI.AuthClientId, config.UI.AuthRedirectURI, config.UI.AuthEncryptionKey),
 	)
 	if err != nil {
 		return nil, err
