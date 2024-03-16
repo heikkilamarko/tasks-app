@@ -1,16 +1,5 @@
 {{ define "active_tasks_table" }}
 	{{ if or .Tasks .IsCreatingNew }}
-		{{ if .IsCreatingNew }}
-			<form
-				id="task-new-form"
-				enctype="multipart/form-data"
-				autocomplete="off"
-				hx-post="/ui/tasks"
-				hx-target="#tasks-table"
-				hx-swap="innerHTML"
-			></form>
-		{{ end }}
-		<div id="task-edit-form"></div>
 		<div class="table-responsive">
 			<table class="table">
 				<thead>
@@ -24,7 +13,7 @@
 				</thead>
 				<tbody>
 					{{ if .IsCreatingNew }}
-						{{ template "active_tasks_table_row_new" }}
+						{{ template "active_tasks_table_row_new" (dict "UI" $.UI) }}
 					{{ end }}
 					{{ range .Tasks }}
 						{{ template "active_tasks_table_row" (dict "Task" . "UI" $.UI) }}

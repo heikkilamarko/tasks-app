@@ -3,6 +3,7 @@ package ui
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -11,6 +12,8 @@ import (
 	"strings"
 	"tasks-app/internal/shared"
 	"time"
+
+	"github.com/gorilla/csrf"
 )
 
 type LanguageRequest struct {
@@ -73,6 +76,8 @@ type UIModel struct {
 	UserID    string
 	UserName  string
 	HubURL    string
+	CSRFToken string
+	CSRFField template.HTML
 }
 
 func NewUIModel(r *http.Request) *UIModel {
@@ -93,6 +98,8 @@ func NewUIModel(r *http.Request) *UIModel {
 		UserID:    userID,
 		UserName:  userName,
 		HubURL:    os.Getenv("APP_UI_HUB_URL"),
+		CSRFToken: csrf.Token(r),
+		CSRFField: csrf.TemplateField(r),
 	}
 }
 

@@ -37,6 +37,16 @@
 		</td>
 		<td></td>
 		<td>
+			<form
+				id="task-new-form"
+				enctype="multipart/form-data"
+				autocomplete="off"
+				hx-post="/ui/tasks"
+				hx-target="#tasks-table"
+				hx-swap="innerHTML"
+			>
+				{{ .UI.CSRFField }}
+			</form>
 			<button
 				type="button"
 				class="btn btn-sm btn-outline-danger rounded-pill px-3"

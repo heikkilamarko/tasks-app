@@ -50,6 +50,16 @@
 		</td>
 		<td>{{ .Task.CreatedAt | formattime .UI.Location }}</td>
 		<td>
+			<form
+				id="task-edit-form"
+				enctype="multipart/form-data"
+				autocomplete="off"
+				hx-put="/ui/tasks/{{ .Task.ID }}"
+				hx-target="closest tr"
+				hx-swap="outerHTML"
+			>
+				{{ .UI.CSRFField }}
+			</form>
 			<button
 				type="button"
 				class="btn btn-sm btn-outline-danger rounded-pill px-3"
@@ -64,13 +74,4 @@
 			</button>
 		</td>
 	</tr>
-	<form
-		id="task-edit-form"
-		enctype="multipart/form-data"
-		autocomplete="off"
-		hx-swap-oob="true"
-		hx-put="/ui/tasks/{{ .Task.ID }}"
-		hx-target=".editing"
-		hx-swap="outerHTML"
-	></form>
 {{ end }}
