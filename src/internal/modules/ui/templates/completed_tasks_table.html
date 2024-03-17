@@ -1,24 +1,22 @@
-{{ define "completed_tasks_table" }}
-	{{ if .Tasks }}
-		<div class="table-responsive">
-			<table class="table">
-				<thead>
-					<tr>
-						<th class="task-name">Task</th>
-						<th>Attachments</th>
-						<th>Expiration</th>
-						<th>Created</th>
-						<th>Completed</th>
-					</tr>
-				</thead>
-				<tbody>
-					{{ range .Tasks }}
-						{{ template "completed_tasks_table_row" (dict "Task" . "UI" $.UI) }}
-					{{ end }}
-				</tbody>
-			</table>
-		</div>
-	{{ else }}
-		<div class="fw-bold text-muted">No completed tasks</div>
-	{{ end }}
+{{ if .Tasks }}
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th class="task-name">Task</th>
+					<th>Attachments</th>
+					<th>Expiration</th>
+					<th>Created</th>
+					<th>Completed</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{ range .Tasks }}
+					{{ template "completed_tasks_table_row.html" (dict "Task" . "UI" $.UI) }}
+				{{ end }}
+			</tbody>
+		</table>
+	</div>
+{{ else }}
+	<div class="fw-bold text-muted">No completed tasks</div>
 {{ end }}

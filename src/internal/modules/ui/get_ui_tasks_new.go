@@ -23,5 +23,5 @@ func (h *GetUITasksNew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vm := NewTasksResponse(r, tasks)
 	vm.IsCreatingNew = true
 
-	h.Renderer.Render(w, "active_tasks_table", vm)
+	h.Renderer.Render(w, "active_tasks_table.html", vm)
 }

@@ -1,64 +1,49 @@
-{{ define "active_tasks_table_row_new" }}
-	<tr>
-		<td class="task-name">
-			<textarea
-				name="name"
-				rows="5"
-				form="task-new-form"
-				class="form-control form-control-sm"
-				minlength="3"
-				maxlength="200"
-				required
-				_="on input
-					if me.value == 'test'
-						me.setCustomValidity(`'${me.value}' is not allowed`)
-					else
-						me.setCustomValidity('')"
-			></textarea>
-		</td>
-		<td>
-			<input
-				type="file"
-				multiple
-				name="attachments"
-				form="task-new-form"
-				class="form-control form-control-sm"
-				value=""
-			/>
-		</td>
-		<td>
-			<input
-				type="datetime-local"
-				name="expires_at"
-				form="task-new-form"
-				class="form-control form-control-sm"
-				value=""
-			/>
-		</td>
-		<td></td>
-		<td>
-			<form
-				id="task-new-form"
-				enctype="multipart/form-data"
-				autocomplete="off"
-				hx-post="/ui/tasks"
-				hx-target="#tasks-table"
-				hx-swap="innerHTML"
-			>
-				{{ .UI.CSRFField }}
-			</form>
-			<button
-				type="button"
-				class="btn btn-sm btn-outline-danger rounded-pill px-3"
-				hx-get="/ui/tasks"
-				hx-target="#tasks-table"
-				hx-swap="innerHTML"
-			>
-				Cancel
-			</button>
-			<button type="submit" form="task-new-form" class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2">
-				Create
-			</button>
-		</td>
-	</tr>
-{{ end }}
+<tr>
+	<td class="task-name">
+		<textarea
+			name="name"
+			rows="5"
+			form="task-new-form"
+			class="form-control form-control-sm"
+			minlength="3"
+			maxlength="200"
+			required
+			_="on input
+				if me.value == 'test'
+					me.setCustomValidity(`'${me.value}' is not allowed`)
+				else
+					me.setCustomValidity('')"
+		></textarea>
+	</td>
+	<td>
+		<input type="file" multiple name="attachments" form="task-new-form" class="form-control form-control-sm" value="" />
+	</td>
+	<td>
+		<input type="datetime-local" name="expires_at" form="task-new-form" class="form-control form-control-sm" value="" />
+	</td>
+	<td></td>
+	<td>
+		<form
+			id="task-new-form"
+			enctype="multipart/form-data"
+			autocomplete="off"
+			hx-post="/ui/tasks"
+			hx-target="#tasks-table"
+			hx-swap="innerHTML"
+		>
+			{{ .UI.CSRFField }}
+		</form>
+		<button
+			type="button"
+			class="btn btn-sm btn-outline-danger rounded-pill px-3"
+			hx-get="/ui/tasks"
+			hx-target="#tasks-table"
+			hx-swap="innerHTML"
+		>
+			Cancel
+		</button>
+		<button type="submit" form="task-new-form" class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2">
+			Create
+		</button>
+	</td>
+</tr>

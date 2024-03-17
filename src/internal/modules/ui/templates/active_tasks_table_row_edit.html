@@ -1,77 +1,73 @@
-{{ define "active_tasks_table_row_edit" }}
-	<tr class="editing" hx-trigger="cancelEdit" hx-get="/ui/tasks/{{ .Task.ID }}" hx-swap="outerHTML">
-		<td class="task-name">
-			<textarea
-				name="name"
-				rows="5"
-				form="task-edit-form"
-				class="form-control form-control-sm"
-				minlength="3"
-				maxlength="200"
-				required
-				_="on input
-					if me.value == 'test'
-						me.setCustomValidity(`'${me.value}' is not allowed`)
-					else
-						me.setCustomValidity('')"
-			>
+<tr class="editing" hx-trigger="cancelEdit" hx-get="/ui/tasks/{{ .Task.ID }}" hx-swap="outerHTML">
+	<td class="task-name">
+		<textarea
+			name="name"
+			rows="5"
+			form="task-edit-form"
+			class="form-control form-control-sm"
+			minlength="3"
+			maxlength="200"
+			required
+			_="on input
+				if me.value == 'test'
+					me.setCustomValidity(`'${me.value}' is not allowed`)
+				else
+					me.setCustomValidity('')"
+		>
 {{ .Task.Name }}</textarea
-			>
-		</td>
-		<td>
-			<input
-				type="file"
-				multiple
-				name="attachments"
-				form="task-edit-form"
-				class="form-control form-control-sm"
-				value=""
-			/>
-			<div>
-				{{ range .Task.Attachments }}
-					<div
-						class="badge border text-secondary-emphasis d-flex align-items-center justify-content-between gap-3 mt-2"
-					>
-						<input type="hidden" name="attachments" form="task-edit-form" value="{{ .FileName }}" />
-						{{ .FileName }}
-						<button class="btn-close" _="on click remove closest parent <div/>"></button>
-					</div>
-				{{ end }}
-			</div>
-		</td>
-		<td>
-			<input
-				type="datetime-local"
-				name="expires_at"
-				form="task-edit-form"
-				class="form-control form-control-sm"
-				value="{{ with .Task.ExpiresAt }}{{ . | formatisotime $.UI.Location }}{{ end }}"
-			/>
-		</td>
-		<td>{{ .Task.CreatedAt | formattime .UI.Location }}</td>
-		<td>
-			<form
-				id="task-edit-form"
-				enctype="multipart/form-data"
-				autocomplete="off"
-				hx-put="/ui/tasks/{{ .Task.ID }}"
-				hx-target="closest tr"
-				hx-swap="outerHTML"
-			>
-				{{ .UI.CSRFField }}
-			</form>
-			<button
-				type="button"
-				class="btn btn-sm btn-outline-danger rounded-pill px-3"
-				hx-get="/ui/tasks/{{ .Task.ID }}"
-				hx-target="closest tr"
-				hx-swap="outerHTML"
-			>
-				Cancel
-			</button>
-			<button type="submit" form="task-edit-form" class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2">
-				Save
-			</button>
-		</td>
-	</tr>
-{{ end }}
+		>
+	</td>
+	<td>
+		<input
+			type="file"
+			multiple
+			name="attachments"
+			form="task-edit-form"
+			class="form-control form-control-sm"
+			value=""
+		/>
+		<div>
+			{{ range .Task.Attachments }}
+				<div class="badge border text-secondary-emphasis d-flex align-items-center justify-content-between gap-3 mt-2">
+					<input type="hidden" name="attachments" form="task-edit-form" value="{{ .FileName }}" />
+					{{ .FileName }}
+					<button class="btn-close" _="on click remove closest parent <div/>"></button>
+				</div>
+			{{ end }}
+		</div>
+	</td>
+	<td>
+		<input
+			type="datetime-local"
+			name="expires_at"
+			form="task-edit-form"
+			class="form-control form-control-sm"
+			value="{{ with .Task.ExpiresAt }}{{ . | formatisotime $.UI.Location }}{{ end }}"
+		/>
+	</td>
+	<td>{{ .Task.CreatedAt | formattime .UI.Location }}</td>
+	<td>
+		<form
+			id="task-edit-form"
+			enctype="multipart/form-data"
+			autocomplete="off"
+			hx-put="/ui/tasks/{{ .Task.ID }}"
+			hx-target="closest tr"
+			hx-swap="outerHTML"
+		>
+			{{ .UI.CSRFField }}
+		</form>
+		<button
+			type="button"
+			class="btn btn-sm btn-outline-danger rounded-pill px-3"
+			hx-get="/ui/tasks/{{ .Task.ID }}"
+			hx-target="closest tr"
+			hx-swap="outerHTML"
+		>
+			Cancel
+		</button>
+		<button type="submit" form="task-edit-form" class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2">
+			Save
+		</button>
+	</td>
+</tr>

@@ -23,5 +23,5 @@ func (h *GetUICompleted) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vm := NewTasksResponse(r, tasks)
 	vm.UI.Title = "Completed"
 
-	h.Renderer.Render(w, "completed_tasks", vm)
+	h.Renderer.Render(w, "completed_tasks.html", vm)
 }

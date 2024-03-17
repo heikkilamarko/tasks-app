@@ -73,5 +73,5 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	vm := NewTaskResponse(r, task)
 
-	h.Renderer.Render(w, "active_tasks_table_row", vm)
+	h.Renderer.Render(w, "active_tasks_table_row.html", vm)
 }

@@ -63,7 +63,7 @@ func (m *Module) handleTaskExpiringMessage(ctx context.Context, msg shared.Messa
 		return err
 	}
 
-	if err := m.EmailClient.SendEmail(ctx, to, "Task Expiring", "task_expiring", data.Task); err != nil {
+	if err := m.EmailClient.SendEmail(ctx, to, "Task Expiring", "task_expiring.html", data.Task); err != nil {
 		m.NakMessage(msg)
 		return err
 	}
@@ -90,7 +90,7 @@ func (m *Module) handleTaskExpiredMessage(ctx context.Context, msg shared.Messag
 		return err
 	}
 
-	if err := m.EmailClient.SendEmail(ctx, to, "Task Expired", "task_expired", data.Task); err != nil {
+	if err := m.EmailClient.SendEmail(ctx, to, "Task Expired", "task_expired.html", data.Task); err != nil {
 		m.NakMessage(msg)
 		return err
 	}

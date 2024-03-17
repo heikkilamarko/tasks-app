@@ -23,5 +23,5 @@ func (h *GetUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vm := NewTasksResponse(r, tasks)
 	vm.UI.Title = "Active"
 
-	h.Renderer.Render(w, "active_tasks", vm)
+	h.Renderer.Render(w, "active_tasks.html", vm)
 }
