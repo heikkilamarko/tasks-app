@@ -51,6 +51,8 @@ services:
         condition: on-failure
     env_file:
       - ../config/dev/zitadel.env
+    ports:
+      - "8080:8080"
     volumes:
       - ./zitadel/machinekey:/machinekey
       # - /home/raspi/zitadel/machinekey:/machinekey

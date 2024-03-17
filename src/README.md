@@ -9,7 +9,7 @@ cd ../examples
 ```
 
 ```bash
-docker compose -f infra.yml stop caddy
+docker service rm tasks-app-infra_caddy
 ```
 
 ```bash
