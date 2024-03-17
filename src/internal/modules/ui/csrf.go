@@ -13,6 +13,12 @@ type CSRF struct {
 }
 
 func NewCSRF(config *shared.Config) *CSRF {
-	mw := csrf.Protect([]byte(config.UI.AuthEncryptionKey))
+	mw := csrf.Protect(
+		[]byte(config.UI.AuthEncryptionKey),
+		csrf.SameSite(csrf.SameSiteStrictMode),
+		csrf.CookieName("csrf.token"),
+		csrf.FieldName("csrf-token"),
+		csrf.RequestHeader("X-CSRF-Token"),
+	)
 	return &CSRF{config, mw}
 }
