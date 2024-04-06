@@ -11,6 +11,7 @@ Add the following entries to your `/etc/hosts` file:
 ```
 127.0.0.1    www.tasks-app.com
 127.0.0.1    auth.tasks-app.com
+127.0.0.1    smtp.tasks-app.com
 ```
 
 ### 2. Certificates

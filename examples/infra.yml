@@ -21,6 +21,7 @@ services:
         aliases:
           - www.tasks-app.com
           - auth.tasks-app.com
+          - smtp.tasks-app.com
 
   # traefik:
   #   build: ../proxy/traefik
@@ -153,6 +154,18 @@ services:
       - nats-2
       - nats-3
 
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - ../config/dev/smtp4dev.env
+    volumes:
+      - smtp4dev:/smtp4dev
+    networks:
+      - tasks-app
+
 secrets:
   root.key:
     file: ./certs/root.key
@@ -170,3 +183,4 @@ volumes:
   nats-1:
   nats-2:
   nats-3:
+  smtp4dev:

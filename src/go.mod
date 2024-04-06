@@ -1,20 +1,20 @@
 module tasks-app
 
-go 1.22.1
+go 1.22.2
 
 require (
 	github.com/caarlos0/env/v9 v9.0.0
 	github.com/gorilla/csrf v1.7.2
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/nats-io/jwt/v2 v2.5.5
-	github.com/nats-io/nats.go v1.34.0
+	github.com/nats-io/nats.go v1.34.1
 	github.com/nats-io/nkeys v0.4.7
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/wneessen/go-mail v0.4.1
 	github.com/xuri/excelize/v2 v2.8.1
 	github.com/zitadel/oidc/v3 v3.19.0
 	github.com/zitadel/zitadel-go/v3 v3.0.0-next.2
-	golang.org/x/sync v0.6.0
+	golang.org/x/sync v0.7.0
 )
 
 require (

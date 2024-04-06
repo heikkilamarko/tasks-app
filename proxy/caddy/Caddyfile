@@ -34,6 +34,13 @@
 		reverse_proxy {$CADDY_ZITADEL_ADDRESS}
 	}
 
+	@smtp {
+		host smtp.{$CADDY_DOMAIN}
+	}
+	handle @smtp {
+		reverse_proxy {$CADDY_SMTP4DEV_ADDRESS}
+	}
+
 	@nats_ws {
 		host www.{$CADDY_DOMAIN}
 		path /hub/*
