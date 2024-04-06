@@ -41,7 +41,7 @@ services:
         target: /app_user.creds
     environment:
       - APP_SHARED_SERVICES=db:postgres,messaging:nats
-      - APP_SHARED_MODULES=taskchecker,emailnotifier:null
+      - APP_SHARED_MODULES=taskchecker,emailnotifier:smtp
     networks:
       - tasks-app
 

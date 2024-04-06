@@ -9,7 +9,7 @@ import (
 
 type SharedConfig struct {
 	Services                 []string `env:"APP_SHARED_SERVICES" envDefault:"db:postgres,attachments:nats,messaging:nats"`
-	Modules                  []string `env:"APP_SHARED_MODULES" envDefault:"ui,taskchecker,emailnotifier:null"`
+	Modules                  []string `env:"APP_SHARED_MODULES" envDefault:"ui,taskchecker,emailnotifier:smtp"`
 	LogLevel                 string   `env:"APP_SHARED_LOG_LEVEL" envDefault:"warn"`
 	PostgresConnectionString string   `env:"APP_SHARED_POSTGRES_CONNECTION_STRING,notEmpty"`
 	NATSURL                  string   `env:"APP_SHARED_NATS_URL,notEmpty"`
@@ -39,7 +39,7 @@ type EmailNotifierConfig struct {
 	ZitadelURL      string `env:"APP_EMAIL_NOTIFIER_ZITADEL_URL"`
 	ZitadelPAT      string `env:"APP_EMAIL_NOTIFIER_ZITADEL_PAT"`
 	SMTPHost        string `env:"APP_EMAIL_NOTIFIER_SMTP_HOST"`
-	SMTPPort        int    `env:"APP_EMAIL_NOTIFIER_SMTP_PORT" envDefault:"587"`
+	SMTPPort        int    `env:"APP_EMAIL_NOTIFIER_SMTP_PORT" envDefault:"25"`
 	SMTPFromName    string `env:"APP_EMAIL_NOTIFIER_SMTP_FROM_NAME"`
 	SMTPFromAddress string `env:"APP_EMAIL_NOTIFIER_SMTP_FROM_ADDRESS"`
 	SMTPPassword    string `env:"APP_EMAIL_NOTIFIER_SMTP_PASSWORD"`

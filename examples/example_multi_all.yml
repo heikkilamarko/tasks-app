@@ -64,7 +64,7 @@ services:
         target: /app_user.creds
     environment:
       - APP_SHARED_SERVICES=messaging:nats
-      - APP_SHARED_MODULES=emailnotifier:null
+      - APP_SHARED_MODULES=emailnotifier:smtp
     networks:
       - tasks-app
 

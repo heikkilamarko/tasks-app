@@ -33,13 +33,22 @@ func (c *SMTPEmailClient) SendEmail(ctx context.Context, to string, subject stri
 
 	msg.SetBodyString(mail.TypeTextHTML, body)
 
-	client, err := mail.NewClient(c.Config.EmailNotifier.SMTPHost,
-		mail.WithPort(c.Config.EmailNotifier.SMTPPort),
-		mail.WithTLSPortPolicy(mail.TLSMandatory),
-		mail.WithSMTPAuth(mail.SMTPAuthLogin),
-		mail.WithUsername(c.Config.EmailNotifier.SMTPFromAddress),
-		mail.WithPassword(c.Config.EmailNotifier.SMTPPassword),
-	)
+	var o []mail.Option
+
+	if c.Config.EmailNotifier.SMTPPort == 25 {
+		o = append(o,
+			mail.WithTLSPortPolicy(mail.NoTLS),
+		)
+	} else {
+		o = append(o,
+			mail.WithTLSPortPolicy(mail.TLSMandatory),
+			mail.WithSMTPAuth(mail.SMTPAuthLogin),
+			mail.WithUsername(c.Config.EmailNotifier.SMTPFromAddress),
+			mail.WithPassword(c.Config.EmailNotifier.SMTPPassword),
+		)
+	}
+
+	client, err := mail.NewClient(c.Config.EmailNotifier.SMTPHost, o...)
 	if err != nil {
 		return err
 	}
