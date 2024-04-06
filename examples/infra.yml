@@ -43,6 +43,7 @@ services:
   #       aliases:
   #         - www.tasks-app.com
   #         - auth.tasks-app.com
+  #         - smtp.tasks-app.com
 
   zitadel:
     build: ../iam/zitadel
@@ -169,8 +170,10 @@ services:
 secrets:
   root.key:
     file: ./certs/root.key
+    # file: ./certs/wildcard_.tasks-app.com.key
   root.crt:
     file: ./certs/root.crt
+    # file: ./certs/wildcard_.tasks-app.com.crt
   admin_user.creds:
     file: ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/admin_user.creds
 

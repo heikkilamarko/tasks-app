@@ -1,7 +1,7 @@
 tls:
   certificates:
-    - certFile: /etc/traefik/certs/wildcard_.tasks-app.com.crt
-      keyFile: /etc/traefik/certs/wildcard_.tasks-app.com.key
+    - certFile: /etc/traefik/certs/root.crt
+      keyFile: /etc/traefik/certs/root.key
 
 http:
   routers:
@@ -27,6 +27,11 @@ http:
       service: zitadel
       tls: {}
 
+    smtp:
+      rule: Host(`smtp.tasks-app.com`)
+      service: smtp
+      tls: {}
+
   services:
     tasks-app:
       loadBalancer:
@@ -44,6 +49,11 @@ http:
       loadBalancer:
         servers:
           - url: h2c://zitadel:8080
+
+    smtp:
+      loadBalancer:
+        servers:
+          - url: http://smtp4dev
 
   middlewares:
     tasks-app-ui-redir:
