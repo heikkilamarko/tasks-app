@@ -40,11 +40,15 @@ After running the examples, use the following command to tear down the infra ser
 
 ## ZITADEL Console (UI)
 
-https://auth.tasks-app.com/ui/console
+https://auth.tasks-app.com
 
 | Username        | Initial Password |
 | --------------- | ---------------- |
 | `zitadel-admin` | `S3c_r3t!`       |
+
+## smtp4dev UI
+
+https://smtp.tasks-app.com
 
 ## Example Users
 
