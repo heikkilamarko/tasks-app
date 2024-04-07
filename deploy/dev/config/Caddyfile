@@ -1,0 +1,58 @@
+{
+	log {
+		level INFO
+		format console
+	}
+
+	pki {
+		ca {
+			root {
+				cert /etc/caddy/certs/root.crt
+				key /etc/caddy/certs/root.key
+			}
+		}
+	}
+}
+
+*.tasks-app.com {
+	log
+
+	encode gzip
+
+	tls internal
+
+	header {
+		-Server
+		>Location http:// https://
+	}
+
+	@auth {
+		host auth.tasks-app.com
+	}
+	handle @auth {
+		reverse_proxy h2c://zitadel:8080
+	}
+
+	@smtp {
+		host smtp.tasks-app.com
+	}
+	handle @smtp {
+		reverse_proxy http://smtp4dev
+	}
+
+	@nats_ws {
+		host www.tasks-app.com
+		path /hub/*
+	}
+	handle @nats_ws {
+		reverse_proxy http://nats-1:9222 http://nats-2:9222 http://nats-3:9222
+	}
+
+	@app {
+		host www.tasks-app.com
+	}
+	handle @app {
+		redir / /ui
+		reverse_proxy http://tasks-app
+	}
+}

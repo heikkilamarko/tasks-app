@@ -17,7 +17,7 @@ cd ../src
 ```
 
 ```bash
-./caddy.sh
+caddy run
 ```
 
 ```bash

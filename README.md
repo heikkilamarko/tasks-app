@@ -21,4 +21,4 @@ A simple single binary task management app, built as a modular monolith. The app
 
 ## Examples
 
-See the `/examples` directory for some example setups.
+See the `/deploy/dev` directory for some example setups.

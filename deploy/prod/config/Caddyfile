@@ -1,0 +1,55 @@
+{
+	email {$CADDY_TLS_EMAIL}
+
+	log {
+		level INFO
+		format json {
+			time_format "rfc3339_nano"
+		}
+	}
+}
+
+*.hobbydemos.com {
+	log
+
+	encode gzip
+
+	tls {
+		dns godaddy {$CADDY_TLS_GODADDY_TOKEN}
+	}
+
+	header {
+		-Server
+		>Location http:// https://
+	}
+
+	@auth {
+		host auth.hobbydemos.com
+	}
+	handle @auth {
+		reverse_proxy h2c://zitadel:8080
+	}
+
+	@smtp {
+		host smtp.hobbydemos.com
+	}
+	handle @smtp {
+		reverse_proxy http://smtp4dev
+	}
+
+	@nats_ws {
+		host www.hobbydemos.com
+		path /hub/*
+	}
+	handle @nats_ws {
+		reverse_proxy http://nats-1:9222 http://nats-2:9222 http://nats-3:9222
+	}
+
+	@app {
+		host www.hobbydemos.com
+	}
+	handle @app {
+		redir / /ui
+		reverse_proxy http://tasks-app
+	}
+}
