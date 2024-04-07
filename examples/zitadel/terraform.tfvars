@@ -1,3 +1,5 @@
+auth_domain = "tasks-app.com"
+
 iam_admin_users = [
   {
     user_name  = "zitadel-admin"

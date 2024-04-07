@@ -15,10 +15,10 @@ case "$1" in
   "up")
     nats/configure.sh
     mkdir -p zitadel/machinekey
-    docker compose -f infra.yml build
-    docker stack deploy -c infra.yml tasks-app-infra
+    docker compose -f infra.prod.yml build
+    docker stack deploy -c infra.prod.yml tasks-app-infra
     echo "Waiting for services to start..."
-    sleep 20
+    sleep 60
     # scp -r raspi:/home/raspi/zitadel/machinekey ./zitadel/
     zitadel/configure.sh
     ;;

@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  tasks-app:
+    build:
+      context: ../src
+      args:
+        GOARCH: ${GOARCH}
+    image: tasks-app/tasks-app
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file:
+      - ../config/prod/tasks-app.env
+    secrets:
+      - source: app_user.creds
+        target: /app_user.creds
+    networks:
+      - tasks-app
+
+secrets:
+  app_user.creds:
+    file: ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/app_user.creds
+
+networks:
+  tasks-app:
+    name: tasks-app
+    external: true

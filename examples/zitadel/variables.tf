@@ -1,3 +1,8 @@
+variable "auth_domain" {
+  description = "Auth domain"
+  type        = string
+}
+
 variable "iam_admin_users" {
   description = "The list of iam admin users to create"
   type = list(object({

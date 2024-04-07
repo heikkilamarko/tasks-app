@@ -2,26 +2,21 @@ version: "3.9"
 
 services:
   caddy:
-    build: ../proxy/caddy/dev
+    build: ../proxy/caddy/prod
     image: tasks-app/caddy
     deploy:
       restart_policy:
         condition: on-failure
     env_file:
-      - ../config/dev/caddy.env
-    secrets:
-      - source: root.key
-        target: /etc/caddy/certs/root.key
-      - source: root.crt
-        target: /etc/caddy/certs/root.crt
+      - ../config/prod/caddy.env
     ports:
       - "443:443"
     networks:
       tasks-app:
         aliases:
-          - www.tasks-app.com
-          - auth.tasks-app.com
-          - smtp.tasks-app.com
+          - www.__CHANGE_ME__
+          - auth.__CHANGE_ME__
+          - smtp.__CHANGE_ME__
 
   zitadel:
     build: ../iam/zitadel
@@ -30,7 +25,7 @@ services:
       restart_policy:
         condition: on-failure
     env_file:
-      - ../config/dev/zitadel.env
+      - ../config/prod/zitadel.env
     ports:
       - "8080:8080"
     volumes:
@@ -146,10 +141,6 @@ services:
       - tasks-app
 
 secrets:
-  root.key:
-    file: ./certs/root.key
-  root.crt:
-    file: ./certs/root.crt
   admin_user.creds:
     file: ./nats/nsc/keys/creds/tasks_app_operator/tasks_app_account/admin_user.creds
 
