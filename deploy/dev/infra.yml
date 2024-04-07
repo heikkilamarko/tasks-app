@@ -138,6 +138,9 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    ports:
+      - "8081:80"
+      - "25:25"
     volumes:
       - smtp4dev:/smtp4dev
     networks:

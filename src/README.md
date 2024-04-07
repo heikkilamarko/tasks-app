@@ -1,7 +1,7 @@
 # Dev Setup
 
 ```bash
-cd ../examples
+cd ../deploy/dev
 ```
 
 ```bash
@@ -13,7 +13,7 @@ docker service rm tasks-app-infra_caddy
 ```
 
 ```bash
-cd ../src
+cd ../../src
 ```
 
 ```bash

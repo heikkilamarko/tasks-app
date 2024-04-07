@@ -37,7 +37,7 @@
 		host smtp.tasks-app.com
 	}
 	handle @smtp {
-		reverse_proxy http://smtp4dev
+		reverse_proxy http://localhost:8081
 	}
 
 	@nats_ws {
