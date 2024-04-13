@@ -9,6 +9,10 @@ usage() {
   exit 1
 }
 
+is_zitadel_ready() {
+  curl -sf -o /dev/null https://auth.tasks-app.com/debug/ready
+}
+
 [ "$#" -lt 1 ] && usage
 
 case "$1" in
@@ -17,8 +21,10 @@ case "$1" in
     mkdir -p zitadel/machinekey
     docker compose -f infra.yml build
     docker stack deploy -c infra.yml tasks-app-infra
-    echo "Waiting for services to start..."
-    sleep 20
+    while ! is_zitadel_ready; do
+      echo "Waiting for ZITADEL to start..."
+      sleep 5
+    done
     zitadel/configure.sh
     ;;
   "down")
