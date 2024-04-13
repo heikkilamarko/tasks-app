@@ -12,6 +12,8 @@ type ExcelFileExporter struct {
 	Logger *slog.Logger
 }
 
+var _ FileExporter = (*ExcelFileExporter)(nil)
+
 func (e *ExcelFileExporter) ExportTasks(w http.ResponseWriter, tasks []*Task, name string) error {
 	f := excelize.NewFile()
 	defer f.Close()

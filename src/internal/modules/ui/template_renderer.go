@@ -15,6 +15,8 @@ type TemplateRenderer struct {
 	logger    *slog.Logger
 }
 
+var _ Renderer = (*TemplateRenderer)(nil)
+
 func NewTemplateRenderer(logger *slog.Logger) (*TemplateRenderer, error) {
 	templates, err := template.New("").
 		Funcs(template.FuncMap{

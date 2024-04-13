@@ -16,6 +16,8 @@ type Module struct {
 	MessagingClient shared.MessagingClient
 }
 
+var _ shared.AppModule = (*Module)(nil)
+
 func (m *Module) Run(ctx context.Context) error {
 	for {
 		select {

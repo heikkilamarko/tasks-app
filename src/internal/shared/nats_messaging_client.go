@@ -29,6 +29,8 @@ type NATSMessagingClient struct {
 	js     jetstream.JetStream
 }
 
+var _ MessagingClient = (*NATSMessagingClient)(nil)
+
 func NewNATSMessagingClient(config *Config, logger *slog.Logger) (*NATSMessagingClient, error) {
 	conn, err := nats.Connect(
 		config.Shared.NATSURL,

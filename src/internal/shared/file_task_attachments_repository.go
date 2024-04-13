@@ -13,6 +13,8 @@ type FileTaskAttachmentsRepository struct {
 	Config *Config
 }
 
+var _ TaskAttachmentsRepository = (*FileTaskAttachmentsRepository)(nil)
+
 func (repo *FileTaskAttachmentsRepository) Close() error {
 	return nil
 }

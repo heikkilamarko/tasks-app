@@ -13,6 +13,8 @@ type ZitadelEmailResolver struct {
 	Config *shared.Config
 }
 
+var _ EmailResolver = (*ZitadelEmailResolver)(nil)
+
 func (r *ZitadelEmailResolver) ResolveEmail(userID string) (string, error) {
 	url, err := url.JoinPath(r.Config.EmailNotifier.ZitadelURL, "/v2beta/users/", userID)
 	if err != nil {

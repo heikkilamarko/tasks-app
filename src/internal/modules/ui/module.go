@@ -21,6 +21,8 @@ type Module struct {
 	FileExporter              shared.FileExporter
 }
 
+var _ shared.AppModule = (*Module)(nil)
+
 func (m *Module) Run(ctx context.Context) error {
 	if err := m.initAuth(ctx); err != nil {
 		return fmt.Errorf("init auth: %w", err)

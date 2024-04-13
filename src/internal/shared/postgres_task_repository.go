@@ -13,6 +13,8 @@ type PostgresTaskRepository struct {
 	db *sql.DB
 }
 
+var _ TaskRepository = (*PostgresTaskRepository)(nil)
+
 func NewPostgresTaskRepository(ctx context.Context, config *Config) (*PostgresTaskRepository, error) {
 	db, err := sql.Open("pgx", config.Shared.PostgresConnectionString)
 	if err != nil {

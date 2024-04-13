@@ -18,6 +18,8 @@ type NATSTaskAttachmentsRepository struct {
 	js     jetstream.JetStream
 }
 
+var _ TaskAttachmentsRepository = (*NATSTaskAttachmentsRepository)(nil)
+
 func NewNATSTaskAttachmentsRepository(config *Config, logger *slog.Logger) (*NATSTaskAttachmentsRepository, error) {
 	conn, err := nats.Connect(
 		config.Shared.NATSURL,

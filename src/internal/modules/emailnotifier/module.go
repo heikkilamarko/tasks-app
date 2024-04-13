@@ -20,6 +20,8 @@ type Module struct {
 	validator       *shared.SchemaValidator
 }
 
+var _ shared.AppModule = (*Module)(nil)
+
 func (m *Module) Run(ctx context.Context) error {
 	m.validator = shared.NewSchemaValidator(SchemasFS)
 
