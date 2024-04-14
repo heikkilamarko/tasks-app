@@ -2,7 +2,9 @@ package shared
 
 import (
 	"context"
+	"errors"
 	"io"
+	"io/fs"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -15,15 +17,23 @@ type FileTaskAttachmentsRepository struct {
 
 var _ TaskAttachmentsRepository = (*FileTaskAttachmentsRepository)(nil)
 
-func (repo *FileTaskAttachmentsRepository) Close() error {
-	return nil
-}
-
 func (repo *FileTaskAttachmentsRepository) GetAttachment(ctx context.Context, taskID int, name string) ([]byte, error) {
-	return os.ReadFile(repo.getAttachmentPath(taskID, name))
+	data, err := os.ReadFile(repo.getAttachmentPath(taskID, name))
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func (repo *FileTaskAttachmentsRepository) SaveAttachments(ctx context.Context, taskID int, fileHeaders []*multipart.FileHeader) error {
+	if len(fileHeaders) == 0 {
+		return nil
+	}
+
 	if err := repo.ensureTaskDir(taskID); err != nil {
 		return err
 	}
@@ -51,11 +61,16 @@ func (repo *FileTaskAttachmentsRepository) SaveAttachments(ctx context.Context, 
 }
 
 func (repo *FileTaskAttachmentsRepository) DeleteAttachments(ctx context.Context, taskID int, deleted map[int]string) error {
+	if len(deleted) == 0 {
+		return nil
+	}
+
 	for _, name := range deleted {
-		if err := os.Remove(repo.getAttachmentPath(taskID, name)); err != nil {
+		if err := os.Remove(repo.getAttachmentPath(taskID, name)); err != nil && !errors.Is(err, fs.ErrNotExist) {
 			return err
 		}
 	}
+
 	return nil
 }
 

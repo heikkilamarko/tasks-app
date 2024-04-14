@@ -33,7 +33,7 @@ func (a *App) Run(ctx context.Context) error {
 		return fmt.Errorf("run: %w", err)
 	}
 
-	if err := a.close(ctx); err != nil {
+	if err := a.close(); err != nil {
 		return fmt.Errorf("close: %w", err)
 	}
 
@@ -74,7 +74,7 @@ func (a *App) run(ctx context.Context) error {
 	return g.Wait()
 }
 
-func (a *App) close(ctx context.Context) error {
+func (a *App) close() error {
 	if err := errors.Join(a.closeServices()...); err != nil {
 		return fmt.Errorf("close services: %w", err)
 	}
