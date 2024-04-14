@@ -14,6 +14,9 @@ services:
       - ./config/caddy.env
     ports:
       - "443:443"
+    volumes:
+      - /home/raspi/caddy/data:/data
+      - /home/raspi/caddy/config:/config
     networks:
       tasks-app:
         aliases:

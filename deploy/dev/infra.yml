@@ -17,6 +17,9 @@ services:
         target: /etc/caddy/certs/root.crt
     ports:
       - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
     networks:
       tasks-app:
         aliases:
@@ -163,6 +166,8 @@ networks:
     name: tasks-app
 
 volumes:
+  caddy_data:
+  caddy_config:
   postgres:
   nats-1:
   nats-2:
