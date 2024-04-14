@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"tasks-app/internal/shared"
 
+	"github.com/nats-io/nats.go"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -15,6 +16,7 @@ type App struct {
 	Logger                    *slog.Logger
 	Config                    *shared.Config
 	DB                        *sql.DB
+	NATSConn                  *nats.Conn
 	TxManager                 shared.TxManager
 	TaskRepository            shared.TaskRepository
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository

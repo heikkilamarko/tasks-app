@@ -5,54 +5,26 @@ import (
 	"fmt"
 	"log/slog"
 	"mime/multipart"
-	"os"
 
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 )
 
 type NATSTaskAttachmentsRepository struct {
-	Config *Config
-	Logger *slog.Logger
-	conn   *nats.Conn
 	js     jetstream.JetStream
+	conn   *nats.Conn
+	logger *slog.Logger
 }
 
 var _ TaskAttachmentsRepository = (*NATSTaskAttachmentsRepository)(nil)
 
-func NewNATSTaskAttachmentsRepository(config *Config, logger *slog.Logger) (*NATSTaskAttachmentsRepository, error) {
-	conn, err := nats.Connect(
-		config.Shared.NATSURL,
-		nats.UserCredentials(config.Shared.NATSCreds),
-		nats.MaxReconnects(-1),
-		nats.DisconnectErrHandler(
-			func(_ *nats.Conn, err error) {
-				logger.Info("nats disconnected", "reason", err)
-			}),
-		nats.ReconnectHandler(
-			func(c *nats.Conn) {
-				logger.Info("nats reconnected", "address", c.ConnectedUrl())
-			}),
-		nats.ErrorHandler(
-			func(_ *nats.Conn, _ *nats.Subscription, err error) {
-				logger.Error("nats error", "error", err)
-				os.Exit(1)
-			}),
-	)
-	if err != nil {
-		return nil, err
-	}
-
+func NewNATSTaskAttachmentsRepository(conn *nats.Conn, logger *slog.Logger) (*NATSTaskAttachmentsRepository, error) {
 	js, err := jetstream.New(conn)
 	if err != nil {
 		return nil, err
 	}
 
-	return &NATSTaskAttachmentsRepository{config, logger, conn, js}, nil
-}
-
-func (repo *NATSTaskAttachmentsRepository) Close() error {
-	return repo.conn.Drain()
+	return &NATSTaskAttachmentsRepository{js, conn, logger}, nil
 }
 
 func (repo *NATSTaskAttachmentsRepository) GetAttachment(ctx context.Context, taskID int, name string) ([]byte, error) {
