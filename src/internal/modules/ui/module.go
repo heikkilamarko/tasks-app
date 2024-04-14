@@ -16,6 +16,7 @@ type Module struct {
 	Logger                    *slog.Logger
 	Auth                      *Auth
 	Renderer                  Renderer
+	TxManager                 shared.TxManager
 	TaskRepository            shared.TaskRepository
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
 	FileExporter              shared.FileExporter
@@ -54,10 +55,10 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "GET /ui/tasks/{id}", &GetUITask{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/edit", &GetUITaskEdit{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/attachments/{name}", &GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "POST /ui/tasks", &PostUITasks{m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "POST /ui/tasks", &PostUITasks{m.TxManager, m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "POST /ui/tasks/{id}/complete", &PostUITaskComplete{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "PUT /ui/tasks/{id}", &PutUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "DELETE /ui/tasks/{id}", &DeleteUITask{m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "PUT /ui/tasks/{id}", &PutUITask{m.TxManager, m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "DELETE /ui/tasks/{id}", &DeleteUITask{m.TxManager, m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/completed", &GetUICompleted{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/completed/tasks", &GetUICompletedTasks{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
 

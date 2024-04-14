@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -13,6 +14,8 @@ import (
 type App struct {
 	Logger                    *slog.Logger
 	Config                    *shared.Config
+	DB                        *sql.DB
+	TxManager                 shared.TxManager
 	TaskRepository            shared.TaskRepository
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
 	MessagingClient           shared.MessagingClient

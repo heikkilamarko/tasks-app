@@ -26,6 +26,11 @@ func (h *GetUITaskAttachment) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	if len(data) == 0 {
+		http.Error(w, "task attachment not found", http.StatusNotFound)
+		return
+	}
+
 	w.Header().Set("Content-Type", http.DetectContentType(data))
 	w.Write(data)
 }

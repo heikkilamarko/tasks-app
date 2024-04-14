@@ -1,12 +1,14 @@
 package ui
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"tasks-app/internal/shared"
 )
 
 type DeleteUITask struct {
+	TxManager                 shared.TxManager
 	TaskRepository            shared.TaskRepository
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
 	Renderer                  Renderer
@@ -33,16 +35,18 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.TaskRepository.Delete(r.Context(), req.ID)
-	if err != nil {
-		h.Logger.Error("delete task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
+	if err := h.TxManager.RunInTx(r.Context(), func(ctx context.Context) error {
+		if err := h.TaskRepository.Delete(ctx, req.ID); err != nil {
+			return err
+		}
 
-	err = h.TaskAttachmentsRepository.DeleteTask(r.Context(), req.ID)
-	if err != nil {
-		h.Logger.Error("delete task attachments", "error", err)
+		if err := h.TaskAttachmentsRepository.DeleteTask(ctx, req.ID); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		h.Logger.Error("delete task", "error", err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}

@@ -17,10 +17,12 @@ func (a *App) createServices(ctx context.Context) error {
 	var err error
 
 	if a.Config.IsServiceEnabled(AppServiceDBPostgres) {
-		a.TaskRepository, err = shared.NewPostgresTaskRepository(ctx, a.Config)
+		a.DB, err = shared.NewPostgresDB(ctx, a.Config)
 		if err != nil {
 			return fmt.Errorf("create service %s: %w", AppServiceDBPostgres, err)
 		}
+		a.TxManager = shared.NewSQLTxManager(a.DB)
+		a.TaskRepository = shared.NewPostgresTaskRepository(a.DB)
 	}
 
 	if a.Config.IsServiceEnabled(AppServiceAttachmentsNATS) {
@@ -57,8 +59,8 @@ func (a *App) closeServices() []error {
 		errs = append(errs, a.TaskAttachmentsRepository.Close())
 	}
 
-	if a.TaskRepository != nil {
-		errs = append(errs, a.TaskRepository.Close())
+	if a.DB != nil {
+		errs = append(errs, a.DB.Close())
 	}
 
 	return errs

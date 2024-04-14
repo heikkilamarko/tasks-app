@@ -24,6 +24,7 @@ func (a *App) createModules() error {
 		modules[AppModuleUI] = &ui.Module{
 			Config:                    a.Config,
 			Logger:                    logger,
+			TxManager:                 a.TxManager,
 			TaskRepository:            a.TaskRepository,
 			TaskAttachmentsRepository: a.TaskAttachmentsRepository,
 			FileExporter: &shared.ExcelFileExporter{
