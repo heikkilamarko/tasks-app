@@ -47,6 +47,7 @@ services:
   postgres:
     build: ../../infra/postgres
     image: tasks-app/postgres
+    shm_size: 2gb
     deploy:
       restart_policy:
         condition: on-failure
