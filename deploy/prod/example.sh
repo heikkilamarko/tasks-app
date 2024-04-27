@@ -27,10 +27,10 @@ check_compose_file "$compose_file"
 case "$action" in
   "up")
     docker compose -f "$compose_file" build
-    docker stack deploy -c "$compose_file" tasks-app
+    docker stack deploy --detach=false -c "$compose_file" tasks-app
     ;;
   "down")
-    docker stack rm tasks-app
+    docker stack rm --detach=false tasks-app
     ;;
   *)
     usage

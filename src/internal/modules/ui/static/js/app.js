@@ -1,4 +1,4 @@
-import { connect, JSONCodec } from 'https://unpkg.com/nats.ws@1.23.0/esm/nats.js';
+import { connect, JSONCodec } from 'https://unpkg.com/nats.ws@1.24.0/esm/nats.js';
 
 window.app = Object.assign({}, window.app, {
 	showConfirmModal,

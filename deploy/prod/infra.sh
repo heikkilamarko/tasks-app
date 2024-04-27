@@ -20,7 +20,7 @@ case "$1" in
     nats/configure.sh
     mkdir -p zitadel/machinekey
     docker compose -f infra.yml build
-    docker stack deploy -c infra.yml tasks-app-infra
+    docker stack deploy --detach=true -c infra.yml tasks-app-infra
     while ! is_zitadel_ready; do
       echo "Waiting for ZITADEL to start..."
       sleep 5
@@ -29,7 +29,7 @@ case "$1" in
     zitadel/configure.sh
     ;;
   "down")
-    docker stack rm tasks-app-infra
+    docker stack rm --detach=false tasks-app-infra
     sleep 10
     docker volume prune -a -f
     git clean -dfX nats
