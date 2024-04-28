@@ -37,6 +37,9 @@
 		host smtp.tasks-app.com
 	}
 	handle @smtp {
+		basicauth {
+			admin $2a$14$5rwhDuyblPBQiK/ebhjLYeTOLWScma0LjEe7t.Oa4nzaF00DhKlWy
+		}
 		reverse_proxy http://localhost:8081
 	}
 

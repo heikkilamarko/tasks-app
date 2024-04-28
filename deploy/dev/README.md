@@ -50,6 +50,10 @@ https://auth.tasks-app.com
 
 https://smtp.tasks-app.com
 
+| Username | Password   |
+| -------- | ---------- |
+| `admin`  | `S3c_r3t!` |
+
 ## Example Users
 
 When running the examples, use the following example credentials to log in to the application:
