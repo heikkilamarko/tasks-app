@@ -1,19 +1,26 @@
 package shared
 
-import "time"
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
+	"time"
+)
 
 type Task struct {
-	ID             int           `json:"id"`
-	UserID         string        `json:"user_id"`
-	Name           string        `json:"name"`
-	ExpiresAt      *time.Time    `json:"expires_at"`
-	ExpiringInfoAt *time.Time    `json:"expiring_info_at"`
-	ExpiredInfoAt  *time.Time    `json:"expired_info_at"`
-	CreatedAt      time.Time     `json:"created_at"`
-	UpdatedAt      *time.Time    `json:"updated_at"`
-	CompletedAt    *time.Time    `json:"completed_at"`
-	Attachments    []*Attachment `json:"attachments"`
+	ID             int         `json:"id"`
+	UserID         string      `json:"user_id"`
+	Name           string      `json:"name"`
+	ExpiresAt      *time.Time  `json:"expires_at"`
+	ExpiringInfoAt *time.Time  `json:"expiring_info_at"`
+	ExpiredInfoAt  *time.Time  `json:"expired_info_at"`
+	CreatedAt      time.Time   `json:"created_at"`
+	UpdatedAt      *time.Time  `json:"updated_at"`
+	CompletedAt    *time.Time  `json:"completed_at"`
+	Attachments    Attachments `json:"attachments"`
 }
+
+type Attachments []*Attachment
 
 type Attachment struct {
 	ID        int        `json:"id"`
@@ -70,4 +77,17 @@ func (t *Task) SetCompleted() {
 
 	t.CompletedAt = &now
 	t.UpdatedAt = &now
+}
+
+func (a *Attachments) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+func (a *Attachments) Scan(src any) error {
+	b, ok := src.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte")
+	}
+
+	return json.Unmarshal(b, a)
 }

@@ -6,7 +6,7 @@ require (
 	github.com/caarlos0/env/v9 v9.0.0
 	github.com/gorilla/csrf v1.7.2
 	github.com/jackc/pgx/v5 v5.5.5
-	github.com/nats-io/jwt/v2 v2.5.6
+	github.com/nats-io/jwt/v2 v2.5.7
 	github.com/nats-io/nats.go v1.34.1
 	github.com/nats-io/nkeys v0.4.7
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1

@@ -124,12 +124,12 @@ func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task,
 	user, _ := GetUserContext(ctx)
 
 	where := `
-		WHERE id = $1
+		WHERE t.id = $1
 	`
 	args := []any{id}
 
 	if user != nil {
-		where += "AND user_id = $2"
+		where += "AND t.user_id = $2"
 		args = append(args, user.ID)
 	}
 
@@ -154,17 +154,15 @@ func (repo *PostgresTaskRepository) GetActive(ctx context.Context, offset int, l
 	args := []any{}
 
 	if user != nil {
-		where += "AND user_id = $1"
+		where += "AND t.user_id = $1"
 		args = append(args, user.ID)
 	}
 
-	where += `
+	orderBy := `
 		ORDER BY t.created_at DESC
 		LIMIT $2 OFFSET $3
 	`
 	args = append(args, limit, offset)
-
-	orderBy := "ORDER BY t.created_at DESC"
 
 	return repo.getTasks(ctx, where, orderBy, args...)
 }
@@ -178,17 +176,15 @@ func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context, offset int
 	args := []any{}
 
 	if user != nil {
-		where += "AND user_id = $1"
+		where += "AND t.user_id = $1"
 		args = append(args, user.ID)
 	}
 
-	where += `
+	orderBy := `
 		ORDER BY t.completed_at DESC
 		LIMIT $2 OFFSET $3
 	`
 	args = append(args, limit, offset)
-
-	orderBy := "ORDER BY t.completed_at DESC"
 
 	return repo.getTasks(ctx, where, orderBy, args...)
 }
@@ -209,13 +205,9 @@ func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Dura
 	args := []any{t1, t2}
 
 	if user != nil {
-		where += "AND user_id = $3"
+		where += "AND t.user_id = $3"
 		args = append(args, user.ID)
 	}
-
-	where += `
-		ORDER BY t.created_at ASC
-	`
 
 	orderBy := "ORDER BY t.created_at ASC"
 
@@ -236,13 +228,9 @@ func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, er
 	args := []any{now}
 
 	if user != nil {
-		where += "AND user_id = $2"
+		where += "AND t.user_id = $2"
 		args = append(args, user.ID)
 	}
-
-	where += `
-		ORDER BY t.created_at ASC
-	`
 
 	orderBy := "ORDER BY t.created_at ASC"
 
@@ -287,7 +275,6 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 	var tasks []*Task
 
 	query := fmt.Sprintf(`
-		WITH tasks AS (SELECT * FROM task t %s)
 		SELECT
 			t.id,
 			t.user_id,
@@ -298,15 +285,13 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 			t.created_at,
 			t.updated_at,
 			t.completed_at,
-			a.id,
-			a.task_id,
-			a.file_name,
-			a.created_at,
-			a.updated_at
+			COALESCE(jsonb_agg(a) FILTER (WHERE a.task_id IS NOT NULL), '[]') AS attachments
 		FROM
-			tasks t
+			task t
 		LEFT JOIN
 			attachment a ON t.id = a.task_id
+		%s
+		GROUP BY t.id
 		%s
 	`, where, orderBy)
 
@@ -316,17 +301,8 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 	}
 	defer rows.Close()
 
-	tasksMap := make(map[int]*Task)
-
 	for rows.Next() {
-		var t Task
-		var a struct {
-			ID        *int
-			TaskID    *int
-			FileName  *string
-			CreatedAt *time.Time
-			UpdatedAt *time.Time
-		}
+		t := &Task{}
 
 		if err := rows.Scan(
 			&t.ID,
@@ -338,25 +314,12 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 			&t.CreatedAt,
 			&t.UpdatedAt,
 			&t.CompletedAt,
-			&a.ID,
-			&a.TaskID,
-			&a.FileName,
-			&a.CreatedAt,
-			&a.UpdatedAt,
+			&t.Attachments,
 		); err != nil {
 			return nil, err
 		}
 
-		task, ok := tasksMap[t.ID]
-		if !ok {
-			task = &t
-			tasks = append(tasks, task)
-			tasksMap[task.ID] = task
-		}
-
-		if a.ID != nil {
-			task.Attachments = append(task.Attachments, &Attachment{*a.ID, *a.TaskID, *a.FileName, *a.CreatedAt, a.UpdatedAt})
-		}
+		tasks = append(tasks, t)
 	}
 
 	if err := rows.Err(); err != nil {
