@@ -2,28 +2,28 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h1 class="modal-title fs-5">Confirm Task Deletion</h1>
+				<h1 class="modal-title fs-5">{{ .UI.T.confirm_task_deletion_title }}</h1>
 				<button
 					type="button"
 					class="btn-close"
 					_="on click send confirmResult(answer: false) to #confirm-delete-modal"
 				></button>
 			</div>
-			<div class="modal-body">Are you sure you want to delete the selected task? This action cannot be undone.</div>
+			<div class="modal-body">{{ .UI.T.confirm_task_deletion_message }}</div>
 			<div class="modal-footer">
 				<button
 					type="button"
 					class="btn btn-danger rounded-pill px-4"
 					_="on click send confirmResult(answer: true) to #confirm-delete-modal"
 				>
-					Delete
+					{{ .UI.T.delete }}
 				</button>
 				<button
 					type="button"
 					class="btn btn-secondary rounded-pill px-4"
 					_="on click send confirmResult(answer: false) to #confirm-delete-modal"
 				>
-					Cancel
+					{{ .UI.T.cancel }}
 				</button>
 			</div>
 		</div>
@@ -34,28 +34,28 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h1 class="modal-title fs-5">Confirm Task Completion</h1>
+				<h1 class="modal-title fs-5">{{ .UI.T.confirm_task_completion_title }}</h1>
 				<button
 					type="button"
 					class="btn-close"
 					_="on click send confirmResult(answer: false) to #confirm-complete-modal"
 				></button>
 			</div>
-			<div class="modal-body">Are you sure you want to complete the selected task?</div>
+			<div class="modal-body">{{ .UI.T.confirm_task_completion_message }}</div>
 			<div class="modal-footer">
 				<button
 					type="button"
 					class="btn btn-primary rounded-pill px-4"
 					_="on click send confirmResult(answer: true) to #confirm-complete-modal"
 				>
-					Complete
+					{{ .UI.T.complete }}
 				</button>
 				<button
 					type="button"
 					class="btn btn-secondary rounded-pill px-4"
 					_="on click send confirmResult(answer: false) to #confirm-complete-modal"
 				>
-					Cancel
+					{{ .UI.T.cancel }}
 				</button>
 			</div>
 		</div>

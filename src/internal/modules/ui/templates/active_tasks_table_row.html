@@ -21,7 +21,7 @@
 				send cancelEdit to .editing
 				trigger editTask"
 		>
-			Edit
+			{{ .UI.T.edit }}
 		</button>
 		<button
 			class="btn btn-sm btn-outline-primary rounded-pill px-3 ms-2"
@@ -34,7 +34,7 @@
 				app.showConfirmModal('#confirm-complete-modal')
 				if result trigger completeTask"
 		>
-			Complete
+			{{ .UI.T.complete }}
 		</button>
 		<button
 			class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-2"
@@ -47,7 +47,7 @@
 				app.showConfirmModal('#confirm-delete-modal')
 				if result trigger deleteTask"
 		>
-			Delete
+			{{ .UI.T.delete }}
 		</button>
 	</td>
 </tr>

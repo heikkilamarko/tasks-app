@@ -3,10 +3,10 @@
 		<table class="table">
 			<thead>
 				<tr>
-					<th class="task-name">Task</th>
-					<th>Attachments</th>
-					<th>Expiration</th>
-					<th>Created</th>
+					<th class="task-name">{{ .UI.T.task }}</th>
+					<th>{{ .UI.T.attachments }}</th>
+					<th>{{ .UI.T.expiration }}</th>
+					<th>{{ .UI.T.created }}</th>
 					<th></th>
 				</tr>
 			</thead>
@@ -21,5 +21,5 @@
 		</table>
 	</div>
 {{ else }}
-	<div class="fw-bold text-muted">No tasks</div>
+	<div class="fw-bold text-muted">{{ .UI.T.no_tasks }}</div>
 {{ end }}

@@ -71,6 +71,7 @@ type UIModel struct {
 	Theme     string
 	Language  string
 	Languages []string
+	T         map[string]string
 	Location  *time.Location
 	Timezones []string
 	UserID    string
@@ -88,11 +89,14 @@ func NewUIModel(r *http.Request) *UIModel {
 		userName = user.Name
 	}
 
+	language := GetLanguage(r)
+
 	return &UIModel{
 		Title:     "",
 		Theme:     GetTheme(r),
-		Language:  GetLanguage(r),
+		Language:  language,
 		Languages: SupportedLanguages,
+		T:         Translations[language],
 		Location:  GetLocation(r),
 		Timezones: SupportedTimezones,
 		UserID:    userID,
