@@ -331,7 +331,13 @@ func ParseTaskExpiresAt(value string, l *time.Location) (*time.Time, error) {
 func ParseTaskAttachments(r *http.Request) (*AttachmentsRequest, error) {
 	files := r.MultipartForm.File["attachments"]
 
-	names := r.Form["attachments"]
+	names := slices.DeleteFunc(
+		r.Form["attachments"],
+		func(name string) bool {
+			return name == ""
+		},
+	)
+
 	for _, file := range files {
 		names = append(names, file.Filename)
 	}
