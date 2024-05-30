@@ -34,7 +34,7 @@
 		host smtp.hobbydemos.com
 	}
 	handle @smtp {
-		basicauth {
+		basic_auth {
 			admin $2a$14$5rwhDuyblPBQiK/ebhjLYeTOLWScma0LjEe7t.Oa4nzaF00DhKlWy
 		}
 		reverse_proxy http://smtp4dev
