@@ -47,7 +47,7 @@
 				</li>
 			</ul>
 			<ul class="navbar-nav">
-				<div class="nav-item dropdown">
+				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						{{ template "icon-globe-americas" }}
 						{{ .UI.Location.String | formattimezone }}
@@ -65,8 +65,8 @@
 							</li>
 						{{ end }}
 					</ul>
-				</div>
-				<div class="nav-item dropdown">
+				</li>
+				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						{{ template "icon-translate" }}
 						{{ .UI.Language }}
@@ -84,8 +84,8 @@
 							</li>
 						{{ end }}
 					</ul>
-				</div>
-				<div class="nav-item dropdown">
+				</li>
+				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						{{ template "icon-person-fill" }}
 						{{ .UI.UserName }}
@@ -112,7 +112,7 @@
 							</a>
 						</li>
 					</ul>
-				</div>
+				</li>
 			</ul>
 		</div>
 	</div>
