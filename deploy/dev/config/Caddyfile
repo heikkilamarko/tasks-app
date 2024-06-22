@@ -17,8 +17,6 @@
 *.tasks-app.com {
 	log
 
-	encode gzip
-
 	tls internal
 
 	header {
@@ -56,6 +54,12 @@
 	}
 	handle @app {
 		redir / /ui
+		encode zstd gzip {
+			match {
+				header Content-Type text/*
+				header Content-Type application/javascript*
+			}
+		}
 		reverse_proxy http://tasks-app
 	}
 }

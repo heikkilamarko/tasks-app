@@ -12,8 +12,6 @@
 *.hobbydemos.com {
 	log
 
-	encode gzip
-
 	tls {
 		dns godaddy {$CADDY_TLS_GODADDY_TOKEN}
 	}
@@ -53,6 +51,12 @@
 	}
 	handle @app {
 		redir / /ui
+		encode zstd gzip {
+			match {
+				header Content-Type text/*
+				header Content-Type application/javascript*
+			}
+		}
 		reverse_proxy http://tasks-app
 	}
 }

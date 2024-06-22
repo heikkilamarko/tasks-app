@@ -1,4 +1,6 @@
-import { connect, JSONCodec } from 'https://unpkg.com/nats.ws@1.27.0/esm/nats.js';
+import { Modal, Toast, Tooltip } from 'bootstrap';
+import htmx from 'htmx.org';
+import { connect, JSONCodec } from 'nats.ws';
 
 window.app = Object.assign({}, window.app, {
 	showConfirmModal,
@@ -60,7 +62,7 @@ htmx.onLoad((el) => {
 function initBootstrap(root) {
 	const tooltips = (root ?? document).querySelectorAll('[data-bs-toggle="tooltip"]');
 	[...tooltips].forEach((tooltip) =>
-		bootstrap.Tooltip.getOrCreateInstance(tooltip, {
+		Tooltip.getOrCreateInstance(tooltip, {
 			customClass: 'app-tooltip',
 			placement: 'left',
 			delay: { show: 1000, hide: 100 }
@@ -110,7 +112,7 @@ function getWsUrl(url) {
 
 function showConfirmModal(selector) {
 	return new Promise((resolve) => {
-		const modal = bootstrap.Modal.getOrCreateInstance(selector, { backdrop: 'static', keyboard: false });
+		const modal = Modal.getOrCreateInstance(selector, { backdrop: 'static', keyboard: false });
 
 		modal._element.addEventListener(
 			'confirmResult',
@@ -170,6 +172,6 @@ function showToastMessage(config) {
 		{ once: true }
 	);
 
-	const toast = new bootstrap.Toast(toastEl);
+	const toast = new Toast(toastEl);
 	toast.show();
 }
