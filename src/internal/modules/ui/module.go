@@ -44,7 +44,7 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "GET /ui/auth/login", m.Auth.LoginHandler("/ui"))
 	HandleWithMiddleware(mux, "GET /ui/auth/callback", m.Auth.CallbackHandler())
 	HandleWithMiddleware(mux, "GET /ui/auth/logout", m.Auth.LogoutHandler())
-	HandleWithMiddleware(mux, "GET /ui/static/*", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
+	HandleWithMiddleware(mux, "GET /ui/static/", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
 	HandleWithMiddleware(mux, "GET /ui", &GetUI{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW, loginMW)
 	HandleWithMiddleware(mux, "GET /ui/language/{language}", &GetUILanguage{m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/theme/{theme}", &GetUITheme{m.Logger}, authnMW, userMW)

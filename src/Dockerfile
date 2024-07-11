@@ -1,4 +1,4 @@
-FROM golang:1.22 AS build
+FROM golang:1.23-rc AS build
 ARG GOARCH=amd64
 COPY . .
 ENV GOPATH=""
