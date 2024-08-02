@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg border-bottom border-body">
 	<div class="container-fluid">
-		<a class="navbar-brand" href="/ui" hx-boost="true" hx-swap="innerHTML transition:true">
+		<a href="/ui" class="navbar-brand">
 			<img
 				src="/ui/static/android-chrome-192x192.png"
 				alt="Logo"
@@ -24,23 +24,13 @@
 		<div class="collapse navbar-collapse" id="navbar-content">
 			<ul class="navbar-nav mx-auto">
 				<li class="nav-item">
-					<a
-						class="nav-link {{ if eq .UI.Title "Active" }}fw-bold active{{ end }}"
-						href="/ui"
-						hx-boost="true"
-						hx-swap="innerHTML transition:true"
-					>
+					<a href="/ui" class="nav-link {{ if eq .UI.Title "Active" }}fw-bold active{{ end }}">
 						{{ template "icon-stopwatch" }}
 						{{ .UI.T.active_tasks }}
 					</a>
 				</li>
 				<li class="nav-item">
-					<a
-						class="nav-link {{ if eq .UI.Title "Completed" }}fw-bold active{{ end }}"
-						href="/ui/completed"
-						hx-boost="true"
-						hx-swap="innerHTML transition:true"
-					>
+					<a href="/ui/completed" class="nav-link {{ if eq .UI.Title "Completed" }}fw-bold active{{ end }}">
 						{{ template "icon-clock-history" }}
 						{{ .UI.T.completed_tasks }}
 					</a>
@@ -55,13 +45,13 @@
 					<ul class="dropdown-menu">
 						{{ range .UI.Timezones }}
 							<li>
-								<a
-									class="dropdown-item {{ if eq . $.UI.Location.String }}active{{ end }}"
-									href="/ui/timezone?tz={{ . }}"
-									hx-boost="true"
-								>
-									{{ . | formattimezone }}
-								</a>
+								<form action="/ui/timezone" method="post">
+									{{ $.UI.CSRFField }}
+									<input type="hidden" name="timezone" value="{{ . }}" />
+									<button type="submit" class="dropdown-item {{ if eq . $.UI.Location.String }}active{{ end }}">
+										{{ . | formattimezone }}
+									</button>
+								</form>
 							</li>
 						{{ end }}
 					</ul>
@@ -74,13 +64,13 @@
 					<ul class="dropdown-menu">
 						{{ range .UI.Languages }}
 							<li>
-								<a
-									class="dropdown-item {{ if eq . $.UI.Language }}active{{ end }}"
-									href="/ui/language/{{ . }}"
-									hx-boost="true"
-								>
-									{{ . }}
-								</a>
+								<form action="/ui/language" method="post">
+									{{ $.UI.CSRFField }}
+									<input type="hidden" name="language" value="{{ . }}" />
+									<button type="submit" class="dropdown-item {{ if eq . $.UI.Language }}active{{ end }}">
+										{{ . }}
+									</button>
+								</form>
 							</li>
 						{{ end }}
 					</ul>
@@ -92,21 +82,26 @@
 					</a>
 					<ul class="dropdown-menu">
 						<li>
-							{{ if eq .UI.Theme "light" }}
-								<a class="dropdown-item" href="/ui/theme/dark" hx-boost="true">
-									{{ template "icon-moon-fill" }}
-									{{ .UI.T.dark_theme }}
-								</a>
-							{{ else }}
-								<a class="dropdown-item" href="/ui/theme/light" hx-boost="true">
-									{{ template "icon-sun-fill" }}
-									{{ .UI.T.light_theme }}
-								</a>
-							{{ end }}
+							<form action="/ui/theme" method="post">
+								{{ .UI.CSRFField }}
+								{{ if eq .UI.Theme "light" }}
+									<input type="hidden" name="theme" value="dark" />
+									<button type="submit" class="dropdown-item">
+										{{ template "icon-moon-fill" }}
+										{{ .UI.T.dark_theme }}
+									</button>
+								{{ else }}
+									<input type="hidden" name="theme" value="light" />
+									<button type="submit" class="dropdown-item">
+										{{ template "icon-sun-fill" }}
+										{{ .UI.T.light_theme }}
+									</button>
+								{{ end }}
+							</form>
 						</li>
 						<li><hr class="dropdown-divider" /></li>
 						<li>
-							<a class="dropdown-item" href="/ui/auth/logout">
+							<a href="/ui/auth/logout" class="dropdown-item">
 								{{ template "icon-power" }}
 								{{ .UI.T.sign_out }}
 							</a>

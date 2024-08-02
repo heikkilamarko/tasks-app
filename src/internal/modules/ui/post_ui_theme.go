@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-type GetUITheme struct {
+type PostUITheme struct {
 	Logger *slog.Logger
 }
 
-func (h *GetUITheme) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *PostUITheme) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req, err := ParseSetThemeRequest(r)
 	if err != nil {
 		h.Logger.Error("parse request", "error", err)
@@ -19,5 +19,5 @@ func (h *GetUITheme) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	SetThemeCookie(w, req.Theme)
 
-	w.Header().Add("HX-Redirect", GetRedirectURL(r))
+	http.Redirect(w, r, GetRedirectURL(r), http.StatusFound)
 }

@@ -124,7 +124,7 @@ func NewTaskResponse(r *http.Request, task *shared.Task) *TaskResponse {
 func ParseSetLanguageRequest(r *http.Request) (*LanguageRequest, error) {
 	var errs []error
 
-	lang, err := ParseLanguage(r.PathValue("language"))
+	lang, err := ParseLanguage(r.FormValue("language"))
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -139,7 +139,7 @@ func ParseSetLanguageRequest(r *http.Request) (*LanguageRequest, error) {
 func ParseSetThemeRequest(r *http.Request) (*ThemeRequest, error) {
 	var errs []error
 
-	theme, err := ParseTheme(r.PathValue("theme"))
+	theme, err := ParseTheme(r.FormValue("theme"))
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -154,7 +154,7 @@ func ParseSetThemeRequest(r *http.Request) (*ThemeRequest, error) {
 func ParseSetTimezoneRequest(r *http.Request) (*TimezoneRequest, error) {
 	var errs []error
 
-	tz, err := ParseTimezone(r.FormValue("tz"))
+	tz, err := ParseTimezone(r.FormValue("timezone"))
 	if err != nil {
 		errs = append(errs, err)
 	}

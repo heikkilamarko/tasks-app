@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-type GetUILanguage struct {
+type PostUILanguage struct {
 	Logger *slog.Logger
 }
 
-func (h *GetUILanguage) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *PostUILanguage) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req, err := ParseSetLanguageRequest(r)
 	if err != nil {
 		h.Logger.Error("parse request", "error", err)
@@ -19,5 +19,5 @@ func (h *GetUILanguage) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	SetLanguageCookie(w, req.Language)
 
-	w.Header().Add("HX-Redirect", GetRedirectURL(r))
+	http.Redirect(w, r, GetRedirectURL(r), http.StatusFound)
 }
