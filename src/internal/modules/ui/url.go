@@ -1,30 +1,25 @@
 package ui
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
-	"strings"
+	"slices"
 )
 
 const DefaultRedirectURL = "/ui"
 
-func GetRedirectURL(r *http.Request) string {
-	currentURL := r.Header.Get("HX-Current-URL")
-	if currentURL == "" {
-		currentURL = r.Header.Get("Referer")
-		if currentURL == "" {
-			return DefaultRedirectURL
-		}
+var ErrBadReferer = errors.New("referer invalid")
+
+func GetRedirectURL(r *http.Request, trustedHosts []string) (string, error) {
+	referer, err := url.Parse(r.Referer())
+	if err != nil || referer.String() == "" {
+		return "", ErrBadReferer
 	}
 
-	redirectURL, err := url.Parse(currentURL)
-	if err != nil {
-		return DefaultRedirectURL
+	if !slices.Contains(trustedHosts, referer.Host) {
+		return "", ErrBadReferer
 	}
 
-	if !strings.HasPrefix(redirectURL.Path, DefaultRedirectURL) {
-		return DefaultRedirectURL
-	}
-
-	return redirectURL.Path
+	return referer.Path, nil
 }
