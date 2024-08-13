@@ -1,6 +1,11 @@
-import { Modal, Toast, Tooltip } from 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
+import './style.css';
 import htmx from 'htmx.org';
-import { connect, JSONCodec } from 'nats.ws';
+import _hyperscript from 'hyperscript.org';
+import { Modal, Toast, Tooltip } from 'bootstrap';
+import { wsconnect, JSONCodec } from '@nats-io/nats-core';
+
+_hyperscript.browserInit();
 
 window.app = Object.assign({}, window.app, {
 	showConfirmModal,
@@ -14,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 
 	if (!window.app.HUB_URL || !window.app.USER_ID) return;
 
-	const nc = await connect({
+	const nc = await wsconnect({
 		servers: getWsUrl(window.app.HUB_URL),
 		name: 'ui',
 		timeout: 120_000,

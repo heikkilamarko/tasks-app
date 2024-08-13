@@ -1,0 +1,24 @@
+{
+	"name": "ui",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"build": "vite build",
+		"copy": "rm -rf ../static && rm -f ../templates/index.html && mkdir ../static && cp -r dist/* ../static/ && cp dist/index.html ../templates/",
+		"build:copy": "npm run build && npm run copy",
+		"format": "prettier --write ."
+	},
+	"dependencies": {
+		"@nats-io/nats-core": "next",
+		"@popperjs/core": "2.11.8",
+		"bootstrap": "5.3.3",
+		"htmx.org": "1.9.12",
+		"hyperscript.org": "0.9.12"
+	},
+	"devDependencies": {
+		"prettier": "3.3.3",
+		"prettier-plugin-go-template": "0.0.15",
+		"vite": "5.4.0"
+	}
+}

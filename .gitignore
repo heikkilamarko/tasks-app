@@ -21,6 +21,9 @@
 go.work
 
 node_modules
+dist
+static
+**/templates/index.html
 
 .DS_Store
 
