@@ -7,18 +7,18 @@ require (
 	github.com/gorilla/csrf v1.7.2
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/nats-io/jwt/v2 v2.5.8
-	github.com/nats-io/nats.go v1.36.0
+	github.com/nats-io/nats.go v1.37.0
 	github.com/nats-io/nkeys v0.4.7
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/wneessen/go-mail v0.4.2
 	github.com/xuri/excelize/v2 v2.8.1
-	github.com/zitadel/oidc/v3 v3.26.0
-	github.com/zitadel/zitadel-go/v3 v3.0.0-next.3
-	golang.org/x/sync v0.7.0
+	github.com/zitadel/oidc/v3 v3.27.0
+	github.com/zitadel/zitadel-go/v3 v3.0.0
+	golang.org/x/sync v0.8.0
 )
 
 require (
-	github.com/go-jose/go-jose/v4 v4.0.3 // indirect
+	github.com/go-jose/go-jose/v4 v4.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -41,9 +41,9 @@ require (
 	go.opentelemetry.io/otel/metric v1.28.0 // indirect
 	go.opentelemetry.io/otel/trace v1.28.0 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/exp v0.0.0-20240707233637-46b078467d37 // indirect
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/oauth2 v0.21.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/oauth2 v0.22.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 )

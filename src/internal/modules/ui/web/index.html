@@ -9,7 +9,7 @@
 	<link rel="manifest" href="/ui/static/site.webmanifest" />
 	<script>
 		window.app = {
-			USER_ID: '{{ .UI.UserID }}'
+			USER_ID: '{{ js .UI.UserID }}'
 		}
 	</script>
 	<script type="module" src="/main.js"></script>

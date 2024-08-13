@@ -54,7 +54,7 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "GET /ui/tasks/new", &GetUITasksNew{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks/{id}", &GetUITask{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/edit", &GetUITaskEdit{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/attachments/{name}", &GetUITaskAttachment{m.TaskAttachmentsRepository, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/attachments/{name}", &GetUITaskAttachment{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "POST /ui/tasks", &PostUITasks{m.TxManager, m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "POST /ui/tasks/{id}/complete", &PostUITaskComplete{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "PUT /ui/tasks/{id}", &PutUITask{m.TxManager, m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
