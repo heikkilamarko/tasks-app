@@ -13,7 +13,7 @@
 		"@nats-io/nats-core": "next",
 		"@popperjs/core": "2.11.8",
 		"bootstrap": "5.3.3",
-		"htmx.org": "1.9.12",
+		"htmx.org": "next",
 		"hyperscript.org": "0.9.12"
 	},
 	"devDependencies": {
