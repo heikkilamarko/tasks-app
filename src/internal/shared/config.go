@@ -25,7 +25,6 @@ type UIConfig struct {
 	AuthEncryptionKey string   `env:"APP_UI_AUTH_ENCRYPTION_KEY"`
 	AuthClientId      string   `env:"APP_UI_AUTH_CLIENT_ID"`
 	AuthRedirectURI   string   `env:"APP_UI_AUTH_REDIRECT_URI"`
-	HubURL            string   `env:"APP_UI_HUB_URL,notEmpty"`
 	HubJWTCookieName  string   `env:"APP_UI_HUB_JWT_COOKIE_NAME,notEmpty"`
 	TrustedHosts      []string `env:"APP_UI_TRUSTED_HOSTS"`
 }

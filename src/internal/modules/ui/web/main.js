@@ -17,10 +17,10 @@ const codec = JSONCodec();
 document.addEventListener('DOMContentLoaded', async (_event) => {
 	initBootstrap();
 
-	if (!window.app.HUB_URL || !window.app.USER_ID) return;
+	if (!window.app.USER_ID) return;
 
 	const nc = await wsconnect({
-		servers: getWsUrl(window.app.HUB_URL),
+		servers: getWsUrl('/hub/v1'),
 		name: 'ui',
 		timeout: 120_000,
 		maxReconnectAttempts: -1,

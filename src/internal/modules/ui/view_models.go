@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -76,7 +75,6 @@ type UIModel struct {
 	Timezones []string
 	UserID    string
 	UserName  string
-	HubURL    string
 	CSRFToken string
 	CSRFField template.HTML
 }
@@ -101,7 +99,6 @@ func NewUIModel(r *http.Request) *UIModel {
 		Timezones: SupportedTimezones,
 		UserID:    userID,
 		UserName:  userName,
-		HubURL:    os.Getenv("APP_UI_HUB_URL"),
 		CSRFToken: csrf.Token(r),
 		CSRFField: csrf.TemplateField(r),
 	}
