@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"tasks-app/internal/shared"
 
+	"github.com/nats-io/nats.go"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"github.com/zitadel/zitadel-go/v3/pkg/authentication"
 	zoidc "github.com/zitadel/zitadel-go/v3/pkg/authentication/oidc"
@@ -17,12 +18,18 @@ type Auth struct {
 	Config        *shared.Config
 }
 
-func NewAuth(ctx context.Context, config *shared.Config) (*Auth, error) {
+func NewAuth(ctx context.Context, conn *nats.Conn, config *shared.Config) (*Auth, error) {
+	sessions, err := NewNATSKVSessions[*zoidc.UserInfoContext[*oidc.IDTokenClaims, *oidc.UserInfo]](conn)
+	if err != nil {
+		return nil, err
+	}
+
 	authenticator, err := authentication.New(
 		ctx,
 		zitadel.New(config.UI.AuthDomain),
 		config.UI.AuthEncryptionKey,
 		zoidc.DefaultAuthentication(config.UI.AuthClientId, config.UI.AuthRedirectURI, config.UI.AuthEncryptionKey),
+		authentication.WithSessionStore(sessions),
 	)
 	if err != nil {
 		return nil, err

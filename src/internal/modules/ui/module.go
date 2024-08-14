@@ -8,12 +8,14 @@ import (
 	"tasks-app/internal/shared"
 	"time"
 
+	"github.com/nats-io/nats.go"
 	"golang.org/x/sync/errgroup"
 )
 
 type Module struct {
 	Config                    *shared.Config
 	Logger                    *slog.Logger
+	NATSConn                  *nats.Conn
 	Auth                      *Auth
 	Renderer                  Renderer
 	TxManager                 shared.TxManager
@@ -89,7 +91,7 @@ func (m *Module) Run(ctx context.Context) error {
 }
 
 func (m *Module) initAuth(ctx context.Context) error {
-	auth, err := NewAuth(ctx, m.Config)
+	auth, err := NewAuth(ctx, m.NATSConn, m.Config)
 	if err != nil {
 		return err
 	}

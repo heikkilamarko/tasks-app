@@ -16,7 +16,7 @@ services:
       - source: app_user.creds
         target: /app_user.creds
     environment:
-      - APP_SHARED_SERVICES=db:postgres,attachments:nats
+      - APP_SHARED_SERVICES=db:postgres,attachments:nats,messaging:nats
       - APP_SHARED_MODULES=ui
     networks:
       - tasks-app
