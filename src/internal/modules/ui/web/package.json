@@ -4,9 +4,8 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"build": "vite build",
-		"copy": "rm -rf ../static && rm -f ../templates/index.html && mkdir ../static && cp -r dist/* ../static/ && cp dist/index.html ../templates/",
-		"build:copy": "npm run build && npm run copy",
+		"build": "vite build && rm -rf dist/templates && cp -r templates dist/ && mv dist/static/index.html dist/templates/",
+		"build:dev": "npm run build && rm -rf ../static ../templates && cp -r dist/* ../",
 		"format": "prettier --write ."
 	},
 	"dependencies": {
