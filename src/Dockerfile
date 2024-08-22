@@ -1,4 +1,4 @@
-FROM node:20-alpine AS build-ui
+FROM node:lts AS build-ui
 WORKDIR /app
 COPY internal/modules/ui/web/package*.json .
 RUN npm ci

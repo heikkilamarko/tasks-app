@@ -10,10 +10,10 @@ require (
 	github.com/nats-io/nats.go v1.37.0
 	github.com/nats-io/nkeys v0.4.7
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
-	github.com/wneessen/go-mail v0.4.2
+	github.com/wneessen/go-mail v0.4.3
 	github.com/xuri/excelize/v2 v2.8.1
-	github.com/zitadel/oidc/v3 v3.27.0
-	github.com/zitadel/zitadel-go/v3 v3.0.0
+	github.com/zitadel/oidc/v3 v3.28.1
+	github.com/zitadel/zitadel-go/v3 v3.0.1
 	golang.org/x/sync v0.8.0
 )
 
@@ -45,5 +45,5 @@ require (
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/oauth2 v0.22.0 // indirect
 	golang.org/x/sys v0.23.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 )
