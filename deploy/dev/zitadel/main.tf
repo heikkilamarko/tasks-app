@@ -2,7 +2,7 @@ terraform {
   required_providers {
     zitadel = {
       source  = "zitadel/zitadel"
-      version = "~> 1.0"
+      version = "~> 2.0"
     }
   }
 }
@@ -143,7 +143,7 @@ resource "zitadel_application_oidc" "tasks_app" {
   auth_method_type            = "OIDC_AUTH_METHOD_TYPE_NONE"
   access_token_type           = "OIDC_TOKEN_TYPE_JWT"
   redirect_uris               = ["https://www.${var.auth_domain}/ui", "https://www.${var.auth_domain}/ui/auth/callback"]
-  post_logout_redirect_uris   = ["https://www.${var.auth_domain}/", "http://www.${var.auth_domain}/"]
+  post_logout_redirect_uris   = ["https://www.${var.auth_domain}/"]
   access_token_role_assertion = true
   id_token_role_assertion     = true
   id_token_userinfo_assertion = true

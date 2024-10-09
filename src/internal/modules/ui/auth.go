@@ -12,14 +12,16 @@ import (
 	"github.com/zitadel/zitadel-go/v3/pkg/zitadel"
 )
 
+type authCtx = *zoidc.UserInfoContext[*oidc.IDTokenClaims, *oidc.UserInfo]
+
 type Auth struct {
-	Authenticator *authentication.Authenticator[*zoidc.UserInfoContext[*oidc.IDTokenClaims, *oidc.UserInfo]]
-	Middleware    *authentication.Interceptor[*zoidc.UserInfoContext[*oidc.IDTokenClaims, *oidc.UserInfo]]
+	Authenticator *authentication.Authenticator[authCtx]
+	Middleware    *authentication.Interceptor[authCtx]
 	Config        *shared.Config
 }
 
 func NewAuth(ctx context.Context, conn *nats.Conn, config *shared.Config) (*Auth, error) {
-	sessions, err := NewNATSKVSessions[*zoidc.UserInfoContext[*oidc.IDTokenClaims, *oidc.UserInfo]](conn)
+	sessions, err := NewNATSKVSessions[authCtx](conn)
 	if err != nil {
 		return nil, err
 	}
@@ -30,6 +32,7 @@ func NewAuth(ctx context.Context, conn *nats.Conn, config *shared.Config) (*Auth
 		config.UI.AuthEncryptionKey,
 		zoidc.DefaultAuthentication(config.UI.AuthClientId, config.UI.AuthRedirectURI, config.UI.AuthEncryptionKey),
 		authentication.WithSessionStore(sessions),
+		authentication.WithExternalSecure[authCtx](true),
 	)
 	if err != nil {
 		return nil, err

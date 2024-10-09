@@ -21,7 +21,6 @@
 
 	header {
 		-Server
-		>Location http:// https://
 	}
 
 	@auth {
