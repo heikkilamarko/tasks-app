@@ -3,7 +3,7 @@ import './style.css';
 import htmx from 'htmx.org';
 import _hyperscript from 'hyperscript.org';
 import { Modal, Toast, Tooltip } from 'bootstrap';
-import { wsconnect, JSONCodec } from '@nats-io/nats-core';
+import { wsconnect } from '@nats-io/nats-core';
 
 _hyperscript.browserInit();
 
@@ -11,8 +11,6 @@ window.app = Object.assign({}, window.app, {
 	showConfirmModal,
 	showToastMessage
 });
-
-const codec = JSONCodec();
 
 document.addEventListener('DOMContentLoaded', async (_event) => {
 	initBootstrap();
@@ -90,7 +88,7 @@ function handleMsg(msg) {
 }
 
 function handleTaskExpiringMsg(msg) {
-	const data = codec.decode(msg.data);
+	const data = msg.json();
 	showToastMessage({
 		type: 'warning',
 		title: 'Task Expiring',
@@ -99,7 +97,7 @@ function handleTaskExpiringMsg(msg) {
 }
 
 function handleTaskExpiredMsg(msg) {
-	const data = codec.decode(msg.data);
+	const data = msg.json();
 	showToastMessage({
 		type: 'error',
 		title: 'Task Expired',

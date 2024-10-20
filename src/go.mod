@@ -6,12 +6,12 @@ require (
 	github.com/caarlos0/env/v9 v9.0.0
 	github.com/gorilla/csrf v1.7.2
 	github.com/jackc/pgx/v5 v5.7.1
-	github.com/nats-io/jwt/v2 v2.7.0
+	github.com/nats-io/jwt/v2 v2.7.2
 	github.com/nats-io/nats.go v1.37.0
 	github.com/nats-io/nkeys v0.4.7
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
-	github.com/wneessen/go-mail v0.5.0
-	github.com/xuri/excelize/v2 v2.8.1
+	github.com/wneessen/go-mail v0.5.1
+	github.com/xuri/excelize/v2 v2.9.0
 	github.com/zitadel/oidc/v3 v3.30.1
 	github.com/zitadel/zitadel-go/v3 v3.2.0
 	golang.org/x/sync v0.8.0
@@ -31,10 +31,10 @@ require (
 	github.com/muhlemmer/gu v0.3.1 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
-	github.com/richardlehane/msoleps v1.0.3 // indirect
+	github.com/richardlehane/msoleps v1.0.4 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/xuri/efp v0.0.0-20231025114914-d1ff6096ae53 // indirect
-	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
+	github.com/xuri/efp v0.0.0-20240408161823-9ad904a10d6d // indirect
+	github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7 // indirect
 	github.com/zitadel/logging v0.6.1 // indirect
 	github.com/zitadel/schema v1.3.0 // indirect
 	go.opentelemetry.io/otel v1.29.0 // indirect
@@ -42,7 +42,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	golang.org/x/crypto v0.28.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
-	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.19.0 // indirect

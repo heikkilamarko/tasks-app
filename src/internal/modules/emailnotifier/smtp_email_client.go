@@ -40,7 +40,7 @@ func (c *SMTPEmailClient) SendEmail(ctx context.Context, to string, subject stri
 	if c.Config.EmailNotifier.SMTPPort == 25 {
 		o = append(o,
 			mail.WithTLSPortPolicy(mail.NoTLS),
-			mail.WithSMTPAuth(mail.SMTPAuthCustom),
+			mail.WithSMTPAuth(mail.SMTPAuthNoAuth),
 		)
 	} else {
 		o = append(o,
