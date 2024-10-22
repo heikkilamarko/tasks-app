@@ -3,7 +3,7 @@ services:
     build:
       context: ../../src
       args:
-        GOARCH: amd64
+        GOARCH: arm64
     image: tasks-app/tasks-app
     deploy:
       restart_policy:

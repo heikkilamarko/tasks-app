@@ -6,7 +6,7 @@ COPY internal/modules/ui/web/ .
 RUN npm run build
 
 FROM golang:1.23 AS build
-ARG GOARCH=amd64
+ARG GOARCH=arm64
 COPY . .
 COPY --from=build-ui /app/dist/ ./internal/modules/ui/
 ENV GOPATH=""

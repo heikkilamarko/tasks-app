@@ -3,7 +3,7 @@ services:
     build:
       context: ../../src
       args:
-        GOARCH: amd64
+        GOARCH: arm64
     image: tasks-app/tasks-app
     deploy:
       restart_policy:
@@ -25,7 +25,7 @@ services:
     build:
       context: ../../src
       args:
-        GOARCH: amd64
+        GOARCH: arm64
     image: tasks-app/tasks-app-taskchecker
     deploy:
       restart_policy:
@@ -47,7 +47,7 @@ services:
     build:
       context: ../../src
       args:
-        GOARCH: amd64
+        GOARCH: arm64
     image: tasks-app/tasks-app-emailnotifier
     deploy:
       replicas: 2
