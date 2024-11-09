@@ -90,7 +90,7 @@ services:
       - tasks-app
 
   nats-2:
-    build: ../../infra/nats
+    # build: ../../infra/nats
     image: tasks-app/nats
     deploy:
       restart_policy:
@@ -104,7 +104,7 @@ services:
       - tasks-app
 
   nats-3:
-    build: ../../infra/nats
+    # build: ../../infra/nats
     image: tasks-app/nats
     deploy:
       restart_policy:
