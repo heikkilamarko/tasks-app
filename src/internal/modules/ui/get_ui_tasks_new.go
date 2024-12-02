@@ -7,21 +7,23 @@ import (
 )
 
 type GetUITasksNew struct {
-	TaskRepository shared.TaskRepository
-	Renderer       Renderer
-	Logger         *slog.Logger
+	TxProvider shared.TxProvider
+	Renderer   Renderer
+	Logger     *slog.Logger
 }
 
 func (h *GetUITasksNew) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.TaskRepository.GetActive(r.Context(), 0, 50)
-	if err != nil {
-		h.Logger.Error("get tasks", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
+	h.TxProvider.Transact(func(adapters shared.TxAdapters) error {
+		tasks, err := adapters.TaskRepository.GetActive(r.Context(), 0, 50)
+		if err != nil {
+			h.Logger.Error("get tasks", "error", err)
+			http.Error(w, "", http.StatusInternalServerError)
+			return nil
+		}
 
-	vm := NewTasksResponse(r, tasks)
-	vm.IsCreatingNew = true
+		vm := NewTasksResponse(r, tasks)
+		vm.IsCreatingNew = true
 
-	h.Renderer.Render(w, "active_tasks_table.html", vm)
+		return h.Renderer.Render(w, "active_tasks_table.html", vm)
+	})
 }

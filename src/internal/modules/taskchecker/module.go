@@ -12,7 +12,7 @@ import (
 type Module struct {
 	Config          *shared.Config
 	Logger          *slog.Logger
-	TaskRepository  shared.TaskRepository
+	TxProvider      shared.TxProvider
 	MessagingClient shared.MessagingClient
 }
 
@@ -48,70 +48,76 @@ func (m *Module) checkTasks(ctx context.Context) (err error) {
 func (m *Module) checkCompletedTasks(ctx context.Context) error {
 	m.Logger.Info("check completed tasks")
 
-	count, err := m.TaskRepository.DeleteCompleted(ctx, m.Config.TaskChecker.DeleteWindow)
-	if err != nil {
-		return err
-	}
+	return m.TxProvider.Transact(func(adapters shared.TxAdapters) error {
+		count, err := adapters.TaskRepository.DeleteCompleted(ctx, m.Config.TaskChecker.DeleteWindow)
+		if err != nil {
+			return err
+		}
 
-	if 0 < count {
-		m.Logger.Info("found completed tasks", slog.Int64("count", count))
-	}
+		if 0 < count {
+			m.Logger.Info("found completed tasks", slog.Int64("count", count))
+		}
 
-	return nil
+		return nil
+	})
 }
 
 func (m *Module) checkExpiringTasks(ctx context.Context) error {
 	m.Logger.Info("check expiring tasks")
 
-	tasks, err := m.TaskRepository.GetExpiring(ctx, m.Config.TaskChecker.ExpiringWindow)
-	if err != nil {
-		return err
-	}
-
-	count := len(tasks)
-	if 0 < count {
-		m.Logger.Info("found expiring tasks", slog.Int("count", count))
-	}
-
-	var errs []error
-	for _, task := range tasks {
-		if err := m.MessagingClient.SendPersistent(ctx, fmt.Sprintf("task.%s.%d.expiring", task.UserID, task.ID), shared.TaskExpiringMsg{Task: task}); err != nil {
-			errs = append(errs, err)
-			continue
+	return m.TxProvider.Transact(func(adapters shared.TxAdapters) error {
+		tasks, err := adapters.TaskRepository.GetExpiring(ctx, m.Config.TaskChecker.ExpiringWindow)
+		if err != nil {
+			return err
 		}
 
-		task.SetExpiringInfoAt()
-		err := m.TaskRepository.Update(ctx, task)
-		errs = append(errs, err)
-	}
+		count := len(tasks)
+		if 0 < count {
+			m.Logger.Info("found expiring tasks", slog.Int("count", count))
+		}
 
-	return errors.Join(errs...)
+		var errs []error
+		for _, task := range tasks {
+			if err := m.MessagingClient.SendPersistent(ctx, fmt.Sprintf("task.%s.%d.expiring", task.UserID, task.ID), shared.TaskExpiringMsg{Task: task}); err != nil {
+				errs = append(errs, err)
+				continue
+			}
+
+			task.SetExpiringInfoAt()
+			err := adapters.TaskRepository.Update(ctx, task)
+			errs = append(errs, err)
+		}
+
+		return errors.Join(errs...)
+	})
 }
 
 func (m *Module) checkExpiredTasks(ctx context.Context) error {
 	m.Logger.Info("check expired tasks")
 
-	tasks, err := m.TaskRepository.GetExpired(ctx)
-	if err != nil {
-		return err
-	}
-
-	count := len(tasks)
-	if 0 < count {
-		m.Logger.Info("found expired tasks", slog.Int("count", count))
-	}
-
-	var errs []error
-	for _, task := range tasks {
-		if err := m.MessagingClient.SendPersistent(ctx, fmt.Sprintf("task.%s.%d.expired", task.UserID, task.ID), shared.TaskExpiredMsg{Task: task}); err != nil {
-			errs = append(errs, err)
-			continue
+	return m.TxProvider.Transact(func(adapters shared.TxAdapters) error {
+		tasks, err := adapters.TaskRepository.GetExpired(ctx)
+		if err != nil {
+			return err
 		}
 
-		task.SetExpiredInfoAt()
-		err := m.TaskRepository.Update(ctx, task)
-		errs = append(errs, err)
-	}
+		count := len(tasks)
+		if 0 < count {
+			m.Logger.Info("found expired tasks", slog.Int("count", count))
+		}
 
-	return errors.Join(errs...)
+		var errs []error
+		for _, task := range tasks {
+			if err := m.MessagingClient.SendPersistent(ctx, fmt.Sprintf("task.%s.%d.expired", task.UserID, task.ID), shared.TaskExpiredMsg{Task: task}); err != nil {
+				errs = append(errs, err)
+				continue
+			}
+
+			task.SetExpiredInfoAt()
+			err := adapters.TaskRepository.Update(ctx, task)
+			errs = append(errs, err)
+		}
+
+		return errors.Join(errs...)
+	})
 }

@@ -2,24 +2,21 @@ package shared
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"time"
 )
 
 type PostgresTaskRepository struct {
-	db *sql.DB
+	db DB
 }
 
 var _ TaskRepository = (*PostgresTaskRepository)(nil)
 
-func NewPostgresTaskRepository(db *sql.DB) *PostgresTaskRepository {
+func NewPostgresTaskRepository(db DB) *PostgresTaskRepository {
 	return &PostgresTaskRepository{db}
 }
 
 func (repo *PostgresTaskRepository) Create(ctx context.Context, task *Task) error {
-	db := repo.getDB(ctx)
-
 	user, err := GetUserContext(ctx)
 	if err != nil {
 		return err
@@ -33,7 +30,7 @@ func (repo *PostgresTaskRepository) Create(ctx context.Context, task *Task) erro
 		RETURNING id
 	`
 
-	return db.QueryRowContext(
+	return repo.db.QueryRowContext(
 		ctx,
 		query,
 		user.ID, task.Name, task.ExpiresAt, task.ExpiringInfoAt, task.ExpiredInfoAt, task.CreatedAt, task.UpdatedAt, task.CompletedAt,
@@ -41,8 +38,6 @@ func (repo *PostgresTaskRepository) Create(ctx context.Context, task *Task) erro
 }
 
 func (repo *PostgresTaskRepository) Update(ctx context.Context, task *Task) error {
-	db := repo.getDB(ctx)
-
 	user, _ := GetUserContext(ctx)
 
 	query := `
@@ -64,13 +59,11 @@ func (repo *PostgresTaskRepository) Update(ctx context.Context, task *Task) erro
 		args = append(args, user.ID)
 	}
 
-	_, err := db.ExecContext(ctx, query, args...)
+	_, err := repo.db.ExecContext(ctx, query, args...)
 	return err
 }
 
 func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskID int, inserted []string, deleted map[int]string) error {
-	db := repo.getDB(ctx)
-
 	now := time.Now().UTC()
 
 	query := `
@@ -81,7 +74,7 @@ func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskI
 	`
 
 	for _, name := range inserted {
-		if _, err := db.ExecContext(ctx, query, taskID, name, now); err != nil {
+		if _, err := repo.db.ExecContext(ctx, query, taskID, name, now); err != nil {
 			return err
 		}
 	}
@@ -92,7 +85,7 @@ func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskI
 	`
 
 	for id := range deleted {
-		if _, err := db.ExecContext(ctx, query, id); err != nil {
+		if _, err := repo.db.ExecContext(ctx, query, id); err != nil {
 			return err
 		}
 	}
@@ -101,8 +94,6 @@ func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskI
 }
 
 func (repo *PostgresTaskRepository) Delete(ctx context.Context, id int) error {
-	db := repo.getDB(ctx)
-
 	user, _ := GetUserContext(ctx)
 
 	query := `
@@ -116,7 +107,7 @@ func (repo *PostgresTaskRepository) Delete(ctx context.Context, id int) error {
 		args = append(args, user.ID)
 	}
 
-	_, err := db.ExecContext(ctx, query, args...)
+	_, err := repo.db.ExecContext(ctx, query, args...)
 	return err
 }
 
@@ -238,8 +229,6 @@ func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, er
 }
 
 func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.Duration) (int64, error) {
-	db := repo.getDB(ctx)
-
 	user, _ := GetUserContext(ctx)
 
 	t := time.Now().UTC().Add(-d)
@@ -256,7 +245,7 @@ func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.
 		args = append(args, user.ID)
 	}
 
-	result, err := db.ExecContext(ctx, query, args...)
+	result, err := repo.db.ExecContext(ctx, query, args...)
 	if err != nil {
 		return 0, err
 	}
@@ -270,8 +259,6 @@ func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.
 }
 
 func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, orderBy string, args ...any) ([]*Task, error) {
-	db := repo.getDB(ctx)
-
 	var tasks []*Task
 
 	query := fmt.Sprintf(`
@@ -295,7 +282,7 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 		%s
 	`, where, orderBy)
 
-	rows, err := db.QueryContext(ctx, query, args...)
+	rows, err := repo.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -327,11 +314,4 @@ func (repo *PostgresTaskRepository) getTasks(ctx context.Context, where string, 
 	}
 
 	return tasks, nil
-}
-
-func (repo *PostgresTaskRepository) getDB(ctx context.Context) SQLTx {
-	if tx := GetSQLTx(ctx); tx != nil {
-		return tx
-	}
-	return repo.db
 }

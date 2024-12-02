@@ -31,8 +31,7 @@ func (a *App) createServices(ctx context.Context) error {
 	}
 
 	if a.Config.IsServiceEnabled(AppServiceDBPostgres) {
-		a.TxManager = shared.NewSQLTxManager(a.DB)
-		a.TaskRepository = shared.NewPostgresTaskRepository(a.DB)
+		a.TxProvider = shared.NewSQLTxProvider(a.DB)
 	}
 
 	if a.Config.IsServiceEnabled(AppServiceAttachmentsNATS) {

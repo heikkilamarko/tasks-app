@@ -1,13 +1,14 @@
 package ui
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"tasks-app/internal/shared"
 )
 
 type GetUITaskAttachment struct {
-	TaskRepository            shared.TaskRepository
+	TxProvider                shared.TxProvider
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
 	Logger                    *slog.Logger
 }
@@ -20,15 +21,22 @@ func (h *GetUITaskAttachment) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	task, err := h.TaskRepository.GetByID(r.Context(), req.ID)
-	if err != nil {
-		h.Logger.Error("get task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
+	h.TxProvider.Transact(func(adapters shared.TxAdapters) error {
+		task, err := adapters.TaskRepository.GetByID(r.Context(), req.ID)
+		if err != nil {
+			h.Logger.Error("get task", "error", err)
+			http.Error(w, "", http.StatusInternalServerError)
+			return err
+		}
 
-	if task == nil {
-		http.Error(w, "task not found", http.StatusNotFound)
+		if task == nil {
+			http.Error(w, "task not found", http.StatusNotFound)
+			return errors.New("task not found")
+		}
+
+		return nil
+	})
+	if err != nil {
 		return
 	}
 

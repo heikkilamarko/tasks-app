@@ -16,8 +16,8 @@
 		"hyperscript.org": "0.9.13"
 	},
 	"devDependencies": {
-		"prettier": "3.3.3",
+		"prettier": "3.4.1",
 		"prettier-plugin-go-template": "0.0.15",
-		"vite": "5.4.11"
+		"vite": "6.0.2"
 	}
 }

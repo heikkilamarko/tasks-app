@@ -25,8 +25,7 @@ func (a *App) createModules() error {
 			Config:                    a.Config,
 			Logger:                    logger,
 			NATSConn:                  a.NATSConn,
-			TxManager:                 a.TxManager,
-			TaskRepository:            a.TaskRepository,
+			TxProvider:                a.TxProvider,
 			TaskAttachmentsRepository: a.TaskAttachmentsRepository,
 			FileExporter: &shared.ExcelFileExporter{
 				Logger: logger,
@@ -40,7 +39,7 @@ func (a *App) createModules() error {
 		modules[AppModuleTaskChecker] = &taskchecker.Module{
 			Config:          a.Config,
 			Logger:          logger,
-			TaskRepository:  a.TaskRepository,
+			TxProvider:      a.TxProvider,
 			MessagingClient: a.MessagingClient,
 		}
 	}

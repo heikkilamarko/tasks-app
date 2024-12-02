@@ -17,8 +17,7 @@ type App struct {
 	Config                    *shared.Config
 	DB                        *sql.DB
 	NATSConn                  *nats.Conn
-	TxManager                 shared.TxManager
-	TaskRepository            shared.TaskRepository
+	TxProvider                shared.TxProvider
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
 	MessagingClient           shared.MessagingClient
 	Modules                   map[string]shared.AppModule

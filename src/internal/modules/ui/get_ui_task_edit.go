@@ -7,9 +7,9 @@ import (
 )
 
 type GetUITaskEdit struct {
-	TaskRepository shared.TaskRepository
-	Renderer       Renderer
-	Logger         *slog.Logger
+	TxProvider shared.TxProvider
+	Renderer   Renderer
+	Logger     *slog.Logger
 }
 
 func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -20,19 +20,21 @@ func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := h.TaskRepository.GetByID(r.Context(), req.ID)
-	if err != nil {
-		h.Logger.Error("get task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
+	h.TxProvider.Transact(func(adapters shared.TxAdapters) error {
+		task, err := adapters.TaskRepository.GetByID(r.Context(), req.ID)
+		if err != nil {
+			h.Logger.Error("get task", "error", err)
+			http.Error(w, "", http.StatusInternalServerError)
+			return nil
+		}
 
-	if task == nil {
-		http.Error(w, "task not found", http.StatusNotFound)
-		return
-	}
+		if task == nil {
+			http.Error(w, "task not found", http.StatusNotFound)
+			return nil
+		}
 
-	vm := NewTaskResponse(r, task)
+		vm := NewTaskResponse(r, task)
 
-	h.Renderer.Render(w, "active_tasks_table_row_edit.html", vm)
+		return h.Renderer.Render(w, "active_tasks_table_row_edit.html", vm)
+	})
 }

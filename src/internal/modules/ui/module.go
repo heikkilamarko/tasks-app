@@ -18,8 +18,7 @@ type Module struct {
 	NATSConn                  *nats.Conn
 	Auth                      *Auth
 	Renderer                  Renderer
-	TxManager                 shared.TxManager
-	TaskRepository            shared.TaskRepository
+	TxProvider                shared.TxProvider
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
 	FileExporter              shared.FileExporter
 }
@@ -47,22 +46,22 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "GET /ui/auth/callback", m.Auth.CallbackHandler())
 	HandleWithMiddleware(mux, "GET /ui/auth/logout", m.Auth.LogoutHandler())
 	HandleWithMiddleware(mux, "GET /ui/static/", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
-	HandleWithMiddleware(mux, "GET /ui", &GetUI{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW, loginMW)
+	HandleWithMiddleware(mux, "GET /ui", &GetUI{m.TxProvider, m.Renderer, m.Logger}, authnMW, userMW, loginMW)
 	HandleWithMiddleware(mux, "POST /ui/language", &PostUILanguage{m.Config, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "POST /ui/theme", &PostUITheme{m.Config, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "POST /ui/timezone", &PostUITimezone{m.Config, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/tasks", &GetUITasks{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/tasks/export", &GetUITasksExport{m.TaskRepository, m.FileExporter, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/tasks/new", &GetUITasksNew{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/tasks/{id}", &GetUITask{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/edit", &GetUITaskEdit{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/attachments/{name}", &GetUITaskAttachment{m.TaskRepository, m.TaskAttachmentsRepository, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "POST /ui/tasks", &PostUITasks{m.TxManager, m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "POST /ui/tasks/{id}/complete", &PostUITaskComplete{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "PUT /ui/tasks/{id}", &PutUITask{m.TxManager, m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "DELETE /ui/tasks/{id}", &DeleteUITask{m.TxManager, m.TaskRepository, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/completed", &GetUICompleted{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/completed/tasks", &GetUICompletedTasks{m.TaskRepository, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/tasks", &GetUITasks{m.TxProvider, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/tasks/export", &GetUITasksExport{m.TxProvider, m.FileExporter, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/tasks/new", &GetUITasksNew{m.TxProvider, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/tasks/{id}", &GetUITask{m.TxProvider, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/edit", &GetUITaskEdit{m.TxProvider, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/tasks/{id}/attachments/{name}", &GetUITaskAttachment{m.TxProvider, m.TaskAttachmentsRepository, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "POST /ui/tasks", &PostUITasks{m.TxProvider, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "POST /ui/tasks/{id}/complete", &PostUITaskComplete{m.TxProvider, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "PUT /ui/tasks/{id}", &PutUITask{m.TxProvider, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "DELETE /ui/tasks/{id}", &DeleteUITask{m.TxProvider, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/completed", &GetUICompleted{m.TxProvider, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/completed/tasks", &GetUICompletedTasks{m.TxProvider, m.Renderer, m.Logger}, authnMW, userMW)
 
 	server := &http.Server{
 		ReadTimeout:  60 * time.Second,
