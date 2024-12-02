@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"errors"
 	"log/slog"
 	"net/http"
 	"tasks-app/internal/shared"
@@ -26,32 +25,29 @@ func (h *GetUITaskAttachment) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			h.Logger.Error("get task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
-			return err
+			return nil
 		}
 
 		if task == nil {
 			http.Error(w, "task not found", http.StatusNotFound)
-			return errors.New("task not found")
+			return nil
 		}
+
+		data, err := h.TaskAttachmentsRepository.GetAttachment(r.Context(), req.ID, req.Name)
+		if err != nil {
+			h.Logger.Error("get task attachment", "error", err)
+			http.Error(w, "", http.StatusInternalServerError)
+			return nil
+		}
+
+		if len(data) == 0 {
+			http.Error(w, "task attachment not found", http.StatusNotFound)
+			return nil
+		}
+
+		w.Header().Set("Content-Type", http.DetectContentType(data))
+		w.Write(data)
 
 		return nil
 	})
-	if err != nil {
-		return
-	}
-
-	data, err := h.TaskAttachmentsRepository.GetAttachment(r.Context(), req.ID, req.Name)
-	if err != nil {
-		h.Logger.Error("get task attachment", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-
-	if len(data) == 0 {
-		http.Error(w, "task attachment not found", http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", http.DetectContentType(data))
-	w.Write(data)
 }
