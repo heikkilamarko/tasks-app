@@ -25,30 +25,24 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
 		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
-		return err
-	})
+		if err != nil {
+			return err
+		}
 
-	if err != nil {
-		h.Logger.Error("get task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
+		task.Update(req.Name, req.ExpiresAt)
 
-	if task == nil {
-		http.Error(w, "task not found", http.StatusNotFound)
-		return
-	}
+		attachments := BuildAttachmentsUpdate(task.Attachments, req.Attachments.Names)
 
-	task.Update(req.Name, req.ExpiresAt)
-
-	attachments := BuildAttachmentsUpdate(task.Attachments, req.Attachments.Names)
-
-	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
 		if err := txc.TaskRepository.Update(r.Context(), task); err != nil {
 			return err
 		}
 
 		if err := txc.TaskRepository.UpdateAttachments(r.Context(), task.ID, attachments.Inserted, attachments.Deleted); err != nil {
+			return err
+		}
+
+		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
+		if err != nil {
 			return err
 		}
 
@@ -60,19 +54,12 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		h.Logger.Error("update task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-
-	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
-		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
-		return err
-	})
-
-	if err != nil {
-		h.Logger.Error("get task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
+		if err == shared.ErrNotFound {
+			http.Error(w, "task not found", http.StatusNotFound)
+		} else {
+			h.Logger.Error("update task", "error", err)
+			http.Error(w, "", http.StatusInternalServerError)
+		}
 		return
 	}
 

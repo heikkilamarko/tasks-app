@@ -9,7 +9,7 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"@nats-io/nats-core": "3.0.0-45",
+		"@nats-io/nats-core": "3.0.0-46",
 		"@popperjs/core": "2.11.8",
 		"bootstrap": "5.3.3",
 		"htmx.org": "next",

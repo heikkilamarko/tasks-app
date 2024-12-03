@@ -28,13 +28,12 @@ func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		h.Logger.Error("get task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-
-	if task == nil {
-		http.Error(w, "task not found", http.StatusNotFound)
+		if err == shared.ErrNotFound {
+			http.Error(w, "task not found", http.StatusNotFound)
+		} else {
+			h.Logger.Error("get task", "error", err)
+			http.Error(w, "", http.StatusInternalServerError)
+		}
 		return
 	}
 

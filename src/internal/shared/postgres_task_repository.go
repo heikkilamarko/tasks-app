@@ -130,7 +130,7 @@ func (repo *PostgresTaskRepository) GetByID(ctx context.Context, id int) (*Task,
 	}
 
 	if len(tasks) == 0 {
-		return nil, nil
+		return nil, ErrNotFound
 	}
 
 	return tasks[0], nil

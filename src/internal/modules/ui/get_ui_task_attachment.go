@@ -20,21 +20,18 @@ func (h *GetUITaskAttachment) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var task *shared.Task
-
 	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
-		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
+		_, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
 		return err
 	})
 
 	if err != nil {
-		h.Logger.Error("get task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-
-	if task == nil {
-		http.Error(w, "task not found", http.StatusNotFound)
+		if err == shared.ErrNotFound {
+			http.Error(w, "task not found", http.StatusNotFound)
+		} else {
+			h.Logger.Error("get task", "error", err)
+			http.Error(w, "", http.StatusInternalServerError)
+		}
 		return
 	}
 

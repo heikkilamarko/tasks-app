@@ -21,25 +21,11 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task *shared.Task
-
 	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
-		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
-		return err
-	})
+		if _, err := txc.TaskRepository.GetByID(r.Context(), req.ID); err != nil {
+			return err
+		}
 
-	if err != nil {
-		h.Logger.Error("get task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-
-	if task == nil {
-		http.Error(w, "task not found", http.StatusNotFound)
-		return
-	}
-
-	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
 		if err = txc.TaskRepository.Delete(r.Context(), req.ID); err != nil {
 			return err
 		}
@@ -48,8 +34,12 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		h.Logger.Error("delete task", "error", err)
-		http.Error(w, "", http.StatusInternalServerError)
+		if err == shared.ErrNotFound {
+			http.Error(w, "task not found", http.StatusNotFound)
+		} else {
+			h.Logger.Error("delete task", "error", err)
+			http.Error(w, "", http.StatusInternalServerError)
+		}
 		return
 	}
 
