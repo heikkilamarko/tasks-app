@@ -64,7 +64,7 @@ func (repo *PostgresTaskRepository) Update(ctx context.Context, task *Task) erro
 }
 
 func (repo *PostgresTaskRepository) UpdateAttachments(ctx context.Context, taskID int, inserted []string, deleted map[int]string) error {
-	now := time.Now().UTC()
+	now := UTCNow()
 
 	query := `
 		INSERT INTO attachment
@@ -183,7 +183,7 @@ func (repo *PostgresTaskRepository) GetCompleted(ctx context.Context, offset int
 func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Duration) ([]*Task, error) {
 	user, _ := GetUserContext(ctx)
 
-	t1 := time.Now().UTC()
+	t1 := UTCNow()
 	t2 := t1.Add(d)
 
 	where := `
@@ -208,7 +208,7 @@ func (repo *PostgresTaskRepository) GetExpiring(ctx context.Context, d time.Dura
 func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, error) {
 	user, _ := GetUserContext(ctx)
 
-	now := time.Now().UTC()
+	now := UTCNow()
 
 	where := `
 		WHERE t.completed_at IS NULL
@@ -231,7 +231,7 @@ func (repo *PostgresTaskRepository) GetExpired(ctx context.Context) ([]*Task, er
 func (repo *PostgresTaskRepository) DeleteCompleted(ctx context.Context, d time.Duration) (int64, error) {
 	user, _ := GetUserContext(ctx)
 
-	t := time.Now().UTC().Add(-d)
+	t := UTCNow().Add(-d)
 
 	query := `
 		DELETE FROM task

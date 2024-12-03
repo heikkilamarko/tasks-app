@@ -39,7 +39,7 @@ type TaskExpiredMsg struct {
 }
 
 func NewTask(name string, expiresAt *time.Time) *Task {
-	now := time.Now().UTC()
+	now := UTCNow()
 
 	return &Task{
 		Name:      name,
@@ -49,7 +49,7 @@ func NewTask(name string, expiresAt *time.Time) *Task {
 }
 
 func (t *Task) Update(name string, expiresAt *time.Time) {
-	now := time.Now().UTC()
+	now := UTCNow()
 
 	t.Name = name
 	t.ExpiresAt = expiresAt
@@ -59,21 +59,21 @@ func (t *Task) Update(name string, expiresAt *time.Time) {
 }
 
 func (t *Task) SetExpiringInfoAt() {
-	now := time.Now().UTC()
+	now := UTCNow()
 
 	t.ExpiringInfoAt = &now
 	t.UpdatedAt = &now
 }
 
 func (t *Task) SetExpiredInfoAt() {
-	now := time.Now().UTC()
+	now := UTCNow()
 
 	t.ExpiredInfoAt = &now
 	t.UpdatedAt = &now
 }
 
 func (t *Task) SetCompleted() {
-	now := time.Now().UTC()
+	now := UTCNow()
 
 	t.CompletedAt = &now
 	t.UpdatedAt = &now
