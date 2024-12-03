@@ -20,34 +20,36 @@ func (h *GetUITaskAttachment) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	h.TxManager.RunInTx(func(txc shared.TxContext) error {
-		task, err := txc.TaskRepository.GetByID(r.Context(), req.ID)
-		if err != nil {
-			h.Logger.Error("get task", "error", err)
-			http.Error(w, "", http.StatusInternalServerError)
-			return nil
-		}
+	var task *shared.Task
 
-		if task == nil {
-			http.Error(w, "task not found", http.StatusNotFound)
-			return nil
-		}
-
-		data, err := h.TaskAttachmentsRepository.GetAttachment(r.Context(), req.ID, req.Name)
-		if err != nil {
-			h.Logger.Error("get task attachment", "error", err)
-			http.Error(w, "", http.StatusInternalServerError)
-			return nil
-		}
-
-		if len(data) == 0 {
-			http.Error(w, "task attachment not found", http.StatusNotFound)
-			return nil
-		}
-
-		w.Header().Set("Content-Type", http.DetectContentType(data))
-		w.Write(data)
-
-		return nil
+	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
+		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
+		return err
 	})
+
+	if err != nil {
+		h.Logger.Error("get task", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	if task == nil {
+		http.Error(w, "task not found", http.StatusNotFound)
+		return
+	}
+
+	data, err := h.TaskAttachmentsRepository.GetAttachment(r.Context(), req.ID, req.Name)
+	if err != nil {
+		h.Logger.Error("get task attachment", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	if len(data) == 0 {
+		http.Error(w, "task attachment not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", http.DetectContentType(data))
+	w.Write(data)
 }

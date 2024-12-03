@@ -14,11 +14,11 @@ type GetUITasksExport struct {
 }
 
 func (h *GetUITasksExport) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.TxManager.RunInTx(func(txc shared.TxContext) error {
-		var name string
-		var tasks []*shared.Task
-		var err error
+	var name string
+	var tasks []*shared.Task
+	var err error
 
+	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
 		switch r.FormValue("filter") {
 		case "active":
 			name = "active_tasks"
@@ -33,18 +33,17 @@ func (h *GetUITasksExport) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			tasks, err = append(tasks1, tasks2...), errors.Join(err1, err2)
 		}
 
-		if err != nil {
-			h.Logger.Error("get tasks", "error", err)
-			http.Error(w, "", http.StatusInternalServerError)
-			return nil
-		}
-
-		if err := h.FileExporter.ExportTasks(w, tasks, name); err != nil {
-			h.Logger.Error("export tasks", "error", err)
-			http.Error(w, "", http.StatusInternalServerError)
-			return nil
-		}
-
-		return nil
+		return err
 	})
+
+	if err != nil {
+		h.Logger.Error("get tasks", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	if err = h.FileExporter.ExportTasks(w, tasks, name); err != nil {
+		h.Logger.Error("export tasks", "error", err)
+		http.Error(w, "", http.StatusInternalServerError)
+	}
 }
