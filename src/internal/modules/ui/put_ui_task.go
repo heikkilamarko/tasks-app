@@ -24,8 +24,7 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var task *shared.Task
 
 	err = h.TxManager.RunInTx(func(txc shared.TxContext) error {
-		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
-		if err != nil {
+		if task, err = txc.TaskRepository.GetByID(r.Context(), req.ID); err != nil {
 			return err
 		}
 
@@ -41,8 +40,7 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
-		if err != nil {
+		if task, err = txc.TaskRepository.GetByID(r.Context(), req.ID); err != nil {
 			return err
 		}
 
