@@ -12,7 +12,7 @@ import (
 type Module struct {
 	Config          *shared.Config
 	Logger          *slog.Logger
-	TxProvider      shared.TxProvider
+	TxManager       shared.TxManager
 	MessagingClient shared.MessagingClient
 }
 
@@ -48,8 +48,8 @@ func (m *Module) checkTasks(ctx context.Context) (err error) {
 func (m *Module) checkCompletedTasks(ctx context.Context) error {
 	m.Logger.Info("check completed tasks")
 
-	return m.TxProvider.Transact(func(adapters shared.TxAdapters) error {
-		count, err := adapters.TaskRepository.DeleteCompleted(ctx, m.Config.TaskChecker.DeleteWindow)
+	return m.TxManager.RunInTx(func(txc shared.TxContext) error {
+		count, err := txc.TaskRepository.DeleteCompleted(ctx, m.Config.TaskChecker.DeleteWindow)
 		if err != nil {
 			return err
 		}
@@ -65,8 +65,8 @@ func (m *Module) checkCompletedTasks(ctx context.Context) error {
 func (m *Module) checkExpiringTasks(ctx context.Context) error {
 	m.Logger.Info("check expiring tasks")
 
-	return m.TxProvider.Transact(func(adapters shared.TxAdapters) error {
-		tasks, err := adapters.TaskRepository.GetExpiring(ctx, m.Config.TaskChecker.ExpiringWindow)
+	return m.TxManager.RunInTx(func(txc shared.TxContext) error {
+		tasks, err := txc.TaskRepository.GetExpiring(ctx, m.Config.TaskChecker.ExpiringWindow)
 		if err != nil {
 			return err
 		}
@@ -84,7 +84,7 @@ func (m *Module) checkExpiringTasks(ctx context.Context) error {
 			}
 
 			task.SetExpiringInfoAt()
-			err := adapters.TaskRepository.Update(ctx, task)
+			err := txc.TaskRepository.Update(ctx, task)
 			errs = append(errs, err)
 		}
 
@@ -95,8 +95,8 @@ func (m *Module) checkExpiringTasks(ctx context.Context) error {
 func (m *Module) checkExpiredTasks(ctx context.Context) error {
 	m.Logger.Info("check expired tasks")
 
-	return m.TxProvider.Transact(func(adapters shared.TxAdapters) error {
-		tasks, err := adapters.TaskRepository.GetExpired(ctx)
+	return m.TxManager.RunInTx(func(txc shared.TxContext) error {
+		tasks, err := txc.TaskRepository.GetExpired(ctx)
 		if err != nil {
 			return err
 		}
@@ -114,7 +114,7 @@ func (m *Module) checkExpiredTasks(ctx context.Context) error {
 			}
 
 			task.SetExpiredInfoAt()
-			err := adapters.TaskRepository.Update(ctx, task)
+			err := txc.TaskRepository.Update(ctx, task)
 			errs = append(errs, err)
 		}
 

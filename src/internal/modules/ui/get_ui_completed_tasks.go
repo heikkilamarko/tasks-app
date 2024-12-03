@@ -7,14 +7,14 @@ import (
 )
 
 type GetUICompletedTasks struct {
-	TxProvider shared.TxProvider
-	Renderer   Renderer
-	Logger     *slog.Logger
+	TxManager shared.TxManager
+	Renderer  Renderer
+	Logger    *slog.Logger
 }
 
 func (h *GetUICompletedTasks) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.TxProvider.Transact(func(adapters shared.TxAdapters) error {
-		tasks, err := adapters.TaskRepository.GetCompleted(r.Context(), 0, 50)
+	h.TxManager.RunInTx(func(txc shared.TxContext) error {
+		tasks, err := txc.TaskRepository.GetCompleted(r.Context(), 0, 50)
 		if err != nil {
 			h.Logger.Error("get completed tasks", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)

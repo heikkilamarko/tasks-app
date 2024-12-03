@@ -7,7 +7,7 @@ import (
 )
 
 type PutUITask struct {
-	TxProvider                shared.TxProvider
+	TxManager                 shared.TxManager
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
 	Renderer                  Renderer
 	Logger                    *slog.Logger
@@ -21,8 +21,8 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.TxProvider.Transact(func(adapters shared.TxAdapters) error {
-		task, err := adapters.TaskRepository.GetByID(r.Context(), req.ID)
+	h.TxManager.RunInTx(func(txc shared.TxContext) error {
+		task, err := txc.TaskRepository.GetByID(r.Context(), req.ID)
 		if err != nil {
 			h.Logger.Error("get task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
@@ -38,13 +38,13 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		attachments := BuildAttachmentsUpdate(task.Attachments, req.Attachments.Names)
 
-		if err := adapters.TaskRepository.Update(r.Context(), task); err != nil {
+		if err := txc.TaskRepository.Update(r.Context(), task); err != nil {
 			h.Logger.Error("update task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
 			return nil
 		}
 
-		if err := adapters.TaskRepository.UpdateAttachments(r.Context(), task.ID, attachments.Inserted, attachments.Deleted); err != nil {
+		if err := txc.TaskRepository.UpdateAttachments(r.Context(), task.ID, attachments.Inserted, attachments.Deleted); err != nil {
 			h.Logger.Error("update task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
 			return nil
@@ -62,7 +62,7 @@ func (h *PutUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
-		task, err = adapters.TaskRepository.GetByID(r.Context(), req.ID)
+		task, err = txc.TaskRepository.GetByID(r.Context(), req.ID)
 		if err != nil {
 			h.Logger.Error("get task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)

@@ -13,30 +13,12 @@ type DB interface {
 	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 }
 
-type TxAdapters struct {
+type TxContext struct {
 	TaskRepository TaskRepository
 }
 
-type TxProvider interface {
-	Transact(txFunc func(adapters TxAdapters) error) error
-}
-
-type SQLTxProvider struct {
-	db *sql.DB
-}
-
-func NewSQLTxProvider(db *sql.DB) *SQLTxProvider {
-	return &SQLTxProvider{db}
-}
-
-func (p *SQLTxProvider) Transact(txFunc func(adapters TxAdapters) error) error {
-	return runInTx(p.db, func(tx *sql.Tx) error {
-		adapters := TxAdapters{
-			TaskRepository: NewPostgresTaskRepository(tx),
-		}
-
-		return txFunc(adapters)
-	})
+type TxManager interface {
+	RunInTx(fn func(txc TxContext) error) error
 }
 
 func runInTx(db *sql.DB, fn func(tx *sql.Tx) error) error {

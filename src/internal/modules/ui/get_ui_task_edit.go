@@ -7,9 +7,9 @@ import (
 )
 
 type GetUITaskEdit struct {
-	TxProvider shared.TxProvider
-	Renderer   Renderer
-	Logger     *slog.Logger
+	TxManager shared.TxManager
+	Renderer  Renderer
+	Logger    *slog.Logger
 }
 
 func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -20,8 +20,8 @@ func (h *GetUITaskEdit) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.TxProvider.Transact(func(adapters shared.TxAdapters) error {
-		task, err := adapters.TaskRepository.GetByID(r.Context(), req.ID)
+	h.TxManager.RunInTx(func(txc shared.TxContext) error {
+		task, err := txc.TaskRepository.GetByID(r.Context(), req.ID)
 		if err != nil {
 			h.Logger.Error("get task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)

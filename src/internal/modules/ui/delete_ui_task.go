@@ -7,7 +7,7 @@ import (
 )
 
 type DeleteUITask struct {
-	TxProvider                shared.TxProvider
+	TxManager                 shared.TxManager
 	TaskAttachmentsRepository shared.TaskAttachmentsRepository
 	Renderer                  Renderer
 	Logger                    *slog.Logger
@@ -21,8 +21,8 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.TxProvider.Transact(func(adapters shared.TxAdapters) error {
-		task, err := adapters.TaskRepository.GetByID(r.Context(), req.ID)
+	h.TxManager.RunInTx(func(txc shared.TxContext) error {
+		task, err := txc.TaskRepository.GetByID(r.Context(), req.ID)
 		if err != nil {
 			h.Logger.Error("get task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
@@ -34,7 +34,7 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
-		if err := adapters.TaskRepository.Delete(r.Context(), req.ID); err != nil {
+		if err := txc.TaskRepository.Delete(r.Context(), req.ID); err != nil {
 			h.Logger.Error("delete task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
 			return nil
@@ -46,7 +46,7 @@ func (h *DeleteUITask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
-		tasks, err := adapters.TaskRepository.GetActive(r.Context(), 0, 50)
+		tasks, err := txc.TaskRepository.GetActive(r.Context(), 0, 50)
 		if err != nil {
 			h.Logger.Error("get tasks", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)

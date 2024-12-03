@@ -7,9 +7,9 @@ import (
 )
 
 type PostUITaskComplete struct {
-	TxProvider shared.TxProvider
-	Renderer   Renderer
-	Logger     *slog.Logger
+	TxManager shared.TxManager
+	Renderer  Renderer
+	Logger    *slog.Logger
 }
 
 func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -20,8 +20,8 @@ func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.TxProvider.Transact(func(adapters shared.TxAdapters) error {
-		task, err := adapters.TaskRepository.GetByID(r.Context(), req.ID)
+	h.TxManager.RunInTx(func(txc shared.TxContext) error {
+		task, err := txc.TaskRepository.GetByID(r.Context(), req.ID)
 		if err != nil {
 			h.Logger.Error("get task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
@@ -35,14 +35,14 @@ func (h *PostUITaskComplete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		task.SetCompleted()
 
-		err = adapters.TaskRepository.Update(r.Context(), task)
+		err = txc.TaskRepository.Update(r.Context(), task)
 		if err != nil {
 			h.Logger.Error("update task", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
 			return nil
 		}
 
-		tasks, err := adapters.TaskRepository.GetActive(r.Context(), 0, 50)
+		tasks, err := txc.TaskRepository.GetActive(r.Context(), 0, 50)
 		if err != nil {
 			h.Logger.Error("get tasks", "error", err)
 			http.Error(w, "", http.StatusInternalServerError)
