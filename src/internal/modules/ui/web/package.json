@@ -9,15 +9,15 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"@nats-io/nats-core": "3.0.0-49",
+		"@nats-io/nats-core": "3.0.0-50",
 		"@popperjs/core": "2.11.8",
 		"bootstrap": "5.3.3",
 		"htmx.org": "next",
-		"hyperscript.org": "0.9.13"
+		"hyperscript.org": "0.9.14"
 	},
 	"devDependencies": {
-		"prettier": "3.4.2",
+		"prettier": "3.5.1",
 		"prettier-plugin-go-template": "0.0.15",
-		"vite": "6.0.7"
+		"vite": "6.1.0"
 	}
 }

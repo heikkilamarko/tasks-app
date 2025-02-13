@@ -5,7 +5,7 @@ RUN npm ci
 COPY internal/modules/ui/web/ .
 RUN npm run build
 
-FROM golang:1.24-rc AS build
+FROM golang AS build
 ARG GOARCH=arm64
 COPY . .
 COPY --from=build-ui /app/dist/ ./internal/modules/ui/
