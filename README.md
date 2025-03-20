@@ -17,7 +17,6 @@ A simple single binary task management app, built as a modular monolith. The app
 | [Go](https://go.dev/)                      | Programming Language                          |
 | [htmx](https://htmx.org/)                  | Web Technology                                |
 | [Hyperscript](https://hyperscript.org/)    | Frontend Scripting Language                   |
-| [C4 model](https://c4model.com/)           | Software Architecture Visualization           |
 
 ## Examples
 
