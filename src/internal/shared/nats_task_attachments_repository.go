@@ -2,6 +2,7 @@ package shared
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"mime/multipart"
@@ -98,7 +99,7 @@ func (repo *NATSTaskAttachmentsRepository) DeleteAttachments(ctx context.Context
 }
 
 func (repo *NATSTaskAttachmentsRepository) DeleteTask(ctx context.Context, taskID int) error {
-	if err := repo.js.DeleteObjectStore(ctx, repo.getBucketName(taskID)); err != nil && err != jetstream.ErrStreamNotFound {
+	if err := repo.js.DeleteObjectStore(ctx, repo.getBucketName(taskID)); err != nil && !errors.Is(err, jetstream.ErrBucketNotFound) {
 		return err
 	}
 	return nil
