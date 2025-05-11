@@ -14,11 +14,11 @@ data:
   APP_SHARED_LOG_LEVEL: info
   APP_SHARED_NATS_URL: nats://nats-0.nats-headless.examples.svc.cluster.local:4222, nats://nats-1.nats-headless.examples.svc.cluster.local:4222, nats://nats-2.nats-headless.examples.svc.cluster.local:4222
   APP_SHARED_NATS_CREDS: /app.cred
-  APP_SHARED_NATS_ACCOUNT_PUBLIC_KEY: AALVNYHW3SMS236DJ4ZB5OGCNMGNAEIGFJRA3UTBCNS5MVFXKUFALWH2
+  APP_SHARED_NATS_ACCOUNT_PUBLIC_KEY: __GENERATED__
   APP_SHARED_ATTACHMENTS_PATH: attachments
   APP_UI_ADDR: ":8080"
   APP_UI_AUTH_DOMAIN: zitadel.local
-  APP_UI_AUTH_CLIENT_ID: "319541519923085488"
+  APP_UI_AUTH_CLIENT_ID: "__GENERATED__"
   APP_UI_AUTH_REDIRECT_URI: https://tasks-app.local/ui/auth/callback
   APP_UI_HUB_JWT_COOKIE_NAME: nats.jwt
   APP_UI_TRUSTED_HOSTS: tasks-app.local
@@ -40,9 +40,9 @@ stringData:
   POSTGRES_POSTGRES_CONNECTIONSTRING: postgres://postgres:S3c_r3t!@postgresql.examples.svc.cluster.local:5432/postgres?sslmode=disable&search_path=public
   POSTGRES_TASKS_APP_CONNECTIONSTRING: postgres://postgres:S3c_r3t!@postgresql.examples.svc.cluster.local:5432/tasks_app?sslmode=disable&search_path=public
   APP_SHARED_POSTGRES_CONNECTION_STRING: postgres://postgres:S3c_r3t!@postgresql.examples.svc.cluster.local:5432/tasks_app?sslmode=disable
-  APP_SHARED_NATS_ACCOUNT_SEED: SAAAYS5PDZ5JJRK62HBBMEEBQCDZHSLLXKE2F6ESKKXTYIFB3SPFDAIYHM
+  APP_SHARED_NATS_ACCOUNT_SEED: __GENERATED__
   APP_UI_AUTH_ENCRYPTION_KEY: secret12secret12
-  APP_EMAIL_NOTIFIER_ZITADEL_PAT: SJg5PYsRxFWf820boAfv9VxQst_WFQD-tqYd_6tFLCX-YwiieICifPgaaoZ0ic1zsfn_-D4
+  APP_EMAIL_NOTIFIER_ZITADEL_PAT: __GENERATED__
   APP_EMAIL_NOTIFIER_SMTP_PASSWORD: empty
 ---
 apiVersion: apps/v1
@@ -61,7 +61,7 @@ spec:
         app: tasks-app
     spec:
       hostAliases:
-        - ip: 51.136.99.180
+        - ip: __GENERATED__
           hostnames:
             - zitadel.local
       initContainers:
