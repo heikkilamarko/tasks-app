@@ -6,13 +6,11 @@ COPY internal/modules/ui/web/ .
 RUN npm run build
 
 FROM golang AS build
-ARG GOARCH=arm64
 COPY . .
 COPY --from=build-ui /app/dist/ ./internal/modules/ui/
 ENV GOPATH=""
 ENV CGO_ENABLED=0
 ENV GOOS=linux
-ENV GOARCH=$GOARCH
 RUN go build -trimpath -a -ldflags="-w -s" ./cmd/tasks-app
 
 FROM gcr.io/distroless/static

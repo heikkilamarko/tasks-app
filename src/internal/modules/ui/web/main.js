@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async (_event) => {
 	if (!window.app.USER_ID) return;
 
 	const nc = await wsconnect({
-		servers: getWsUrl('/hub/v1'),
+		servers: getWsUrl('/ws'),
 		name: 'ui',
 		timeout: 120_000,
 		maxReconnectAttempts: -1,

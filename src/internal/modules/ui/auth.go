@@ -2,10 +2,13 @@ package ui
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
 	"tasks-app/internal/shared"
+	"time"
 
 	"github.com/nats-io/nats.go"
+	httphelper "github.com/zitadel/oidc/v3/pkg/http"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"github.com/zitadel/zitadel-go/v3/pkg/authentication"
 	zoidc "github.com/zitadel/zitadel-go/v3/pkg/authentication/oidc"
@@ -21,6 +24,15 @@ type Auth struct {
 }
 
 func NewAuth(ctx context.Context, conn *nats.Conn, config *shared.Config) (*Auth, error) {
+	httphelper.DefaultHTTPClient = &http.Client{
+		Timeout: 30 * time.Second,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
 	sessions, err := NewNATSKVSessions[authCtx](conn)
 	if err != nil {
 		return nil, err

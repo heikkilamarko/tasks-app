@@ -1,0 +1,7 @@
+zitadel.local {
+	reverse_proxy {$ZITADEL_ADDRESS} {
+		transport http {
+			tls_insecure_skip_verify
+		}
+	}
+}

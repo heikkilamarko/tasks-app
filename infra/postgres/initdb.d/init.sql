@@ -1,1 +1,0 @@
-CREATE DATABASE tasks_app;
