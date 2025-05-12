@@ -1,6 +1,7 @@
 package emailnotifier
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -23,7 +24,14 @@ func (r *ZitadelEmailResolver) ResolveEmail(userID string) (string, error) {
 
 	token := r.Config.EmailNotifier.ZitadelPAT
 
-	client := &http.Client{}
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", err
