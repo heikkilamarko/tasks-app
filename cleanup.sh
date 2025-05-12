@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eu
 
 cd "$(dirname "$0")"
 
@@ -16,6 +16,6 @@ export NATS_ACCOUNT_PUBLIC_KEY=$(nsc describe account --name tasks-app --json | 
 export NATS_ACCOUNT_SEED="$(cat keys/$NATS_ACCOUNT_PUBLIC_KEY.nk)"
 rm -rf keys
 
-kubectl delete secret nats-app-cred --namespace=tasks-app
+kubectl delete secret nats-app-cred --namespace=tasks-app || true
 
-envsubst < k8s/tasks-app.yaml | kubectl delete -f -
+envsubst < k8s/tasks-app-$2.yaml | kubectl delete -f - || true

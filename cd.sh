@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eu
 
 cd "$(dirname "$0")"
 
@@ -16,6 +16,6 @@ export NATS_ACCOUNT_PUBLIC_KEY=$(nsc describe account --name tasks-app --json | 
 export NATS_ACCOUNT_SEED="$(cat keys/$NATS_ACCOUNT_PUBLIC_KEY.nk)"
 rm -rf keys
 
-envsubst < k8s/tasks-app.yaml | kubectl apply -f -
+envsubst < k8s/tasks-app-$2.yaml | kubectl apply -f - || true
 
-kubectl create secret generic nats-app-cred --from-file=infra/nats/app.cred --namespace=tasks-app
+kubectl create secret generic nats-app-cred --from-file=infra/nats/app.cred --namespace=tasks-app || true
