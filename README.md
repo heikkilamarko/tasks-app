@@ -21,6 +21,16 @@ The infrastructure is built on top of the Azure K3s setup provided in the follow
 
 https://github.com/heikkilamarko/azure-k3s-demo
 
+### Hosts Configuration
+
+To enable local name resolution for the services, add the following entries to your `/etc/hosts` file, replacing `<IP_ADDRESS>` with the external IP of your K3s ingress controller or load balancer:
+
+```
+<IP_ADDRESS> zitadel.local
+<IP_ADDRESS> smtp4dev.local
+<IP_ADDRESS> tasks-app.local
+```
+
 ### NATS Configuration
 
 Follow the instructions in [infra/nats](infra/nats) to configure NATS.
@@ -60,3 +70,24 @@ Follow the instructions in [infra/zitadel](infra/zitadel) to configure ZITADEL.
 ```bash
 ./cleanup.sh <docker_image_tag> micro
 ```
+
+## Application
+
+Access the Tasks application at:
+
+https://tasks-app.local/
+
+### Example Users
+
+Log in using the following example credentials:
+
+| Username  | Initial Password |
+| --------- | ---------------- |
+| `johndoe` | `S3c_r3t!`       |
+| `janedoe` | `S3c_r3t!`       |
+
+### smtp4dev Web UI
+
+Inspect outgoing application emails such as password change notifications or task expiration alerts using the smtp4dev web interface:
+
+https://smtp4dev.local/

@@ -42,6 +42,10 @@ func (m *Module) Run(ctx context.Context) error {
 
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/ui", http.StatusFound)
+	})
+
 	HandleWithMiddleware(mux, "GET /ui/auth/login", m.Auth.LoginHandler("/ui"))
 	HandleWithMiddleware(mux, "GET /ui/auth/callback", m.Auth.CallbackHandler())
 	HandleWithMiddleware(mux, "GET /ui/auth/logout", m.Auth.LogoutHandler())
