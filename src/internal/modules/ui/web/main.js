@@ -134,47 +134,63 @@ function showToastMessage(config) {
 	const toasterEl = document.getElementById('toaster');
 	if (!toasterEl) return;
 
-	let classes = {
-		root: 'text-bg-primary',
-		details: 'bg-primary-subtle text-primary-emphasis'
+	const { title = '', text = '', details = '', type = 'info' } = config;
+
+	if (!title && !text) return;
+
+	const typeClasses = {
+		info: {
+			root: 'text-bg-primary',
+			details: 'bg-primary-subtle text-primary-emphasis'
+		},
+		warning: {
+			root: 'text-bg-warning',
+			details: 'bg-warning-subtle text-warning-emphasis'
+		},
+		error: {
+			root: 'text-bg-danger',
+			details: 'bg-danger-subtle text-danger-emphasis'
+		}
 	};
 
-	switch (config.type) {
-		case 'warning':
-			classes = {
-				root: 'text-bg-warning',
-				details: 'bg-warning-subtle text-warning-emphasis'
-			};
-			break;
-		case 'error':
-			classes = {
-				root: 'text-bg-danger',
-				details: 'bg-danger-subtle text-danger-emphasis'
-			};
-			break;
-	}
+	const classes = typeClasses[type] || typeClasses.info;
 
 	const toastEl = document.createElement('div');
 	toastEl.className = `toast fade border-0 ${classes.root}`;
-	toastEl.innerHTML = `
-		<div class="toast-body d-flex flex-column">
-			<div class="fw-bold">${config.title}</div>
-			<div class="app-text-multiline">${config.text}</div>
-			${config.details ? `<div class="app-text-multiline font-monospace mt-2 py-2 px-3 ${classes.details}">${config.details}</div>` : ''}
-		</div>
-	`;
 
+	const toastBody = document.createElement('div');
+	toastBody.className = 'toast-body d-flex flex-column';
+
+	const titleEl = document.createElement('div');
+	titleEl.className = 'fw-bold';
+	titleEl.textContent = title;
+	toastBody.appendChild(titleEl);
+
+	const textEl = document.createElement('div');
+	textEl.className = 'app-text-multiline';
+	textEl.textContent = text;
+	toastBody.appendChild(textEl);
+
+	if (details) {
+		const detailsEl = document.createElement('div');
+		detailsEl.className = `app-text-multiline font-monospace mt-2 py-2 px-3 ${classes.details}`;
+		detailsEl.textContent = details;
+		toastBody.appendChild(detailsEl);
+	}
+
+	toastEl.appendChild(toastBody);
 	toasterEl.appendChild(toastEl);
+
+	const toast = new Toast(toastEl);
 
 	toastEl.addEventListener(
 		'hidden.bs.toast',
 		() => {
-			toast?.dispose();
+			toast.dispose();
 			toastEl.remove();
 		},
 		{ once: true }
 	);
 
-	const toast = new Toast(toastEl);
 	toast.show();
 }
