@@ -11,7 +11,7 @@ nats auth account add \
     --jetstream \
     --js-disk 1GB \
     --js-memory 1GB \
-    --payload 2MB \
+    --payload 1MB \
     --defaults \
     tasks-app
 

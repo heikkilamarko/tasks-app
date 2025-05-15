@@ -66,6 +66,7 @@ func NATSJWTMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 			jwt, err := natsJWT.CreateUserJWT(func(c *jwt.UserClaims) {
 				c.BearerToken = true
 				c.Sub.Allow.Add(allowSub)
+				c.Limits.Payload = 1048576
 			})
 			if err != nil {
 				next.ServeHTTP(w, r)
