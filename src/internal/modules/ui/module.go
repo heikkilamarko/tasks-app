@@ -38,7 +38,7 @@ func (m *Module) Run(ctx context.Context) error {
 	csrfMW := NewCSRF(m.Config).Middleware
 	authnMW := m.Auth.Middleware.RequireAuthentication()
 	userMW := UserContextMiddleware(m.Auth)
-	loginMW := LoginMiddleware(m.Auth)
+	natsJWTMW := NATSJWTMiddleware(m.Auth)
 
 	mux := http.NewServeMux()
 
@@ -50,7 +50,7 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "GET /ui/auth/callback", m.Auth.CallbackHandler())
 	HandleWithMiddleware(mux, "GET /ui/auth/logout", m.Auth.LogoutHandler())
 	HandleWithMiddleware(mux, "GET /ui/static/", http.StripPrefix("/ui", http.FileServer(http.FS(StaticFS))))
-	HandleWithMiddleware(mux, "GET /ui", &GetUI{m.TxManager, m.Renderer, m.Logger}, authnMW, userMW, loginMW)
+	HandleWithMiddleware(mux, "GET /ui", &GetUI{m.TxManager, m.Renderer, m.Logger}, authnMW, userMW, natsJWTMW)
 	HandleWithMiddleware(mux, "POST /ui/language", &PostUILanguage{m.Config, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "POST /ui/theme", &PostUITheme{m.Config, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "POST /ui/timezone", &PostUITimezone{m.Config, m.Logger}, authnMW, userMW)
@@ -64,7 +64,7 @@ func (m *Module) Run(ctx context.Context) error {
 	HandleWithMiddleware(mux, "POST /ui/tasks/{id}/complete", &PostUITaskComplete{m.TxManager, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "PUT /ui/tasks/{id}", &PutUITask{m.TxManager, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
 	HandleWithMiddleware(mux, "DELETE /ui/tasks/{id}", &DeleteUITask{m.TxManager, m.TaskAttachmentsRepository, m.Renderer, m.Logger}, authnMW, userMW)
-	HandleWithMiddleware(mux, "GET /ui/completed", &GetUICompleted{m.TxManager, m.Renderer, m.Logger}, authnMW, userMW)
+	HandleWithMiddleware(mux, "GET /ui/completed", &GetUICompleted{m.TxManager, m.Renderer, m.Logger}, authnMW, userMW, natsJWTMW)
 	HandleWithMiddleware(mux, "GET /ui/completed/tasks", &GetUICompletedTasks{m.TxManager, m.Renderer, m.Logger}, authnMW, userMW)
 
 	server := &http.Server{

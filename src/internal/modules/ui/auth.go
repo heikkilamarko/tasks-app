@@ -76,26 +76,26 @@ func (a *Auth) LoginHandler(requestedURI string) http.Handler {
 
 func (a *Auth) CallbackHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.DeleteHubJWTCookie(w)
+		a.DeleteNATSJWTCookie(w)
 		a.Authenticator.Callback(w, r)
 	})
 }
 
 func (a *Auth) LogoutHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.DeleteHubJWTCookie(w)
+		a.DeleteNATSJWTCookie(w)
 		a.Authenticator.Logout(w, r)
 	})
 }
 
-func (a *Auth) IsHubJWTCookieSet(r *http.Request) bool {
-	_, err := r.Cookie(a.Config.UI.HubJWTCookieName)
+func (a *Auth) IsNATSJWTCookieSet(r *http.Request) bool {
+	_, err := r.Cookie(a.Config.UI.NATSJWTCookieName)
 	return err == nil
 }
 
-func (a *Auth) SetHubJWTCookie(w http.ResponseWriter, jwt string) {
+func (a *Auth) SetNATSJWTCookie(w http.ResponseWriter, jwt string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     a.Config.UI.HubJWTCookieName,
+		Name:     a.Config.UI.NATSJWTCookieName,
 		Value:    jwt,
 		Path:     "/",
 		Secure:   true,
@@ -104,9 +104,9 @@ func (a *Auth) SetHubJWTCookie(w http.ResponseWriter, jwt string) {
 	})
 }
 
-func (a *Auth) DeleteHubJWTCookie(w http.ResponseWriter) {
+func (a *Auth) DeleteNATSJWTCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     a.Config.UI.HubJWTCookieName,
+		Name:     a.Config.UI.NATSJWTCookieName,
 		Value:    "",
 		MaxAge:   -1,
 		Path:     "/",

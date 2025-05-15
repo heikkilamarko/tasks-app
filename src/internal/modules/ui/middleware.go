@@ -45,12 +45,12 @@ func UserContextMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 	}
 }
 
-func LoginMiddleware(auth *Auth) func(next http.Handler) http.Handler {
+func NATSJWTMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 	natsJWT := &shared.NATSJWT{Config: auth.Config}
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if auth.IsHubJWTCookieSet(r) {
+			if auth.IsNATSJWTCookieSet(r) {
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -72,7 +72,7 @@ func LoginMiddleware(auth *Auth) func(next http.Handler) http.Handler {
 				return
 			}
 
-			auth.SetHubJWTCookie(w, jwt)
+			auth.SetNATSJWTCookie(w, jwt)
 
 			next.ServeHTTP(w, r)
 		})
