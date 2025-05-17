@@ -1,18 +1,24 @@
 # NATS
 
-## Create the auth resources
+## Create Auth Configuration
+
+Generate NATS auth configuration:
 
 ```bash
 ./nats-auth-create.sh
 ```
 
-## Push the auth resources to the cluster
+## Deploy Auth Configuration
+
+Deploy the generated auth configuration to the NATS cluster:
 
 ```bash
 ./nats-auth-push.sh
 ```
 
-## Create the app resources
+## Create App Configuration
+
+Create application-specific NATS configuration:
 
 ```bash
 ./nats-app-create.sh

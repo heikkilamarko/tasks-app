@@ -1,24 +1,28 @@
 # ZITADEL
 
-## Update the Hosts File
+## Prepare Credentials
 
-Add the following entry to your system’s hosts file to map `zitadel.local` to your local machine:
+Generate the `zitadel-admin-sa.json` file from the `zitadel-admin-sa` Kubernetes secret.
+
+## Caddy Proxy
+
+> Only required if not using trusted certificates.
+
+Add this entry to your hosts file to map `zitadel.local` to localhost:
 
 ```bash
 127.0.0.1 zitadel.local
 ```
 
-## Prepare ZITADEL Credentials
-
-Create the `zitadel-admin-sa.json` file from the Kubernetes secret `zitadel-admin-sa`.
-
-## Caddy Proxy
+Start the Caddy proxy:
 
 ```bash
 ./caddy.sh
 ```
 
 ## Terraform
+
+Initialize and apply the Terraform configuration:
 
 ```bash
 terraform init
@@ -30,7 +34,7 @@ terraform apply
 
 ## Outputs
 
-Use the output values below to configure the application:
+Use the following output values to configure the application:
 
 ```bash
 terraform output -raw tasks_app_client_id
