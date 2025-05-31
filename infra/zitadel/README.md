@@ -8,10 +8,10 @@ Generate the `zitadel-admin-sa.json` file from the `zitadel-admin-sa` Kubernetes
 
 > Only required if not using trusted certificates.
 
-Add this entry to your hosts file to map `zitadel.local` to localhost:
+Add this entry to your hosts file to map `zitadel.test` to localhost:
 
 ```bash
-127.0.0.1 zitadel.local
+127.0.0.1 zitadel.test
 ```
 
 Start the Caddy proxy:

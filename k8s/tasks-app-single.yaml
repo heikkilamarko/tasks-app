@@ -17,23 +17,23 @@ data:
   APP_SHARED_NATS_ACCOUNT_PUBLIC_KEY: ${NATS_ACCOUNT_PUBLIC_KEY}
   APP_SHARED_ATTACHMENTS_PATH: attachments
   APP_UI_ADDR: ":8080"
-  APP_UI_AUTH_DOMAIN: zitadel.local
+  APP_UI_AUTH_DOMAIN: zitadel.test
   # APP_UI_AUTH_DOMAIN: zitadel.${DOMAIN}
   APP_UI_AUTH_CLIENT_ID: "${ZITADEL_CLIENT_ID}"
-  APP_UI_AUTH_REDIRECT_URI: https://tasks-app.local/ui/auth/callback
+  APP_UI_AUTH_REDIRECT_URI: https://tasks-app.test/ui/auth/callback
   # APP_UI_AUTH_REDIRECT_URI: https://tasks-app.${DOMAIN}/ui/auth/callback
   APP_UI_NATS_JWT_COOKIE_NAME: nats.jwt
-  APP_UI_TRUSTED_HOSTS: tasks-app.local
+  APP_UI_TRUSTED_HOSTS: tasks-app.test
   # APP_UI_TRUSTED_HOSTS: tasks-app.${DOMAIN}
   APP_TASK_CHECKER_CHECK_INTERVAL: 15s
   APP_TASK_CHECKER_EXPIRING_WINDOW: 24h
   APP_TASK_CHECKER_DELETE_WINDOW: 48h
-  APP_EMAIL_NOTIFIER_ZITADEL_URL: https://zitadel.local
+  APP_EMAIL_NOTIFIER_ZITADEL_URL: https://zitadel.test
   # APP_EMAIL_NOTIFIER_ZITADEL_URL: https://zitadel.${DOMAIN}
   APP_EMAIL_NOTIFIER_SMTP_HOST: smtp4dev.examples.svc.cluster.local
   APP_EMAIL_NOTIFIER_SMTP_PORT: "25"
   APP_EMAIL_NOTIFIER_SMTP_FROM_NAME: Tasks App
-  APP_EMAIL_NOTIFIER_SMTP_FROM_ADDRESS: no-reply@tasks-app.local
+  APP_EMAIL_NOTIFIER_SMTP_FROM_ADDRESS: no-reply@tasks-app.test
   # APP_EMAIL_NOTIFIER_SMTP_FROM_ADDRESS: no-reply@tasks-app.${DOMAIN}
 ---
 apiVersion: v1
@@ -68,7 +68,7 @@ spec:
       hostAliases:
         - ip: ${ZITADEL_IP}
           hostnames:
-            - zitadel.local
+            - zitadel.test
       initContainers:
         - name: tasks-app-migrations
           image: ${IMAGE_MIGRATIONS}
@@ -149,7 +149,7 @@ spec:
   #     secretName: letsencrypt-staging-godaddy-tls
   rules:
     # - host: tasks-app.${DOMAIN}
-    - host: tasks-app.local
+    - host: tasks-app.test
       http:
         paths:
           - path: /

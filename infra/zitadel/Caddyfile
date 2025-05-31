@@ -1,4 +1,6 @@
-zitadel.local {
+zitadel.test {
+	tls internal
+
 	reverse_proxy {$ZITADEL_ADDRESS} {
 		transport http {
 			tls_insecure_skip_verify
