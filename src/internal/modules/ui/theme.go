@@ -29,7 +29,7 @@ func SetThemeCookie(w http.ResponseWriter, theme string) {
 		Path:     "/",
 		Secure:   true,
 		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 		MaxAge:   365 * 24 * 60 * 60, // One year in seconds
 	}
 	http.SetCookie(w, cookie)
