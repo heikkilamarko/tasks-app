@@ -69,10 +69,20 @@ spec:
         - ip: ${ZITADEL_IP}
           hostnames:
             - zitadel.test
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
         - name: tasks-app-migrations
           image: ${IMAGE_MIGRATIONS}
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           envFrom:
             - configMapRef:
                 name: tasks-app
@@ -82,6 +92,11 @@ spec:
         - name: tasks-app
           image: ${IMAGE}
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: 8080
           envFrom:
