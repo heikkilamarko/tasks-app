@@ -102,12 +102,18 @@ spec:
               value: ui
             - name: APP_SHARED_SERVICES
               value: db:postgres,attachments:nats,messaging:nats
+            - name: SSL_CERT_FILE
+              value: /etc/nats/ca.crt
           envFrom:
             - configMapRef:
                 name: tasks-app
             - secretRef:
                 name: tasks-app
           volumeMounts:
+            - name: nats-tls
+              readOnly: true
+              mountPath: /etc/nats/ca.crt
+              subPath: ca.crt
             - name: nats-app-cred
               readOnly: true
               mountPath: /app.cred
@@ -125,12 +131,18 @@ spec:
               value: taskchecker
             - name: APP_SHARED_SERVICES
               value: db:postgres,messaging:nats
+            - name: SSL_CERT_FILE
+              value: /etc/nats/ca.crt
           envFrom:
             - configMapRef:
                 name: tasks-app
             - secretRef:
                 name: tasks-app
           volumeMounts:
+            - name: nats-tls
+              readOnly: true
+              mountPath: /etc/nats/ca.crt
+              subPath: ca.crt
             - name: nats-app-cred
               readOnly: true
               mountPath: /app.cred
@@ -148,17 +160,26 @@ spec:
               value: emailnotifier:smtp
             - name: APP_SHARED_SERVICES
               value: messaging:nats
+            - name: SSL_CERT_FILE
+              value: /etc/nats/ca.crt
           envFrom:
             - configMapRef:
                 name: tasks-app
             - secretRef:
                 name: tasks-app
           volumeMounts:
+            - name: nats-tls
+              readOnly: true
+              mountPath: /etc/nats/ca.crt
+              subPath: ca.crt
             - name: nats-app-cred
               readOnly: true
               mountPath: /app.cred
               subPath: app.cred
       volumes:
+        - name: nats-tls
+          secret:
+            secretName: nats-tls
         - name: nats-app-cred
           secret:
             secretName: nats-app-cred

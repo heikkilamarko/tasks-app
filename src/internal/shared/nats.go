@@ -1,7 +1,6 @@
 package shared
 
 import (
-	"crypto/tls"
 	"log/slog"
 	"os"
 
@@ -11,7 +10,6 @@ import (
 func NewNATSConn(config *Config, logger *slog.Logger) (*nats.Conn, error) {
 	conn, err := nats.Connect(
 		config.Shared.NATSURL,
-		nats.Secure(&tls.Config{InsecureSkipVerify: true}), // TODO: Revisit this. Should NOT be used in production.
 		nats.UserCredentials(config.Shared.NATSCreds),
 		nats.MaxReconnects(-1),
 		nats.DisconnectErrHandler(

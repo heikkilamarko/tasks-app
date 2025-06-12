@@ -17,5 +17,6 @@ export NATS_ACCOUNT_SEED="$(cat keys/$NATS_ACCOUNT_PUBLIC_KEY.nk)"
 rm -rf keys
 
 kubectl delete secret nats-app-cred --namespace=tasks-app || true
+kubectl delete secret nats-tls --namespace=tasks-app || true
 
 envsubst < k8s/tasks-app-$2.yaml | kubectl delete -f - || true

@@ -19,3 +19,4 @@ rm -rf keys
 envsubst < k8s/tasks-app-$2.yaml | kubectl apply -f - || true
 
 kubectl create secret generic nats-app-cred --from-file=infra/nats/app.cred --namespace=tasks-app || true
+kubectl create secret generic nats-tls --from-file=infra/nats/certs/ca.crt --namespace=tasks-app || true
