@@ -10,7 +10,7 @@ metadata:
   namespace: tasks-app
 data:
   APP_SHARED_LOG_LEVEL: info
-  APP_SHARED_NATS_URL: nats://nats-0.nats-headless.examples.svc.cluster.local:4222, nats://nats-1.nats-headless.examples.svc.cluster.local:4222, nats://nats-2.nats-headless.examples.svc.cluster.local:4222
+  APP_SHARED_NATS_URL: tls://nats-0.nats-headless.examples.svc.cluster.local:4222, tls://nats-1.nats-headless.examples.svc.cluster.local:4222, tls://nats-2.nats-headless.examples.svc.cluster.local:4222
   APP_SHARED_NATS_CREDS: /app.cred
   APP_SHARED_NATS_ACCOUNT_PUBLIC_KEY: ${NATS_ACCOUNT_PUBLIC_KEY}
   APP_SHARED_ATTACHMENTS_PATH: attachments
