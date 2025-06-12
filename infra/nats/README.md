@@ -1,5 +1,10 @@
 # NATS
 
+## NATS TLS Certificate Setup
+
+Before proceeding, ensure you have the NATS TLS CA certificate available at `certs/ca.crt`.
+For details on setting up the certificate, refer to the [NATS example setup documentation](https://github.com/heikkilamarko/azure-k3s-demo/tree/main/examples/nats).
+
 ## Create Auth Configuration
 
 Generate NATS auth configuration:

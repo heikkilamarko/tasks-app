@@ -35,6 +35,7 @@ nats auth user credential \
 
 nats ctx add tasks-app-admin \
     --server $nats_server \
+    --tlsca "$PWD/certs/ca.crt" \
     --creds "$PWD/admin.cred"
 
 nats auth user credential \
@@ -43,4 +44,5 @@ nats auth user credential \
 
 nats ctx add tasks-app-app \
     --server $nats_server \
+    --tlsca "$PWD/certs/ca.crt" \
     --creds "$PWD/app.cred"

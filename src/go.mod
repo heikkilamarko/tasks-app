@@ -1,6 +1,6 @@
 module tasks-app
 
-go 1.24.3
+go 1.24.4
 
 require (
 	github.com/caarlos0/env/v9 v9.0.0
@@ -12,9 +12,9 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/wneessen/go-mail v0.6.2
 	github.com/xuri/excelize/v2 v2.9.1
-	github.com/zitadel/oidc/v3 v3.38.1
-	github.com/zitadel/zitadel-go/v3 v3.5.3
-	golang.org/x/sync v0.14.0
+	github.com/zitadel/oidc/v3 v3.39.0
+	github.com/zitadel/zitadel-go/v3 v3.6.1
+	golang.org/x/sync v0.15.0
 )
 
 require (
@@ -32,7 +32,7 @@ require (
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.4 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/tiendc/go-deepcopy v1.6.0 // indirect
+	github.com/tiendc/go-deepcopy v1.6.1 // indirect
 	github.com/xuri/efp v0.0.1 // indirect
 	github.com/xuri/nfp v0.0.1 // indirect
 	github.com/zitadel/logging v0.6.2 // indirect
@@ -41,10 +41,10 @@ require (
 	go.opentelemetry.io/otel v1.36.0 // indirect
 	go.opentelemetry.io/otel/metric v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
-	golang.org/x/exp v0.0.0-20250531010427-b6e5de432a8b // indirect
-	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
+	golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476 // indirect
+	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
 )
