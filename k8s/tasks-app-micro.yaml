@@ -231,7 +231,7 @@ spec:
   # tls:
   #   - hosts:
   #       - tasks-app.${DOMAIN}
-  #     secretName: letsencrypt-staging-godaddy-tls
+  #     secretName: letsencrypt-staging-cloudflare-tls
   rules:
     # - host: tasks-app.${DOMAIN}
     - host: tasks-app.test

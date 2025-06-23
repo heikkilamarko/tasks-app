@@ -11,12 +11,12 @@
 	"dependencies": {
 		"@nats-io/nats-core": "3.0.2",
 		"@popperjs/core": "2.11.8",
-		"bootstrap": "5.3.6",
-		"htmx.org": "next",
+		"bootstrap": "5.3.7",
+		"htmx.org": "2.0.5",
 		"hyperscript.org": "0.9.14"
 	},
 	"devDependencies": {
-		"prettier": "3.5.3",
+		"prettier": "3.6.0",
 		"prettier-plugin-go-template": "0.0.15",
 		"vite": "6.3.5"
 	}
