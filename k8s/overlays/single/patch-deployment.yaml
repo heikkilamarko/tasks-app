@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-app
+spec:
+  template:
+    spec:
+      containers:
+        - name: tasks-app
+          image: ${IMAGE}
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SSL_CERT_FILE
+              value: /etc/nats/ca.crt
+          envFrom:
+            - configMapRef:
+                name: tasks-app
+            - secretRef:
+                name: tasks-app
+          volumeMounts:
+            - name: nats-tls
+              readOnly: true
+              mountPath: /etc/nats/ca.crt
+              subPath: ca.crt
+            - name: nats-app-cred
+              readOnly: true
+              mountPath: /app.cred
+              subPath: app.cred

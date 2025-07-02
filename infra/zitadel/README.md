@@ -29,7 +29,7 @@ terraform init
 ```
 
 ```bash
-terraform apply
+terraform apply -var-file=<(envsubst < vars.tfvars)
 ```
 
 ## Outputs

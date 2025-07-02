@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tasks-app
+data:
+  APP_SHARED_SERVICES: db:postgres,attachments:nats,messaging:nats
+  APP_SHARED_MODULES: ui,taskchecker,emailnotifier:smtp
+  APP_SHARED_LOG_LEVEL: info
+  APP_SHARED_NATS_URL: tls://nats-0.nats-headless.examples.svc.cluster.local:4222, tls://nats-1.nats-headless.examples.svc.cluster.local:4222, tls://nats-2.nats-headless.examples.svc.cluster.local:4222
+  APP_SHARED_NATS_CREDS: /app.cred
+  APP_SHARED_NATS_ACCOUNT_PUBLIC_KEY: ${NATS_ACCOUNT_PUBLIC_KEY}
+  APP_SHARED_ATTACHMENTS_PATH: attachments
+  APP_UI_ADDR: ":8080"
+  APP_UI_AUTH_DOMAIN: zitadel.test
+  APP_UI_AUTH_CLIENT_ID: ${ZITADEL_CLIENT_ID}
+  APP_UI_AUTH_REDIRECT_URI: https://tasks-app.test/ui/auth/callback
+  APP_UI_NATS_JWT_COOKIE_NAME: nats.jwt
+  APP_UI_TRUSTED_HOSTS: tasks-app.test
+  APP_TASK_CHECKER_CHECK_INTERVAL: 15s
+  APP_TASK_CHECKER_EXPIRING_WINDOW: 24h
+  APP_TASK_CHECKER_DELETE_WINDOW: 48h
+  APP_EMAIL_NOTIFIER_ZITADEL_URL: https://zitadel.test
+  APP_EMAIL_NOTIFIER_SMTP_HOST: smtp4dev.examples.svc.cluster.local
+  APP_EMAIL_NOTIFIER_SMTP_PORT: "25"
+  APP_EMAIL_NOTIFIER_SMTP_FROM_NAME: Tasks App
+  APP_EMAIL_NOTIFIER_SMTP_FROM_ADDRESS: no-reply@tasks-app.test

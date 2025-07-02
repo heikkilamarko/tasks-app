@@ -1,0 +1,11 @@
+namespace: tasks-app
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.yaml
+  - deployment.yaml
+  - service.yaml
+  - service-external.yaml
+  - middleware.yaml
+  - ingress.yaml

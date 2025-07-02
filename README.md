@@ -54,21 +54,21 @@ Follow the instructions in [infra/zitadel](infra/zitadel) to configure ZITADEL.
 ### Deploy as a Single Binary
 
 ```bash
-./cd.sh <image_tag> single
+./cd.sh <image_tag> k8s/overlays/single
 ```
 
 ```bash
-./cleanup.sh <image_tag> single
+./cleanup.sh <image_tag> k8s/overlays/single
 ```
 
 ### Deploy as Microservices
 
 ```bash
-./cd.sh <image_tag> micro
+./cd.sh <image_tag> k8s/overlays/micro
 ```
 
 ```bash
-./cleanup.sh <image_tag> micro
+./cleanup.sh <image_tag> k8s/overlays/micro
 ```
 
 ## Application

@@ -1,0 +1,13 @@
+resources:
+  - ../micro
+
+patches:
+  - path: ./patch-configmap.yaml
+  - path: ./patch-ingress.yaml
+  - target:
+      kind: Ingress
+      name: tasks-app
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: tasks-app.${DOMAIN}

@@ -7,7 +7,7 @@ export IMAGE="crk3sdemo.azurecr.io/tasks-app:$1"
 export IMAGE_MIGRATIONS="crk3sdemo.azurecr.io/tasks-app-migrations:$1"
 
 export ZITADEL_IP="$(terraform -chdir=../azure-k3s-demo/infra output -raw vm_public_ip)"
-export ZITADEL_CLIENT_ID="$(terraform -chdir=infra/zitadel output -raw tasks_app_client_id)"
+export ZITADEL_CLIENT_ID="\"$(terraform -chdir=infra/zitadel output -raw tasks_app_client_id)\""
 export ZITADEL_EMAIL_NOTIFIER_PAT="$(terraform -chdir=infra/zitadel output -raw email_notifier_token)"
 
 nsc env -s ~/.local/share/nats/nsc/stores
@@ -16,7 +16,7 @@ export NATS_ACCOUNT_PUBLIC_KEY=$(nsc describe account --name tasks-app --json | 
 export NATS_ACCOUNT_SEED="$(cat keys/$NATS_ACCOUNT_PUBLIC_KEY.nk)"
 rm -rf keys
 
-envsubst < k8s/tasks-app-$2.yaml | kubectl apply -f - || true
+kubectl kustomize "$2" | envsubst | kubectl apply -f - || true
 
 kubectl create secret generic nats-app-cred --from-file=infra/nats/app.cred --namespace=tasks-app || true
 kubectl create secret generic nats-tls --from-file=infra/nats/certs/ca.crt --namespace=tasks-app || true

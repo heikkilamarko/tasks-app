@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks-app
+  template:
+    metadata:
+      labels:
+        app: tasks-app
+    spec:
+      hostAliases:
+        - ip: ${ZITADEL_IP}
+          hostnames:
+            - zitadel.test
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: tasks-app-migrations
+          image: ${IMAGE_MIGRATIONS}
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          envFrom:
+            - configMapRef:
+                name: tasks-app
+            - secretRef:
+                name: tasks-app
+      containers: []
+      volumes:
+        - name: nats-tls
+          secret:
+            secretName: nats-tls
+        - name: nats-app-cred
+          secret:
+            secretName: nats-app-cred
