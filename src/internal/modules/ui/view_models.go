@@ -3,7 +3,6 @@ package ui
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"mime/multipart"
 	"net/http"
 	"slices"
@@ -11,8 +10,6 @@ import (
 	"strings"
 	"tasks-app/internal/shared"
 	"time"
-
-	"github.com/gorilla/csrf"
 )
 
 type LanguageRequest struct {
@@ -75,8 +72,6 @@ type UIModel struct {
 	Timezones []string
 	UserID    string
 	UserName  string
-	CSRFToken string
-	CSRFField template.HTML
 }
 
 func NewUIModel(r *http.Request) *UIModel {
@@ -99,8 +94,6 @@ func NewUIModel(r *http.Request) *UIModel {
 		Timezones: SupportedTimezones,
 		UserID:    userID,
 		UserName:  userName,
-		CSRFToken: csrf.Token(r),
-		CSRFField: csrf.TemplateField(r),
 	}
 }
 

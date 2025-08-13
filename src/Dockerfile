@@ -5,7 +5,7 @@ RUN npm ci
 COPY internal/modules/ui/web/ .
 RUN npm run build
 
-FROM golang AS build
+FROM golang:1.25 AS build
 COPY . .
 COPY --from=build-ui /app/dist/ ./internal/modules/ui/
 ENV GOPATH=""

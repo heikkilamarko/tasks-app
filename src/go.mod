@@ -1,12 +1,11 @@
 module tasks-app
 
-go 1.24.6
+go 1.25.0
 
 require (
 	github.com/caarlos0/env/v9 v9.0.0
-	github.com/gorilla/csrf v1.7.3
 	github.com/jackc/pgx/v5 v5.7.5
-	github.com/nats-io/jwt/v2 v2.7.4
+	github.com/nats-io/jwt/v2 v2.8.0
 	github.com/nats-io/nats.go v1.44.0
 	github.com/nats-io/nkeys v0.4.11
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
@@ -41,9 +40,9 @@ require (
 	go.opentelemetry.io/otel v1.37.0 // indirect
 	go.opentelemetry.io/otel/metric v1.37.0 // indirect
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
-	golang.org/x/crypto v0.40.0 // indirect
-	golang.org/x/net v0.42.0 // indirect
+	golang.org/x/crypto v0.41.0 // indirect
+	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sys v0.34.0 // indirect
-	golang.org/x/text v0.27.0 // indirect
+	golang.org/x/sys v0.35.0 // indirect
+	golang.org/x/text v0.28.0 // indirect
 )

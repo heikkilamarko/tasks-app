@@ -10,7 +10,6 @@
 	<td>{{ with .Task.ExpiresAt }}{{ . | formattime $.UI.Location }}{{ end }}</td>
 	<td>{{ .Task.CreatedAt | formattime .UI.Location }}</td>
 	<td>
-		{{ .UI.CSRFField }}
 		<button
 			class="btn btn-sm btn-outline-primary rounded-pill px-3"
 			hx-get="/ui/tasks/{{ .Task.ID }}/edit"
@@ -39,7 +38,6 @@
 		<button
 			class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-2"
 			hx-delete="/ui/tasks/{{ .Task.ID }}"
-			hx-headers='{"X-CSRF-Token": "{{ .UI.CSRFToken }}"}'
 			hx-target="#tasks-table"
 			hx-swap="innerHTML"
 			hx-trigger="deleteTask"

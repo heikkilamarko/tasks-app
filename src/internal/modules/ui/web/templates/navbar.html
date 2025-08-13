@@ -46,7 +46,6 @@
 						{{ range .UI.Timezones }}
 							<li>
 								<form action="/ui/timezone" method="post">
-									{{ $.UI.CSRFField }}
 									<input type="hidden" name="timezone" value="{{ . }}" />
 									<button type="submit" class="dropdown-item {{ if eq . $.UI.Location.String }}active{{ end }}">
 										{{ . | formattimezone }}
@@ -65,7 +64,6 @@
 						{{ range .UI.Languages }}
 							<li>
 								<form action="/ui/language" method="post">
-									{{ $.UI.CSRFField }}
 									<input type="hidden" name="language" value="{{ . }}" />
 									<button type="submit" class="dropdown-item {{ if eq . $.UI.Language }}active{{ end }}">
 										{{ . }}
@@ -83,7 +81,6 @@
 					<ul class="dropdown-menu">
 						<li>
 							<form action="/ui/theme" method="post">
-								{{ .UI.CSRFField }}
 								{{ if eq .UI.Theme "light" }}
 									<input type="hidden" name="theme" value="dark" />
 									<button type="submit" class="dropdown-item">

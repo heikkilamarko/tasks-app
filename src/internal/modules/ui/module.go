@@ -35,7 +35,7 @@ func (m *Module) Run(ctx context.Context) error {
 	}
 
 	errorMW := ErrorRecoveryMiddleware(m.Logger)
-	csrfMW := NewCSRF(m.Config).Middleware
+	copMW := http.NewCrossOriginProtection()
 	authnMW := m.Auth.Middleware.RequireAuthentication()
 	userMW := UserContextMiddleware(m.Auth)
 	natsJWTMW := NATSJWTMiddleware(m.Auth)
@@ -77,7 +77,7 @@ func (m *Module) Run(ctx context.Context) error {
 		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  120 * time.Second,
 		Addr:         m.Config.UI.Addr,
-		Handler:      errorMW(csrfMW(mux)),
+		Handler:      errorMW(copMW.Handler(mux)),
 	}
 
 	g := &errgroup.Group{}
